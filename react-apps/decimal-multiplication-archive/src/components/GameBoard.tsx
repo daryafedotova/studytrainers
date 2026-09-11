@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import confetti from "canvas-confetti";
-import { Check, CheckCircle2, Coins, XCircle } from "lucide-react";
+import { Check, CheckCircle2, Coins, UserRound, XCircle } from "lucide-react";
 import {
   GOAL,
   clampSlot,
@@ -19,7 +19,9 @@ import WinModal from "./WinModal";
 
 interface GameBoardProps {
   paused: boolean;
+  playerName: string;
   onHelp: () => void;
+  onFinish: () => void;
 }
 
 type FeedbackKind = "correct" | "wrong" | "noPoints";
@@ -30,7 +32,7 @@ interface Feedback {
 
 const CONFETTI_COLORS = ["#ffc53d", "#ff5d73", "#34d399", "#38bdf8", "#a78bfa"];
 
-export default function GameBoard({ paused, onHelp }: GameBoardProps) {
+export default function GameBoard({ paused, playerName, onHelp, onFinish }: GameBoardProps) {
   const [problem, setProblem] = useState<Problem>(() => generateProblem());
   const [slot, setSlot] = useState(problem.c0);
   const [score, setScore] = useState(0);
@@ -49,7 +51,6 @@ export default function GameBoard({ paused, onHelp }: GameBoardProps) {
 
   useEffect(() => () => timersRef.current.forEach(clearTimeout), []);
 
-  // всплывающее «+2 / −1» исчезает само
   useEffect(() => {
     if (!delta) return;
     const t = setTimeout(() => setDelta(null), 850);
@@ -92,7 +93,6 @@ export default function GameBoard({ paused, onHelp }: GameBoardProps) {
     const target = targetSlot(problem);
 
     if (slot === target) {
-      // ── Верный перенос ──
       setLocked(true);
       setStatus("correct");
       setSolved((v) => v + 1);
@@ -115,12 +115,10 @@ export default function GameBoard({ paused, onHelp }: GameBoardProps) {
           later(() => setWinOpen(true), 1300);
         }
       } else {
-        // подсказка была открыта — очки за это задание не начисляются
         setFeedback({ id: Date.now(), kind: "noPoints" });
       }
       later(() => nextProblem(), 1900);
     } else {
-      // ── Неверный перенос ──
       setWrong((v) => v + 1);
       setScore((s) => Math.max(0, s - 1));
       setDelta({ id: Date.now(), value: -1 });
@@ -132,7 +130,6 @@ export default function GameBoard({ paused, onHelp }: GameBoardProps) {
     }
   }, [hintShown, locked, nextProblem, paused, problem, score, slot]);
 
-  // Клавиатура: ← → двигают запятую, Enter — проверка
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (paused) return;
@@ -179,7 +176,13 @@ export default function GameBoard({ paused, onHelp }: GameBoardProps) {
       />
 
       <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-4 px-4 py-6 sm:gap-5 sm:px-6">
-        {/* Задание с живым результатом */}
+        <div className="flex justify-center">
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/[0.06] px-4 py-2 text-sm font-extrabold text-white/65 ring-1 ring-white/10">
+            <UserRound className="h-4 w-4 text-violet-300" />
+            {playerName}
+          </span>
+        </div>
+
         <motion.section
           key={`${problem.digits}-${problem.c0}-${problem.p}-${problem.dir}`}
           initial={{ opacity: 0, y: 22, scale: 0.98 }}
@@ -230,7 +233,6 @@ export default function GameBoard({ paused, onHelp }: GameBoardProps) {
             </AnimatePresence>
           </div>
 
-          {/* Интерактивный ряд цифр */}
           <div className="mt-5">
             <GameRow
               digits={problem.digits}
@@ -243,7 +245,6 @@ export default function GameBoard({ paused, onHelp }: GameBoardProps) {
             />
           </div>
 
-          {/* Проверка + сообщения */}
           <div className="mt-5 flex flex-col items-center gap-3">
             <button
               type="button"
@@ -293,7 +294,6 @@ export default function GameBoard({ paused, onHelp }: GameBoardProps) {
           </div>
         </motion.section>
 
-        {/* Подсказка после ошибки */}
         <AnimatePresence>
           {hintShown && !winOpen && (
             <HintPanel problem={problem} onSkip={() => nextProblem()} />
@@ -303,10 +303,13 @@ export default function GameBoard({ paused, onHelp }: GameBoardProps) {
 
       <WinModal
         open={winOpen}
+        playerName={playerName}
+        score={score}
         solved={solved}
         wrong={wrong}
         onRestart={handleRestart}
         onContinue={() => setWinOpen(false)}
+        onFinish={onFinish}
       />
     </div>
   );
