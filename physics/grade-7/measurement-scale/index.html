@@ -113,5 +113,34 @@
       </section>
     </section>
   </main>
+
+  <div class="rule-modal" id="rule-modal" hidden role="dialog" aria-modal="true" aria-labelledby="rule-modal-title">
+    <div class="rule-modal-backdrop" data-rule-close></div>
+    <section class="rule-modal-card">
+      <div class="rule-modal-head">
+        <div>
+          <span class="eyebrow">Алгоритм</span>
+          <h2 id="rule-modal-title">Как работать со шкалой прибора</h2>
+        </div>
+        <button class="rule-close" id="rule-close" type="button" aria-label="Закрыть правило">×</button>
+      </div>
+      <ol class="rule-modal-steps">
+        <li>Выбери две соседние подписанные отметки.</li>
+        <li>Найди разность их значений.</li>
+        <li>Посчитай <b>промежутки</b> между ними, а не риски.</li>
+        <li>Цена деления: <b>c = разность ÷ число промежутков</b>.</li>
+        <li>Абсолютная погрешность: <b>Δ = c / 2</b>.</li>
+        <li>Определи показание прибора.</li>
+        <li>Запиши результат: <b>x = (значение ± Δ) единица</b>.</li>
+      </ol>
+      <div class="rule-example">
+        <b>Пример:</b> между 20 мл и 30 мл — 5 промежутков.<br>
+        Цена деления: (30 − 20) : 5 = 2 мл.<br>
+        Погрешность: Δ = 2 : 2 = 1 мл.
+      </div>
+      <button class="btn primary rule-done" type="button" data-rule-close>Понятно</button>
+    </section>
+  </div>
+
 </body>
 </html>
