@@ -19,8 +19,8 @@
           <div class="rule-symbol">→</div>
           <div>
             <h2>Умножаем на 10, 100, 1000</h2>
-            <p>Переноси запятую <strong>вправо</strong>: на 1, 2 или 3 цифры.</p>
-            <div class="rule-example"><span>3,45 × 100</span><span>= 345</span></div>
+            <p>Переноси запятую <strong>вправо на столько знаков, сколько нулей в числе</strong>: 10 — на 1 знак, 100 — на 2, 1000 — на 3.</p>
+            <div class="rule-example"><span>5,03 × 1000</span><span>= 5030</span></div>
           </div>
         </article>
 
@@ -28,13 +28,14 @@
           <div class="rule-symbol">←</div>
           <div>
             <h2>Умножаем на 0,1; 0,01; 0,001</h2>
-            <p>Переноси запятую <strong>влево</strong>: на 1, 2 или 3 цифры.</p>
-            <div class="rule-example"><span>56,2 × 0,01</span><span>= 0,562</span></div>
+            <p>Переноси запятую <strong>влево на столько знаков, сколько цифр после запятой у множителя</strong>: 0,1 — на 1 знак, 0,01 — на 2, 0,001 — на 3.</p>
+            <div class="rule-example"><span>0,24 × 0,01</span><span>= 0,0024</span></div>
           </div>
         </article>
       </div>
 
       <div class="start-panel">
+        <p class="goal-note"><strong>Важно:</strong> если при переносе запятой цифр не хватает, дописывай нули.</p>
         <label for="playerName">Как тебя зовут?</label>
         <div class="start-row">
           <input id="playerName" maxlength="24" autocomplete="off" placeholder="Введите имя">
@@ -61,7 +62,6 @@
       </div>
 
       <div id="answers" class="answer-grid"></div>
-
       <div id="feedback" class="feedback hidden"></div>
       <div id="hintBox" class="hint-box hidden"></div>
     </section>
