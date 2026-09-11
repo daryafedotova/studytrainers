@@ -6,6 +6,7 @@
   <meta name="description" content="Интерактивные тренажёры по математике и физике">
   <title>Интерактивные тренажёры</title>
   <link rel="stylesheet" href="assets/styles.css">
+  <script src="assets/library.js" defer></script>
 </head>
 <body>
   <main class="page-shell">
@@ -19,13 +20,71 @@
       <div class="library-heading">
         <div>
           <p class="empty-kicker">Библиотека</p>
-          <h2 id="library-title">Тренажёры</h2>
+          <h2 id="library-title">Выберите предмет и класс</h2>
         </div>
-        <span class="counter">3 материала</span>
+        <span class="counter" id="material-counter">3 материала</span>
       </div>
 
-      <div class="trainer-grid">
-        <article class="trainer-card multiplication-card">
+      <div class="subject-switch" role="group" aria-label="Предмет">
+        <button class="subject-tab is-active" type="button" data-subject="math" aria-pressed="true">
+          <span class="subject-tab-icon" aria-hidden="true">∑</span>
+          <span>
+            <strong>Математика</strong>
+            <small>5–9 классы</small>
+          </span>
+        </button>
+        <button class="subject-tab" type="button" data-subject="physics" aria-pressed="false">
+          <span class="subject-tab-icon atom-tab-icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="32" cy="32" r="5" fill="currentColor"/>
+              <ellipse cx="32" cy="32" rx="22" ry="9" fill="none" stroke="currentColor" stroke-width="3"/>
+              <ellipse cx="32" cy="32" rx="22" ry="9" fill="none" stroke="currentColor" stroke-width="3" transform="rotate(60 32 32)"/>
+              <ellipse cx="32" cy="32" rx="22" ry="9" fill="none" stroke="currentColor" stroke-width="3" transform="rotate(-60 32 32)"/>
+            </svg>
+          </span>
+          <span>
+            <strong>Физика</strong>
+            <small>7–11 классы</small>
+          </span>
+        </button>
+      </div>
+
+      <div class="filter-area">
+        <div class="grade-panel" data-grade-panel="math" aria-label="Класс по математике">
+          <button type="button" class="filter-chip is-active" data-grade="all">Все</button>
+          <button type="button" class="filter-chip" data-grade="5">5 класс</button>
+          <button type="button" class="filter-chip" data-grade="6">6 класс</button>
+          <button type="button" class="filter-chip" data-grade="7">7 класс</button>
+          <button type="button" class="filter-chip" data-grade="8">8 класс</button>
+          <button type="button" class="filter-chip" data-grade="9">9 класс</button>
+        </div>
+
+        <div class="grade-panel" data-grade-panel="physics" aria-label="Класс по физике" hidden>
+          <button type="button" class="filter-chip is-active" data-grade="all">Все</button>
+          <button type="button" class="filter-chip" data-grade="7">7 класс</button>
+          <button type="button" class="filter-chip" data-grade="8">8 класс</button>
+          <button type="button" class="filter-chip" data-grade="9">9 класс</button>
+          <button type="button" class="filter-chip" data-grade="10">10 класс</button>
+          <button type="button" class="filter-chip" data-grade="11">11 класс</button>
+        </div>
+
+        <div class="domain-panel" id="math-domain-panel" aria-label="Раздел математики" hidden>
+          <span class="domain-label">Раздел:</span>
+          <button type="button" class="domain-chip is-active" data-domain="all">Все</button>
+          <button type="button" class="domain-chip" data-domain="algebra">Алгебра</button>
+          <button type="button" class="domain-chip" data-domain="geometry">Геометрия</button>
+        </div>
+      </div>
+
+      <div class="results-heading">
+        <div>
+          <p class="results-kicker">Показаны материалы</p>
+          <h3 id="results-title">Математика · все классы</h3>
+        </div>
+      </div>
+
+      <div class="trainer-grid" id="trainer-grid">
+        <article class="trainer-card multiplication-card" data-subject="math" data-grades="5 6" data-domain="general">
           <div class="trainer-topline">
             <span class="trainer-badge">Математика · 5–6 класс</span>
             <span class="new-badge">Умножение</span>
@@ -35,7 +94,7 @@
           <a class="open-btn" href="math/grade-5-6/decimal-multiplication-react/">Открыть тренажёр <span aria-hidden="true">→</span></a>
         </article>
 
-        <article class="trainer-card division-card">
+        <article class="trainer-card division-card" data-subject="math" data-grades="5 6" data-domain="general">
           <div class="trainer-topline">
             <span class="trainer-badge">Математика · 5–6 класс</span>
             <span class="new-badge">Деление</span>
@@ -45,7 +104,7 @@
           <a class="open-btn" href="math/grade-5-6/decimal-division/">Открыть тренажёр <span aria-hidden="true">→</span></a>
         </article>
 
-        <article class="trainer-card percent-card">
+        <article class="trainer-card percent-card" data-subject="math" data-grades="6" data-domain="general">
           <div class="trainer-topline">
             <span class="trainer-badge">Математика · 6 класс</span>
             <span class="new-badge">Проценты</span>
@@ -54,6 +113,12 @@
           <p>Два уровня: перевод десятичных и обыкновенных дробей в проценты, затем перевод процентов в десятичные дроби. Цель — 50 очков.</p>
           <a class="open-btn" href="math/grade-6/percent-fractions/">Открыть тренажёр <span aria-hidden="true">→</span></a>
         </article>
+      </div>
+
+      <div class="empty-results" id="empty-results" hidden>
+        <div class="empty-results-icon" aria-hidden="true">✦</div>
+        <h3>Здесь пока нет тренажёров</h3>
+        <p id="empty-results-text">Материалы для этого раздела появятся позже.</p>
       </div>
     </section>
 
