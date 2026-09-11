@@ -18,7 +18,7 @@ body {
 
 body {
   font-family: var(--font-body);
-  background: #061523;
+  background: linear-gradient(135deg, #071827 0%, #0b263c 55%, #123b55 100%);
   color: #ffffff;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
