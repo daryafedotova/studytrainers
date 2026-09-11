@@ -1,0 +1,50 @@
+name: Build React decimal division trainer
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'react-apps/decimal-division/**'
+      - '.github/workflows/build-react-division.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        working-directory: react-apps/decimal-division
+        run: npm install --no-audit --no-fund
+
+      - name: Build
+        working-directory: react-apps/decimal-division
+        run: npm run build
+
+      - name: Publish trainer into Pages tree
+        run: |
+          rm -rf math/grade-5-6/decimal-division
+          mkdir -p math/grade-5-6/decimal-division
+          cp -R react-apps/decimal-division/dist/. math/grade-5-6/decimal-division/
+
+      - name: Commit built trainer and lockfile
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add math/grade-5-6/decimal-division react-apps/decimal-division/package-lock.json
+          if git diff --cached --quiet; then
+            echo "No build changes"
+          else
+            git commit -m "Build decimal division trainer [skip ci]"
+            git push
+          fi
