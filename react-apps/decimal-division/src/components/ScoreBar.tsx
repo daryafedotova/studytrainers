@@ -23,7 +23,6 @@ export default function ScoreBar({ score, delta, soundOn, onToggleSound, onHelp 
   return (
     <header className="relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-3 px-4 pt-5 sm:px-6">
       <div className="flex items-center justify-between gap-3">
-        {/* Логотип */}
         <div className="flex items-center gap-2.5">
           <span className="grid h-10 w-8 place-items-end rounded-xl bg-gradient-to-b from-[#ff7a8c] to-[#ff4d67] pb-1 font-display text-xl font-black text-white shadow-lg shadow-rose-500/30">
             ,
@@ -32,11 +31,10 @@ export default function ScoreBar({ score, delta, soundOn, onToggleSound, onHelp 
             <div className="font-display text-[13px] font-extrabold tracking-wide text-white sm:text-sm">
               Запятая в движении
             </div>
-            <div className="text-[11px] font-bold text-white/45">математика · 5 класс</div>
+            <div className="text-[11px] font-bold text-white/45">деление · 5–6 класс</div>
           </div>
         </div>
 
-        {/* Кнопки */}
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -57,7 +55,6 @@ export default function ScoreBar({ score, delta, soundOn, onToggleSound, onHelp 
         </div>
       </div>
 
-      {/* Счёт + прогресс до цели */}
       <div className="flex items-center gap-3 rounded-2xl bg-white/[0.07] p-3 ring-1 ring-white/12 backdrop-blur-md sm:gap-4 sm:p-4">
         <div className="relative shrink-0">
           <div className="flex items-center gap-2 rounded-xl bg-gradient-to-b from-amber-300 to-amber-400 px-3 py-2 shadow-lg shadow-amber-500/25 sm:px-4">
@@ -75,7 +72,6 @@ export default function ScoreBar({ score, delta, soundOn, onToggleSound, onHelp 
               </motion.span>
             </AnimatePresence>
           </div>
-          {/* Всплывающие +2 / −1 */}
           <AnimatePresence>
             {delta && (
               <motion.span
@@ -105,11 +101,10 @@ export default function ScoreBar({ score, delta, soundOn, onToggleSound, onHelp 
           </div>
           <div className="relative h-4 overflow-visible rounded-full bg-white/10 ring-1 ring-white/10">
             <motion.div
-              className="h-full rounded-full bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400 shadow-[0_0_18px_rgba(251,191,36,0.45)]"
+              className="h-full rounded-full bg-gradient-to-r from-sky-400 via-cyan-400 to-violet-400 shadow-[0_0_18px_rgba(56,189,248,0.35)]"
               animate={{ width: `${pct}%` }}
               transition={{ type: "spring", stiffness: 120, damping: 20 }}
             />
-            {/* Метки-звёзды */}
             {MILESTONES.map((m) => (
               <span
                 key={m}
