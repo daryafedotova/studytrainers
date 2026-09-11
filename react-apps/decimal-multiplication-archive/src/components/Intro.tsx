@@ -11,12 +11,15 @@ import {
   MoveRight,
   Play,
   PlusCircle,
+  UserRound,
 } from "lucide-react";
 import RuleDemo from "./RuleDemo";
 
 interface IntroProps {
   mode: "start" | "help";
   onStart: () => void;
+  playerName?: string;
+  onPlayerNameChange?: (value: string) => void;
 }
 
 const fade = {
@@ -24,10 +27,11 @@ const fade = {
   animate: { opacity: 1, y: 0 },
 };
 
-export default function Intro({ mode, onStart }: IntroProps) {
+export default function Intro({ mode, onStart, playerName = "", onPlayerNameChange }: IntroProps) {
+  const canStart = mode === "help" || playerName.trim().length > 0;
+
   return (
     <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-5xl flex-col items-center justify-center px-4 py-10 sm:px-6">
-      {/* Значок-запятая */}
       <motion.div
         initial={{ scale: 0, rotate: -18 }}
         animate={{ scale: 1, rotate: 0 }}
@@ -39,7 +43,7 @@ export default function Intro({ mode, onStart }: IntroProps) {
 
       <motion.div {...fade} transition={{ delay: 0.1, duration: 0.55 }} className="mt-6 text-center">
         <span className="inline-block rounded-full bg-white/10 px-4 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.2em] text-white/60 ring-1 ring-white/15 sm:text-xs">
-          Игра-тренажёр · математика · 5 класс
+          Игра-тренажёр · математика · 5–6 класс
         </span>
         <h1 className="font-display mt-4 text-3xl font-black leading-[1.08] text-white sm:text-5xl md:text-6xl">
           Запятая <span className="text-gradient">в движении</span>
@@ -50,7 +54,6 @@ export default function Intro({ mode, onStart }: IntroProps) {
         </p>
       </motion.div>
 
-      {/* Два правила с живыми демонстрациями */}
       <div className="mt-8 grid w-full gap-4 md:grid-cols-2">
         <motion.div
           {...fade}
@@ -93,7 +96,6 @@ export default function Intro({ mode, onStart }: IntroProps) {
         </motion.div>
       </div>
 
-      {/* Как играть */}
       <motion.div
         {...fade}
         transition={{ delay: 0.42, duration: 0.55 }}
@@ -116,7 +118,6 @@ export default function Intro({ mode, onStart }: IntroProps) {
         ))}
       </motion.div>
 
-      {/* Очки и цель */}
       <motion.div
         {...fade}
         transition={{ delay: 0.5, duration: 0.55 }}
@@ -136,15 +137,43 @@ export default function Intro({ mode, onStart }: IntroProps) {
         </span>
       </motion.div>
 
-      {/* Старт */}
+      {mode === "start" && (
+        <motion.div
+          {...fade}
+          transition={{ delay: 0.56, duration: 0.55 }}
+          className="mt-7 w-full max-w-md"
+        >
+          <label htmlFor="player-name" className="mb-2 block text-center text-sm font-extrabold text-white/70">
+            Как тебя зовут?
+          </label>
+          <div className="relative">
+            <UserRound className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-white/35" />
+            <input
+              id="player-name"
+              type="text"
+              value={playerName}
+              onChange={(e) => onPlayerNameChange?.(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && playerName.trim()) onStart();
+              }}
+              maxLength={40}
+              autoComplete="off"
+              placeholder="Введи имя"
+              className="w-full rounded-2xl border border-white/15 bg-white/[0.08] py-3.5 pl-12 pr-4 text-base font-extrabold text-white outline-none transition placeholder:text-white/30 focus:border-violet-300/60 focus:bg-white/[0.11] focus:ring-4 focus:ring-violet-400/10"
+            />
+          </div>
+        </motion.div>
+      )}
+
       <motion.button
         {...fade}
-        transition={{ delay: 0.6, duration: 0.55 }}
+        transition={{ delay: 0.62, duration: 0.55 }}
         type="button"
         onClick={onStart}
-        className="btn-push group mt-8 inline-flex items-center gap-3 rounded-3xl border-b-[6px] border-emerald-700 bg-gradient-to-b from-emerald-400 to-emerald-500 px-10 py-4 font-display text-lg font-black text-white shadow-2xl shadow-emerald-600/40 hover:brightness-105 sm:text-xl"
+        disabled={!canStart}
+        className="btn-push group mt-6 inline-flex items-center gap-3 rounded-3xl border-b-[6px] border-emerald-700 bg-gradient-to-b from-emerald-400 to-emerald-500 px-10 py-4 font-display text-lg font-black text-white shadow-2xl shadow-emerald-600/40 hover:brightness-105 disabled:cursor-not-allowed disabled:border-white/10 disabled:from-white/10 disabled:to-white/10 disabled:text-white/35 disabled:shadow-none sm:text-xl"
       >
-        <Play className="h-6 w-6 fill-white transition-transform group-hover:scale-110" />
+        <Play className="h-6 w-6 fill-current transition-transform group-hover:scale-110" />
         {mode === "start" ? "Начать игру" : "Продолжить игру"}
         <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" strokeWidth={3} />
       </motion.button>
