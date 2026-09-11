@@ -1,0 +1,50 @@
+name: Build percent fractions trainer
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'react-apps/percent-fractions/**'
+      - '.github/workflows/build-percent-fractions.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        working-directory: react-apps/percent-fractions
+        run: npm install --no-audit --no-fund
+
+      - name: Build
+        working-directory: react-apps/percent-fractions
+        run: npm run build
+
+      - name: Publish trainer into Pages tree
+        run: |
+          rm -rf math/grade-6/percent-fractions
+          mkdir -p math/grade-6/percent-fractions
+          cp -R react-apps/percent-fractions/dist/. math/grade-6/percent-fractions/
+
+      - name: Commit built trainer and lockfile
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add math/grade-6/percent-fractions react-apps/percent-fractions/package-lock.json
+          if git diff --cached --quiet; then
+            echo "No build changes"
+          else
+            git commit -m "Build percent fractions trainer [skip ci]"
+            git push
+          fi
