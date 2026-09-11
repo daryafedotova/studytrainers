@@ -47,7 +47,7 @@ export default function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 overflow-y-auto bg-sky-50/90 backdrop-blur-md"
+            className="fixed inset-0 z-40 overflow-y-auto bg-[#06131f]/90 backdrop-blur-md"
           >
             <Intro mode="help" onStart={() => setHelpOpen(false)} />
           </motion.div>
