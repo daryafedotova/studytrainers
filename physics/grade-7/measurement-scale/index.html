@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Интерактивный тренажёр по определению цены деления, абсолютной погрешности и показания измерительного прибора">
+  <title>Работа со шкалой прибора · Физика 7 класс</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main class="page">
+    <section class="shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark">φ</span>
+          <div><strong>РАБОТА СО ШКАЛОЙ ПРИБОРА</strong><small>физика · 7 класс</small></div>
+        </div>
+        <div class="top-status">
+          <span class="stage-pill" id="stage-pill">Учимся</span>
+          <span class="progress-pill" id="progress-pill">0 / 17</span>
+          <button class="top-btn" id="rule-btn" type="button">? Правило</button>
+        </div>
+      </header>
+
+      <section class="screen active" id="intro-screen">
+        <div class="intro-grid">
+          <article class="panel hero-panel">
+            <span class="eyebrow">Освоение навыка</span>
+            <h1>Цена деления, погрешность и показание</h1>
+            <p>Тренажёр учит читать шкалы разных приборов и правильно записывать результат измерения.</p>
+            <ol class="algorithm">
+              <li>Выбери две соседние подписанные отметки.</li>
+              <li>Найди разность их значений.</li>
+              <li>Посчитай <b>промежутки</b> между ними.</li>
+              <li>Найди цену деления: разность ÷ число промежутков.</li>
+              <li>Найди погрешность: <b>Δ = c / 2</b>.</li>
+              <li>Определи показание прибора.</li>
+              <li>Запиши результат: <b>x = (значение ± Δ) единица</b>.</li>
+            </ol>
+            <button class="btn primary" id="start-btn" type="button">Начать обучение →</button>
+          </article>
+          <article class="panel">
+            <h2>Три этапа</h2>
+            <div class="mode-card"><b>1. Учимся</b><span>2 задания с подробными подсказками.</span></div>
+            <div class="mode-card"><b>2. Тренируемся</b><span>5 заданий. Подсказка открывается по запросу.</span></div>
+            <div class="mode-card"><b>3. Проверяю себя</b><span>10 заданий. Для освоения навыка нужно 8 самостоятельных решений с первой попытки.</span></div>
+            <div class="note"><b>Главное правило:</b> считаем промежутки между рисками, а не количество рисок.</div>
+          </article>
+        </div>
+      </section>
+
+      <section class="screen" id="game-screen">
+        <div class="workspace">
+          <aside class="sidebar">
+            <div class="panel compact">
+              <span class="eyebrow">Прогресс</span>
+              <div id="stage-progress"></div>
+            </div>
+            <div class="panel compact rule-card" id="rule-card">
+              <b>Короткое правило</b>
+              <p>Цена деления = разность двух соседних подписанных значений ÷ число промежутков.</p>
+              <p>Абсолютная погрешность: <b>Δ = c / 2</b>.</p>
+            </div>
+          </aside>
+
+          <article class="panel task-panel">
+            <div class="task-head">
+              <span class="task-number" id="task-number"># задание 1</span>
+              <span class="instrument-pill" id="instrument-pill">Линейка</span>
+            </div>
+            <p class="task-prompt" id="task-prompt">Выполни алгоритм по шагам</p>
+
+            <div class="task-grid">
+              <div class="visual-column">
+                <div class="instrument-card" id="instrument-card"></div>
+                <div class="message info" id="selection-message">Выбери две соседние подписанные отметки.</div>
+                <div class="formula" id="formula-box">Здесь появится ход решения.</div>
+              </div>
+
+              <div class="form-column">
+                <div class="step" id="step-marks"><b>1. Подписанные отметки</b><span>Нажми на две соседние подписанные отметки на приборе.</span></div>
+                <label class="step">2. Разность значений<input id="difference" inputmode="decimal" placeholder="Введите число"></label>
+                <div class="step"><b>3. Число промежутков</b><span>Нажми на нужное количество клеток.</span><div class="intervals" id="intervals"></div></div>
+                <label class="step">4. Цена деления<input id="division" inputmode="decimal" placeholder="Введите число"></label>
+                <label class="step">5. Абсолютная погрешность<input id="error" inputmode="decimal" placeholder="Введите число"></label>
+                <label class="step">6. Показание прибора<input id="reading" inputmode="decimal" placeholder="Введите число"></label>
+                <label class="step">7. Полная запись<input id="result" placeholder="Например: 46 ± 1"><small id="result-hint"></small></label>
+              </div>
+            </div>
+
+            <div class="message info" id="feedback">Заполняй шаги по порядку. При необходимости используй подсказку.</div>
+            <div class="actions">
+              <button class="btn secondary" id="hint-btn" type="button">Подсказка</button>
+              <button class="btn check" id="check-btn" type="button">Проверить</button>
+              <button class="btn primary" id="next-btn" type="button" disabled>Следующее задание →</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="screen" id="result-screen">
+        <article class="panel result-panel">
+          <span class="eyebrow">Итог</span>
+          <h1 id="final-title">Навык освоен</h1>
+          <p id="final-text"></p>
+          <div class="skill-grid" id="skill-grid"></div>
+          <div class="actions result-actions">
+            <a class="btn secondary link-btn" href="../../../#physics-7">← В библиотеку</a>
+            <button class="btn primary" id="restart-btn" type="button">Пройти ещё раз</button>
+          </div>
+        </article>
+      </section>
+    </section>
+  </main>
+</body>
+</html>
