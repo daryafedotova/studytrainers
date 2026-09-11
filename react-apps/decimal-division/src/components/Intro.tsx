@@ -32,6 +32,7 @@ export default function Intro({ mode, onStart, playerName = "", onPlayerNameChan
 
   return (
     <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-5xl flex-col items-center justify-center px-4 py-10 sm:px-6">
+      {/* Значок-запятая */}
       <motion.div
         initial={{ scale: 0, rotate: -18 }}
         animate={{ scale: 1, rotate: 0 }}
@@ -49,11 +50,12 @@ export default function Intro({ mode, onStart, playerName = "", onPlayerNameChan
           Запятая <span className="text-gradient">в движении</span>
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-base font-semibold leading-relaxed text-white/65 sm:text-lg">
-          Мгновенно умножаем десятичные дроби на <b className="text-sky-300">10, 100, 1000</b> и на{" "}
+          Мгновенно делим десятичные дроби на <b className="text-sky-300">10, 100, 1000</b> и на{" "}
           <b className="text-amber-300">0,1; 0,01; 0,001</b> — просто перенося запятую в нужную сторону!
         </p>
       </motion.div>
 
+      {/* Два правила с живыми демонстрациями */}
       <div className="mt-8 grid w-full gap-4 md:grid-cols-2">
         <motion.div
           {...fade}
@@ -62,16 +64,16 @@ export default function Intro({ mode, onStart, playerName = "", onPlayerNameChan
         >
           <div className="flex items-center gap-2.5">
             <span className="grid h-10 w-10 place-items-center rounded-xl bg-sky-400 text-sky-950 shadow-lg shadow-sky-500/30">
-              <MoveRight className="h-5 w-5" strokeWidth={3} />
+              <MoveLeft className="h-5 w-5" strokeWidth={3} />
             </span>
-            <h2 className="font-display text-lg font-extrabold text-sky-300 sm:text-xl">× 10, 100, 1000</h2>
+            <h2 className="font-display text-lg font-extrabold text-sky-300 sm:text-xl">÷ 10, 100, 1000</h2>
           </div>
           <p className="mt-3 text-sm font-semibold leading-relaxed text-white/70 sm:text-[15px]">
-            Считаем <b className="text-sky-300">НУЛИ</b> в множителе — на столько знаков запятая бежит{" "}
-            <b className="text-sky-300">ВПРАВО</b>. Число от этого растёт!
+            Считаем <b className="text-sky-300">НУЛИ</b> в делителе — на столько знаков запятая бежит{" "}
+            <b className="text-sky-300">ВЛЕВО</b>. Число уменьшается!
           </p>
           <div className="mt-4">
-            <RuleDemo digits="635" c0={1} p={2} dir={1} />
+            <RuleDemo digits="635" c0={1} p={2} dir={-1} />
           </div>
         </motion.div>
 
@@ -82,27 +84,28 @@ export default function Intro({ mode, onStart, playerName = "", onPlayerNameChan
         >
           <div className="flex items-center gap-2.5">
             <span className="grid h-10 w-10 place-items-center rounded-xl bg-amber-400 text-amber-950 shadow-lg shadow-amber-500/30">
-              <MoveLeft className="h-5 w-5" strokeWidth={3} />
+              <MoveRight className="h-5 w-5" strokeWidth={3} />
             </span>
-            <h2 className="font-display text-lg font-extrabold text-amber-300 sm:text-xl">× 0,1; 0,01; 0,001</h2>
+            <h2 className="font-display text-lg font-extrabold text-amber-300 sm:text-xl">÷ 0,1; 0,01; 0,001</h2>
           </div>
           <p className="mt-3 text-sm font-semibold leading-relaxed text-white/70 sm:text-[15px]">
-            Считаем <b className="text-amber-300">ЦИФРЫ после запятой</b> в множителе — на столько знаков запятая
-            бежит <b className="text-amber-300">ВЛЕВО</b>. Число уменьшается!
+            Считаем <b className="text-amber-300">ЦИФРЫ после запятой</b> в делителе — на столько знаков запятая
+            бежит <b className="text-amber-300">ВПРАВО</b>. Число увеличивается!
           </p>
           <div className="mt-4">
-            <RuleDemo digits="635" c0={1} p={1} dir={-1} />
+            <RuleDemo digits="635" c0={1} p={1} dir={1} />
           </div>
         </motion.div>
       </div>
 
+      {/* Как играть */}
       <motion.div
         {...fade}
         transition={{ delay: 0.42, duration: 0.55 }}
         className="mt-4 grid w-full gap-3 sm:grid-cols-3"
       >
         {[
-          { icon: Eye, t: "Смотри на пример", d: "Например: 6,35 × 100" },
+          { icon: Eye, t: "Смотри на пример", d: "Например: 6,35 ÷ 100" },
           { icon: Hand, t: "Переноси запятую", d: "Тяни её или жми стрелки" },
           { icon: CheckCircle2, t: "Жми «Проверить»", d: "И получай очки!" },
         ].map((s) => (
@@ -118,6 +121,7 @@ export default function Intro({ mode, onStart, playerName = "", onPlayerNameChan
         ))}
       </motion.div>
 
+      {/* Очки и цель */}
       <motion.div
         {...fade}
         transition={{ delay: 0.5, duration: 0.55 }}
@@ -143,11 +147,11 @@ export default function Intro({ mode, onStart, playerName = "", onPlayerNameChan
           transition={{ delay: 0.56, duration: 0.55 }}
           className="mt-7 w-full max-w-md"
         >
-          <label htmlFor="player-name" className="mb-2 block text-center text-sm font-extrabold text-white/70">
+          <label htmlFor="player-name" className="mb-2 block text-center text-sm font-extrabold text-slate-700">
             Как тебя зовут?
           </label>
           <div className="relative">
-            <UserRound className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-white/35" />
+            <UserRound className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
             <input
               id="player-name"
               type="text"
@@ -159,21 +163,22 @@ export default function Intro({ mode, onStart, playerName = "", onPlayerNameChan
               maxLength={40}
               autoComplete="off"
               placeholder="Введи имя"
-              className="w-full rounded-2xl border border-white/15 bg-white/[0.08] py-3.5 pl-12 pr-4 text-base font-extrabold text-white outline-none transition placeholder:text-white/30 focus:border-violet-300/60 focus:bg-white/[0.11] focus:ring-4 focus:ring-violet-400/10"
+              className="w-full rounded-2xl border border-sky-200 bg-white/85 py-3.5 pl-12 pr-4 text-base font-extrabold text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-sky-400 focus:ring-4 focus:ring-sky-200/60"
             />
           </div>
         </motion.div>
       )}
 
+      {/* Старт */}
       <motion.button
         {...fade}
         transition={{ delay: 0.62, duration: 0.55 }}
         type="button"
         onClick={onStart}
         disabled={!canStart}
-        className="btn-push group mt-6 inline-flex items-center gap-3 rounded-3xl border-b-[6px] border-emerald-700 bg-gradient-to-b from-emerald-400 to-emerald-500 px-10 py-4 font-display text-lg font-black text-white shadow-2xl shadow-emerald-600/40 hover:brightness-105 disabled:cursor-not-allowed disabled:border-white/10 disabled:from-white/10 disabled:to-white/10 disabled:text-white/35 disabled:shadow-none sm:text-xl"
+        className="btn-push group mt-8 inline-flex items-center gap-3 rounded-3xl border-b-[6px] border-emerald-700 bg-gradient-to-b from-emerald-400 to-emerald-500 px-10 py-4 font-display text-lg font-black text-white shadow-2xl shadow-emerald-600/40 hover:brightness-105 disabled:cursor-not-allowed disabled:border-slate-200 disabled:from-slate-200 disabled:to-slate-300 disabled:text-slate-400 disabled:shadow-none sm:text-xl"
       >
-        <Play className="h-6 w-6 fill-current transition-transform group-hover:scale-110" />
+        <Play className="h-6 w-6 fill-white transition-transform group-hover:scale-110" />
         {mode === "start" ? "Начать игру" : "Продолжить игру"}
         <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" strokeWidth={3} />
       </motion.button>
