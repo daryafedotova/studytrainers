@@ -1,4 +1,4 @@
-const STORAGE_KEY = "decimalMultiplicationUsedV2";
+const STORAGE_KEY = "decimalMultiplicationUsedV3";
 const GOAL = 50;
 
 const els = {
@@ -30,12 +30,12 @@ let soundEnabled = true;
 let used = new Set(loadUsed());
 
 const multipliers = [
-  { value: 10, exponent: 1, label: "10" },
-  { value: 100, exponent: 2, label: "100" },
-  { value: 1000, exponent: 3, label: "1000" },
-  { value: 0.1, exponent: -1, label: "0,1" },
-  { value: 0.01, exponent: -2, label: "0,01" },
-  { value: 0.001, exponent: -3, label: "0,001" }
+  { exponent: 1, label: "10" },
+  { exponent: 2, label: "100" },
+  { exponent: 3, label: "1000" },
+  { exponent: -1, label: "0,1" },
+  { exponent: -2, label: "0,01" },
+  { exponent: -3, label: "0,001" }
 ];
 
 function loadUsed() {
@@ -48,36 +48,70 @@ function loadUsed() {
 }
 
 function saveUsed() {
-  const list = Array.from(used).slice(-700);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(used).slice(-700)));
 }
 
-function roundValue(value) {
-  return Number(value.toFixed(8));
+function normalizeDecimalString(value) {
+  let text = String(value).replace(".", ",");
+
+  if (!text.includes(",")) {
+    return text.replace(/^0+(?=\d)/, "") || "0";
+  }
+
+  let [integerPart, fractionalPart] = text.split(",");
+  integerPart = integerPart.replace(/^0+(?=\d)/, "") || "0";
+  fractionalPart = fractionalPart.replace(/0+$/, "");
+
+  return fractionalPart ? `${integerPart},${fractionalPart}` : integerPart;
 }
 
-function formatNumber(value) {
-  return new Intl.NumberFormat("ru-RU", {
-    useGrouping: false,
-    maximumFractionDigits: 8
-  }).format(roundValue(value));
+function moveDecimal(source, shift) {
+  let [integerPart, fractionalPart = ""] = String(source).replace(".", ",").split(",");
+  integerPart = integerPart.replace(/^0+(?=\d)/, "") || "0";
+
+  const digits = integerPart + fractionalPart;
+  const oldIndex = integerPart.length;
+  const newIndex = oldIndex + shift;
+  let result;
+
+  if (newIndex <= 0) {
+    result = `0,${"0".repeat(-newIndex)}${digits}`;
+  } else if (newIndex >= digits.length) {
+    result = `${digits}${"0".repeat(newIndex - digits.length)}`;
+  } else {
+    result = `${digits.slice(0, newIndex)},${digits.slice(newIndex)}`;
+  }
+
+  return normalizeDecimalString(result);
 }
 
-function makeBaseNumber() {
-  const places = 1 + Math.floor(Math.random() * 3);
-  const scale = 10 ** places;
-  const integerPart = Math.floor(Math.random() * 90);
-  let fractional = Math.floor(Math.random() * scale);
-  if (fractional === 0) fractional = 1;
-  return roundValue(integerPart + fractional / scale);
+function makeBaseString() {
+  const fractionalLength = 1 + Math.floor(Math.random() * 3);
+  const integerPart = Math.random() < 0.22 ? 0 : 1 + Math.floor(Math.random() * 90);
+
+  let fractionalPart = "";
+  for (let i = 0; i < fractionalLength; i++) {
+    fractionalPart += Math.floor(Math.random() * 10);
+  }
+
+  if (/^0+$/.test(fractionalPart)) {
+    fractionalPart = fractionalPart.slice(0, -1) + String(1 + Math.floor(Math.random() * 9));
+  }
+
+  if (fractionalPart.endsWith("0")) {
+    fractionalPart = fractionalPart.slice(0, -1) + String(1 + Math.floor(Math.random() * 9));
+  }
+
+  return `${integerPart},${fractionalPart}`;
 }
 
 function generateQuestion() {
   let attempts = 0;
+
   while (attempts < 2500) {
-    const a = makeBaseNumber();
-    const mult = multipliers[Math.floor(Math.random() * multipliers.length)];
-    const signature = `${a}|${mult.value}`;
+    const source = makeBaseString();
+    const multiplier = multipliers[Math.floor(Math.random() * multipliers.length)];
+    const signature = `${source}|${multiplier.label}`;
     attempts += 1;
 
     if (used.has(signature)) continue;
@@ -86,11 +120,10 @@ function generateQuestion() {
     saveUsed();
 
     return {
-      a,
-      multiplier: mult.value,
-      exponent: mult.exponent,
-      multiplierLabel: mult.label,
-      answer: roundValue(a * 10 ** mult.exponent)
+      source,
+      exponent: multiplier.exponent,
+      multiplierLabel: multiplier.label,
+      answer: moveDecimal(source, multiplier.exponent)
     };
   }
 
@@ -99,28 +132,42 @@ function generateQuestion() {
   return generateQuestion();
 }
 
-function plausibleDistractors(q) {
-  const exponents = [
-    -q.exponent,
-    q.exponent > 0 ? q.exponent - 1 : q.exponent + 1,
-    q.exponent > 0 ? q.exponent + 1 : q.exponent - 1,
-    0
+function makeDistractors(question) {
+  const distractors = [];
+  const sign = Math.sign(question.exponent);
+  const magnitude = Math.abs(question.exponent);
+
+  const candidateShifts = [
+    sign * (magnitude === 1 ? 2 : magnitude - 1),
+    sign * (magnitude + 1),
+    -question.exponent,
+    0,
+    sign * (magnitude + 2),
+    -sign * Math.max(1, magnitude - 1),
+    -sign * (magnitude + 1)
   ];
 
-  const values = [];
-  for (const exp of exponents) {
-    const value = roundValue(q.a * 10 ** exp);
-    if (value !== q.answer && !values.includes(value)) values.push(value);
+  for (const shift of candidateShifts) {
+    if (shift === question.exponent) continue;
+
+    const value = moveDecimal(question.source, shift);
+    if (value !== question.answer && !distractors.includes(value) && !value.startsWith("-")) {
+      distractors.push(value);
+    }
+
+    if (distractors.length === 3) return distractors;
   }
 
-  let extraShift = q.exponent > 0 ? 2 : -2;
-  while (values.length < 3) {
-    const value = roundValue(q.answer * 10 ** extraShift);
-    if (value !== q.answer && !values.includes(value)) values.push(value);
-    extraShift += q.exponent > 0 ? 1 : -1;
+  for (let shift = -5; shift <= 5 && distractors.length < 3; shift++) {
+    if (shift === question.exponent) continue;
+
+    const value = moveDecimal(question.source, shift);
+    if (value !== question.answer && !distractors.includes(value) && !value.startsWith("-")) {
+      distractors.push(value);
+    }
   }
 
-  return values.slice(0, 3);
+  return distractors.slice(0, 3);
 }
 
 function shuffle(array) {
@@ -134,23 +181,24 @@ function shuffle(array) {
 function renderQuestion() {
   locked = false;
   current = generateQuestion();
+
   els.feedback.className = "feedback hidden";
   els.feedback.textContent = "";
   els.hintBox.classList.add("hidden");
   els.hintBox.textContent = "";
 
-  els.taskText.textContent = `${formatNumber(current.a)} × ${current.multiplierLabel} = ?`;
+  els.taskText.textContent = `${current.source} × ${current.multiplierLabel} = ?`;
 
-  const options = shuffle([current.answer, ...plausibleDistractors(current)]);
+  const options = shuffle([current.answer, ...makeDistractors(current)]);
   els.answers.innerHTML = "";
 
   options.forEach((value) => {
-    const btn = document.createElement("button");
-    btn.className = "answer-btn";
-    btn.type = "button";
-    btn.textContent = formatNumber(value);
-    btn.addEventListener("click", () => checkAnswer(value));
-    els.answers.appendChild(btn);
+    const button = document.createElement("button");
+    button.className = "answer-btn";
+    button.type = "button";
+    button.textContent = value;
+    button.addEventListener("click", () => checkAnswer(value));
+    els.answers.appendChild(button);
   });
 }
 
@@ -158,6 +206,19 @@ function disableAnswers() {
   els.answers.querySelectorAll("button").forEach((button) => {
     button.disabled = true;
   });
+}
+
+function buildShiftPath(source, exponent) {
+  const values = [source];
+  let value = source;
+  const step = exponent > 0 ? 1 : -1;
+
+  for (let i = 0; i < Math.abs(exponent); i++) {
+    value = moveDecimal(value, step);
+    values.push(value);
+  }
+
+  return values.join(" → ");
 }
 
 function checkAnswer(value) {
@@ -180,15 +241,19 @@ function checkAnswer(value) {
 
   score += 1;
   updateScore();
+
   const direction = current.exponent > 0 ? "вправо" : "влево";
   const steps = Math.abs(current.exponent);
-  const word = steps === 1 ? "цифру" : "цифры";
+  const stepsWord = steps === 1 ? "знак" : "знака";
+  const reason = current.exponent > 0
+    ? `потому что в ${current.multiplierLabel} ${steps} ${steps === 1 ? "ноль" : "нуля"}`
+    : `потому что в ${current.multiplierLabel} после запятой ${steps} ${steps === 1 ? "цифра" : "цифры"}`;
 
-  els.hintBox.innerHTML = `💡 <strong>Подсказка:</strong> при умножении на ${current.multiplierLabel} перенеси запятую <strong>${direction}</strong> на ${steps} ${word}.`;
+  els.hintBox.innerHTML = `💡 <strong>Подсказка:</strong> перенеси запятую <strong>${direction}</strong> на ${steps} ${stepsWord}, ${reason}.<br><strong>${buildShiftPath(current.source, current.exponent)}</strong>`;
   els.hintBox.classList.remove("hidden");
   playTone(250, 0.06);
 
-  setTimeout(finishOrNext, 2300);
+  setTimeout(finishOrNext, 3000);
 }
 
 function finishOrNext() {
@@ -234,10 +299,13 @@ function resetGame() {
 
 async function copyResult() {
   const text = `${player} прошёл(а) тренажёр «Мастер умножения дробей» и набрал(а) ${score} баллов.`;
+
   try {
     await navigator.clipboard.writeText(text);
     els.copyBtn.textContent = "Скопировано!";
-    setTimeout(() => els.copyBtn.textContent = "Скопировать результат", 1400);
+    setTimeout(() => {
+      els.copyBtn.textContent = "Скопировать результат";
+    }, 1400);
   } catch {
     alert(text);
   }
@@ -259,16 +327,20 @@ function launchConfetti() {
     els.confettiLayer.appendChild(piece);
   }
 
-  setTimeout(() => els.confettiLayer.innerHTML = "", 6000);
+  setTimeout(() => {
+    els.confettiLayer.innerHTML = "";
+  }, 6000);
 }
 
 function playTone(frequency, duration) {
-  if (!soundEnabled || !window.AudioContext && !window.webkitAudioContext) return;
+  if (!soundEnabled || (!window.AudioContext && !window.webkitAudioContext)) return;
+
   try {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     const ctx = new AudioCtx();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
+
     osc.frequency.value = frequency;
     osc.type = "sine";
     gain.gain.setValueAtTime(0.05, ctx.currentTime);
@@ -282,6 +354,7 @@ function playTone(frequency, duration) {
 
 function playVictorySound() {
   if (!soundEnabled) return;
+
   [523, 659, 784].forEach((frequency, index) => {
     setTimeout(() => playTone(frequency, 0.18), index * 120);
   });
