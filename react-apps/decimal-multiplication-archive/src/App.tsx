@@ -8,6 +8,17 @@ import { unlockAudio } from "./lib/sound";
 export default function App() {
   const [screen, setScreen] = useState<"intro" | "game">("intro");
   const [helpOpen, setHelpOpen] = useState(false);
+  const [playerName, setPlayerName] = useState("");
+
+  const startGame = () => {
+    if (!playerName.trim()) return;
+    unlockAudio();
+    setScreen("game");
+  };
+
+  const finishGame = () => {
+    window.location.href = "../../../";
+  };
 
   return (
     <div className="relative min-h-screen">
@@ -17,13 +28,17 @@ export default function App() {
       {screen === "intro" ? (
         <Intro
           mode="start"
-          onStart={() => {
-            unlockAudio();
-            setScreen("game");
-          }}
+          playerName={playerName}
+          onPlayerNameChange={setPlayerName}
+          onStart={startGame}
         />
       ) : (
-        <GameBoard paused={helpOpen} onHelp={() => setHelpOpen(true)} />
+        <GameBoard
+          paused={helpOpen}
+          playerName={playerName.trim()}
+          onHelp={() => setHelpOpen(true)}
+          onFinish={finishGame}
+        />
       )}
 
       {/* Правила поверх игры */}
