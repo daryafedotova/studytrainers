@@ -177,12 +177,29 @@ h1 {
   font-weight: 800;
 }
 
+.trainer-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
 .trainer-card {
+  min-width: 0;
   padding: 28px;
   border-radius: 22px;
+}
+
+.multiplication-card {
   background: linear-gradient(135deg, #17142c 0%, #241b4b 58%, #2d205d 100%);
   color: #fff;
   box-shadow: 0 20px 45px rgba(67, 56, 202, .18);
+}
+
+.division-card {
+  background: linear-gradient(135deg, #ffffff 0%, #edf9ff 48%, #f0edff 100%);
+  color: #17233b;
+  border: 1px solid #cfe6f5;
+  box-shadow: 0 20px 45px rgba(56, 189, 248, .13);
 }
 
 .trainer-topline {
@@ -204,16 +221,28 @@ h1 {
   font-weight: 800;
 }
 
-.trainer-badge {
+.multiplication-card .trainer-badge {
   background: rgba(255,255,255,.10);
   color: rgba(255,255,255,.8);
   border: 1px solid rgba(255,255,255,.12);
 }
 
-.new-badge {
+.multiplication-card .new-badge {
   background: rgba(52, 211, 153, .14);
   color: #86efac;
   border: 1px solid rgba(134, 239, 172, .22);
+}
+
+.division-card .trainer-badge {
+  background: rgba(14,165,233,.09);
+  color: #0369a1;
+  border: 1px solid rgba(14,165,233,.18);
+}
+
+.division-card .new-badge {
+  background: rgba(124,58,237,.09);
+  color: #6d28d9;
+  border: 1px solid rgba(124,58,237,.16);
 }
 
 .trainer-card h3 {
@@ -222,10 +251,16 @@ h1 {
   letter-spacing: -.025em;
 }
 
-.trainer-card p {
+.multiplication-card p {
   max-width: 760px;
   margin-bottom: 18px;
   color: rgba(255,255,255,.68);
+}
+
+.division-card p {
+  max-width: 760px;
+  margin-bottom: 18px;
+  color: #64748b;
 }
 
 .trainer-tags {
@@ -235,10 +270,16 @@ h1 {
   margin-bottom: 22px;
 }
 
-.trainer-tags span {
+.multiplication-card .trainer-tags span {
   background: rgba(255,255,255,.07);
   border-color: rgba(255,255,255,.12);
   color: rgba(255,255,255,.78);
+}
+
+.division-card .trainer-tags span {
+  background: rgba(255,255,255,.82);
+  border-color: #d7e7f3;
+  color: #475569;
 }
 
 .open-btn {
@@ -247,12 +288,21 @@ h1 {
   gap: 9px;
   padding: 13px 18px;
   border-radius: 15px;
-  background: linear-gradient(180deg, #34d399 0%, #10b981 100%);
-  color: #052e24;
   text-decoration: none;
   font-weight: 900;
-  box-shadow: 0 10px 24px rgba(16, 185, 129, .28);
   transition: transform .16s ease, filter .16s ease;
+}
+
+.multiplication-card .open-btn {
+  background: linear-gradient(180deg, #34d399 0%, #10b981 100%);
+  color: #052e24;
+  box-shadow: 0 10px 24px rgba(16, 185, 129, .28);
+}
+
+.division-card .open-btn {
+  background: linear-gradient(180deg, #7dd3fc 0%, #38bdf8 100%);
+  color: #082f49;
+  box-shadow: 0 10px 24px rgba(56, 189, 248, .24);
 }
 
 .open-btn:hover {
@@ -271,7 +321,8 @@ footer {
     padding: 40px 28px;
   }
 
-  .subjects {
+  .subjects,
+  .trainer-grid {
     grid-template-columns: 1fr;
   }
 }
