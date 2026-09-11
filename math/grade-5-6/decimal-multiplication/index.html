@@ -1,26 +1,86 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Мастер умножения дробей</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#6757e8">
+  <title>Мастер умножения десятичных дробей</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="card">
-<h1>🚀 Мастер умножения дробей</h1>
-<p>Умножение десятичных дробей на 10, 100, 1000 и 0,1; 0,01; 0,001</p>
-<input id="name" placeholder="Введите имя">
-<div class="rules"><b>Правило:</b><br>При умножении на 10, 100, 1000 запятая переносится вправо.<br>При умножении на 0,1; 0,01; 0,001 — влево.</div>
-<button id="start">Начать тренировку</button>
-<div id="game" class="hidden">
-<h2 id="player"></h2>
-<h2 id="score">Баллы: 0</h2>
-<h1 id="task"></h1>
-<div id="answers"></div>
-<p id="hint"></p>
-</div>
-</div>
-<script src="script.js"></script>
+  <main class="app-shell">
+    <section id="startScreen" class="screen start-screen">
+      <div class="brand-chip">Математика · 5–6 класс</div>
+      <h1>Мастер умножения дробей</h1>
+      <p class="lead">Научись быстро умножать десятичные дроби на 10, 100, 1000 и на 0,1; 0,01; 0,001.</p>
+
+      <div class="rule-grid">
+        <article class="rule-card rule-right">
+          <div class="rule-symbol">→</div>
+          <div>
+            <h2>Умножаем на 10, 100, 1000</h2>
+            <p>Переноси запятую <strong>вправо</strong>: на 1, 2 или 3 цифры.</p>
+            <div class="rule-example"><span>3,45 × 100</span><span>= 345</span></div>
+          </div>
+        </article>
+
+        <article class="rule-card rule-left">
+          <div class="rule-symbol">←</div>
+          <div>
+            <h2>Умножаем на 0,1; 0,01; 0,001</h2>
+            <p>Переноси запятую <strong>влево</strong>: на 1, 2 или 3 цифры.</p>
+            <div class="rule-example"><span>56,2 × 0,01</span><span>= 0,562</span></div>
+          </div>
+        </article>
+      </div>
+
+      <div class="start-panel">
+        <label for="playerName">Как тебя зовут?</label>
+        <div class="start-row">
+          <input id="playerName" maxlength="24" autocomplete="off" placeholder="Введите имя">
+          <button id="startBtn" class="primary-btn">Начать</button>
+        </div>
+        <p class="goal-note">Цель — набрать <strong>50 баллов</strong>. Правильный ответ: +2, ошибка: +1 и подсказка.</p>
+      </div>
+    </section>
+
+    <section id="gameScreen" class="screen game-screen hidden" aria-live="polite">
+      <header class="game-header">
+        <div class="player-badge"><span class="mini-label">Игрок</span><strong id="playerLabel">Ученик</strong></div>
+        <button id="soundBtn" class="icon-btn" type="button" aria-label="Выключить звук" title="Звук">🔊</button>
+        <div class="score-badge"><span class="mini-label">Баллы</span><strong><span id="scoreValue">0</span> / 50</strong></div>
+      </header>
+
+      <div class="progress-track" aria-label="Прогресс">
+        <div id="progressBar" class="progress-bar"></div>
+      </div>
+
+      <div id="taskCard" class="task-card">
+        <p class="task-caption">Выбери правильный ответ</p>
+        <div id="taskText" class="task-text">5,03 × 1000 = ?</div>
+      </div>
+
+      <div id="answers" class="answer-grid"></div>
+
+      <div id="feedback" class="feedback hidden"></div>
+      <div id="hintBox" class="hint-box hidden"></div>
+    </section>
+
+    <section id="victoryScreen" class="screen victory-screen hidden">
+      <div id="confettiLayer" class="confetti-layer" aria-hidden="true"></div>
+      <div class="victory-copy">
+        <div class="trophy">🏆</div>
+        <h1>Теперь ты мастер по умножению дробей!</h1>
+        <p id="resultText" class="result-text"></p>
+      </div>
+      <img class="reward-image" src="kotik.png" alt="Котик поздравляет с отличным результатом">
+      <div class="victory-actions">
+        <button id="copyBtn" class="secondary-btn">Скопировать результат</button>
+        <button id="restartBtn" class="primary-btn">Ещё одна тренировка</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
 </body>
 </html>
