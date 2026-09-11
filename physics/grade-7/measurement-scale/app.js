@@ -28,7 +28,7 @@
   const el = {
     intro:$('intro-screen'),game:$('game-screen'),result:$('result-screen'),start:$('start-btn'),restart:$('restart-btn'),rule:$('rule-btn'),ruleCard:$('rule-card'),stagePill:$('stage-pill'),progressPill:$('progress-pill'),stageProgress:$('stage-progress'),taskNumber:$('task-number'),instrumentPill:$('instrument-pill'),taskPrompt:$('task-prompt'),instrument:$('instrument-card'),selection:$('selection-message'),formula:$('formula-box'),intervals:$('intervals'),difference:$('difference'),division:$('division'),error:$('error'),reading:$('reading'),resultInput:$('result'),resultHint:$('result-hint'),feedback:$('feedback'),hint:$('hint-btn'),check:$('check-btn'),next:$('next-btn'),finalTitle:$('final-title'),finalText:$('final-text'),skillGrid:$('skill-grid')
   };
-  const state = {index:0,marks:[],intervals:0,hintUsed:false,attempts:0,records:[]};
+  const state = {index:0,marks:[],intervals:0,hintUsed:false,attempts:0,firstCheck:null,records:[]};
 
   const fmt = n => String(Math.round(n*1000)/1000).replace('.',',');
   const num = s => Number(String(s).trim().replace(/\s/g,'').replace(',','.'));
@@ -57,7 +57,7 @@
     const t=task(); el.intervals.innerHTML='';
     for(let i=1;i<=t.parts;i++){const b=document.createElement('button');b.type='button';b.className='interval';b.textContent=i;b.addEventListener('click',()=>{state.intervals=i;[...el.intervals.children].forEach((x,j)=>x.classList.toggle('on',j<i))});el.intervals.appendChild(b)}
   }
-  function resetInputs(){state.marks=[];state.intervals=0;state.hintUsed=false;state.attempts=0;[el.difference,el.division,el.error,el.reading,el.resultInput].forEach(x=>x.value='');el.next.disabled=true;el.feedback.className='message info';el.feedback.textContent='Заполняй шаги по порядку. При необходимости используй подсказку.';el.formula.textContent='Здесь появится ход решения.';el.selection.className='message info';el.selection.textContent='Выбери две соседние подписанные отметки.';buildIntervals()}
+  function resetInputs(){state.marks=[];state.intervals=0;state.hintUsed=false;state.attempts=0;state.firstCheck=null;[el.difference,el.division,el.error,el.reading,el.resultInput].forEach(x=>x.value='');el.next.disabled=true;el.feedback.className='message info';el.feedback.textContent='Заполняй шаги по порядку. При необходимости используй подсказку.';el.formula.textContent='Здесь появится ход решения.';el.selection.className='message info';el.selection.textContent='Выбери две соседние подписанные отметки.';buildIntervals()}
   function renderTask(){
     const t=task(); if(!t){finish();return} resetInputs();updateProgress();
     el.taskNumber.textContent=`# задание ${state.index+1}`;el.instrumentPill.textContent=t.name;
@@ -99,10 +99,10 @@
     const cx=350,cy=220,r=150,a0=-120,a1=120,total=Math.round((t.max-t.min)/minor(t)),ri=(t.reading-t.min)/minor(t),ra=a0+(a1-a0)*ri/total;let s=`<circle cx="${cx}" cy="${cy}" r="174" fill="#fff" stroke="#27344a" stroke-width="4"/><text class="unit-label" x="${cx}" y="${cy+112}" text-anchor="middle">${t.unit}</text>`;for(let i=0;i<=total;i++){const v=t.min+i*minor(t),a=a0+(a1-a0)*i/total,p1=polar(cx,cy,r,a),maj=i%t.parts===0,p2=polar(cx,cy,maj?r-28:r-15,a);s+=`<line class="${tickClass(v,maj)}" x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}"/>`;if(maj){const p=polar(cx,cy,r-49,a);s+=`<text class="${labelClass(v)}" data-mark="${v}" x="${p.x}" y="${p.y+6}" text-anchor="middle" font-size="${t.unit==='Па'?16:19}" font-weight="900" style="cursor:pointer">${fmt(v)}</text>`}}const n=polar(cx,cy,112,ra);s+=`<line class="needle" x1="${cx}" y1="${cy}" x2="${n.x}" y2="${n.y}"/><circle cx="${cx}" cy="${cy}" r="9" fill="#27344a"/>`;return `<svg viewBox="0 0 700 420" aria-label="${t.name}, единицы ${t.unit}">${s}</svg>`
   }
 
-  function resultOk(t){const raw=el.resultInput.value.replace(/\s/g,'').replace(',','.');return raw.includes(String(t.reading).replace(',','.'))&&raw.includes(String(uncertainty(t)).replace(',','.'))}
+  function resultOk(t){const raw=el.resultInput.value.replace(/\s/g,'').replace(/,/g,'.');return raw.includes(String(t.reading).replace(',','.'))&&raw.includes(String(uncertainty(t)).replace(',','.'))}
   function currentChecks(t){return {marks:pairValid(t),difference:close(num(el.difference.value),diff()),intervals:state.intervals===t.parts,division:close(num(el.division.value),price(t)),error:close(num(el.error.value),uncertainty(t)),reading:close(num(el.reading.value),t.reading),result:resultOk(t)}}
   function check(){
-    const t=task(), c=currentChecks(t);state.attempts++;
+    const t=task(), c=currentChecks(t);state.attempts++;if(state.attempts===1)state.firstCheck={...c};
     const wrong=[];
     if(!c.marks) wrong.push('Выбери две соседние подписанные отметки.');
     if(!c.difference) wrong.push('Проверь разность выбранных значений.');
@@ -113,7 +113,7 @@
     if(!c.result) wrong.push('В итоговой записи должны быть значение и погрешность через ±.');
     if(wrong.length){el.feedback.className='message bad';el.feedback.innerHTML='<b>Проверь:</b><br>• '+wrong.join('<br>• ');return}
     const clean=state.attempts===1&&!state.hintUsed;
-    state.records.push({stage:t.stage,clean,division:c.division,error:c.error,reading:c.reading});
+    const first=state.firstCheck||c;state.records.push({stage:t.stage,clean,division:first.division,error:first.error,reading:first.reading});
     el.feedback.className='message ok';el.feedback.innerHTML=`<b>Верно.</b> ${clean?'Решено самостоятельно с первой попытки.':'Алгоритм выполнен правильно.'}`;
     el.formula.innerHTML=`${fmt(diff())} ${t.unit} ÷ ${t.parts} = <b>${fmt(price(t))} ${t.unit}</b><br>Δ = ${fmt(price(t))} ÷ 2 = <b>${fmt(uncertainty(t))} ${t.unit}</b><br>${t.symbol} = <b>(${fmt(t.reading)} ± ${fmt(uncertainty(t))}) ${t.unit}</b>`;
     el.next.disabled=false;updateProgress();
