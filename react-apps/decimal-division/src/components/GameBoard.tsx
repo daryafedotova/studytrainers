@@ -177,8 +177,8 @@ export default function GameBoard({ paused, playerName, onHelp, onFinish }: Game
 
       <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-4 px-4 py-6 sm:gap-5 sm:px-6">
         <div className="flex justify-center">
-          <span className="inline-flex items-center gap-2 rounded-full bg-white/[0.06] px-4 py-2 text-sm font-extrabold text-white/65 ring-1 ring-white/10">
-            <UserRound className="h-4 w-4 text-violet-300" />
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-sm font-extrabold text-slate-700 ring-1 ring-sky-200 shadow-sm">
+            <UserRound className="h-4 w-4 text-sky-500" />
             {playerName}
           </span>
         </div>
@@ -210,9 +210,9 @@ export default function GameBoard({ paused, playerName, onHelp, onFinish }: Game
             <span className="text-3xl font-black text-white sm:text-5xl">
               {formatNumber(problem.digits, problem.c0)}
             </span>
-            <span className="text-2xl font-bold text-white/40 sm:text-4xl">×</span>
+            <span className="text-2xl font-bold text-white/40 sm:text-4xl">÷</span>
             <span
-              className={`text-3xl font-black sm:text-5xl ${problem.dir > 0 ? "text-sky-300" : "text-amber-300"}`}
+              className={`text-3xl font-black sm:text-5xl ${problem.dir < 0 ? "text-sky-300" : "text-amber-300"}`}
             >
               {multiplierLabel(problem)}
             </span>
