@@ -111,6 +111,12 @@ h1 {
   box-shadow: 0 20px 45px rgba(14, 116, 144, .22);
 }
 
+.percent-card {
+  background: linear-gradient(135deg, #131827 0%, #18234a 52%, #34205b 100%);
+  border: 1px solid rgba(196, 181, 253, .16);
+  box-shadow: 0 20px 45px rgba(76, 29, 149, .18);
+}
+
 .trainer-topline {
   display: flex;
   justify-content: space-between;
@@ -131,7 +137,8 @@ h1 {
 }
 
 .multiplication-card .trainer-badge,
-.division-card .trainer-badge {
+.division-card .trainer-badge,
+.percent-card .trainer-badge {
   background: rgba(255,255,255,.09);
   color: rgba(255,255,255,.82);
   border: 1px solid rgba(255,255,255,.12);
@@ -149,6 +156,12 @@ h1 {
   border: 1px solid rgba(125, 211, 252, .24);
 }
 
+.percent-card .new-badge {
+  background: rgba(167, 139, 250, .15);
+  color: #ddd6fe;
+  border: 1px solid rgba(196, 181, 253, .23);
+}
+
 .trainer-card h3 {
   margin-bottom: 10px;
   font-size: clamp(1.45rem, 3vw, 2.1rem);
@@ -160,23 +173,6 @@ h1 {
   margin-bottom: 18px;
   color: rgba(255,255,255,.68);
   line-height: 1.7;
-}
-
-.trainer-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 9px;
-  margin-bottom: 22px;
-}
-
-.trainer-tags span {
-  padding: 9px 12px;
-  border-radius: 999px;
-  background: rgba(255,255,255,.07);
-  border: 1px solid rgba(255,255,255,.12);
-  color: rgba(255,255,255,.78);
-  font-size: .92rem;
-  font-weight: 700;
 }
 
 .open-btn {
@@ -200,6 +196,12 @@ h1 {
   background: linear-gradient(180deg, #67e8f9 0%, #38bdf8 100%);
   color: #06283d;
   box-shadow: 0 10px 24px rgba(56, 189, 248, .28);
+}
+
+.percent-card .open-btn {
+  background: linear-gradient(180deg, #c4b5fd 0%, #8b5cf6 100%);
+  color: #21113f;
+  box-shadow: 0 10px 24px rgba(139, 92, 246, .28);
 }
 
 .open-btn:hover {
