@@ -1,0 +1,50 @@
+name: Build React decimal preview
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'react-apps/decimal-multiplication/**'
+      - '.github/workflows/build-react-preview.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        working-directory: react-apps/decimal-multiplication
+        run: npm install --no-audit --no-fund
+
+      - name: Build
+        working-directory: react-apps/decimal-multiplication
+        run: npm run build
+
+      - name: Publish preview into Pages tree
+        run: |
+          rm -rf math/grade-5-6/decimal-multiplication-react
+          mkdir -p math/grade-5-6/decimal-multiplication-react
+          cp -R react-apps/decimal-multiplication/dist/. math/grade-5-6/decimal-multiplication-react/
+
+      - name: Commit built preview
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add math/grade-5-6/decimal-multiplication-react
+          if git diff --cached --quiet; then
+            echo "No build changes"
+          else
+            git commit -m "Build React preview of decimal trainer"
+            git push
+          fi
