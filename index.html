@@ -17,7 +17,7 @@
 
     <section class="intro" aria-labelledby="intro-title">
       <h2 id="intro-title">Выберите предмет</h2>
-      <p>Здесь будут собраны тренажёры, интерактивные задания и небольшие учебные игры. Они открываются прямо в браузере — ничего скачивать и устанавливать не нужно.</p>
+      <p>Здесь собраны тренажёры, интерактивные задания и небольшие учебные игры. Они открываются прямо в браузере — ничего скачивать и устанавливать не нужно.</p>
     </section>
 
     <section class="subjects" aria-label="Предметы">
@@ -34,7 +34,14 @@
       </article>
 
       <article class="subject-card physics-card">
-        <div class="subject-icon" aria-hidden="true">⚛</div>
+        <div class="subject-icon" aria-hidden="true">
+          <svg class="atom-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="32" cy="32" r="5" fill="currentColor"/>
+            <ellipse cx="32" cy="32" rx="22" ry="9" fill="none" stroke="currentColor" stroke-width="3"/>
+            <ellipse cx="32" cy="32" rx="22" ry="9" fill="none" stroke="currentColor" stroke-width="3" transform="rotate(60 32 32)"/>
+            <ellipse cx="32" cy="32" rx="22" ry="9" fill="none" stroke="currentColor" stroke-width="3" transform="rotate(-60 32 32)"/>
+          </svg>
+        </div>
         <div>
           <p class="subject-label">Физика</p>
           <h2>Тренажёры по физике</h2>
@@ -46,12 +53,27 @@
       </article>
     </section>
 
-    <section class="empty-state" aria-labelledby="library-title">
-      <div>
-        <p class="empty-kicker">Библиотека</p>
-        <h2 id="library-title">Первый тренажёр появится здесь</h2>
-        <p>После добавления тренажёров на этой странице появятся отдельные карточки с названием темы, классом и кнопкой «Открыть».</p>
+    <section class="library-section" aria-labelledby="library-title">
+      <div class="library-heading">
+        <div>
+          <p class="empty-kicker">Библиотека</p>
+          <h2 id="library-title">Тренажёры</h2>
+        </div>
+        <span class="counter">1 материал</span>
       </div>
+
+      <article class="trainer-card">
+        <div class="trainer-topline">
+          <span class="trainer-badge">Математика · 5–6 класс</span>
+          <span class="new-badge">Новый</span>
+        </div>
+        <h3>Мастер умножения десятичных дробей</h3>
+        <p>Умножение десятичных дробей на 10, 100, 1000 и на 0,1; 0,01; 0,001. Цель — набрать 50 баллов.</p>
+        <div class="trainer-tags" aria-label="Особенности тренажёра">
+          <span>Интерактив</span><span>Звуки</span><span>Анимации</span><span>Сохранение результата</span>
+        </div>
+        <a class="open-btn" href="math/grade-5-6/decimal-multiplication-react/">Открыть тренажёр <span aria-hidden="true">→</span></a>
+      </article>
     </section>
 
     <footer>
