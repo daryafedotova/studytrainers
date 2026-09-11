@@ -1,4 +1,4 @@
-// ─── Игровая логика: умножение десятичных дробей переносом запятой ───
+// ─── Игровая логика: деление десятичных дробей переносом запятой ───
 
 export interface Problem {
   /** Значащие цифры числа без запятой, напр. "347" для 3,47 */
@@ -7,7 +7,7 @@ export interface Problem {
   c0: number;
   /** Степень десятки: 1, 2 или 3 */
   p: number;
-  /** Направление: +1 — умножение на 10/100/1000 (вправо), −1 — на 0,1/0,01/0,001 (влево) */
+  /** Направление переноса: −1 — деление на 10/100/1000 (влево), +1 — деление на 0,1/0,01/0,001 (вправо) */
   dir: 1 | -1;
 }
 
@@ -17,9 +17,9 @@ export function targetSlot(pr: Problem): number {
   return pr.c0 + pr.dir * pr.p;
 }
 
-/** Подпись множителя: 10 / 100 / 1000 или 0,1 / 0,01 / 0,001 */
+/** Подпись делителя: 10 / 100 / 1000 или 0,1 / 0,01 / 0,001 */
 export function multiplierLabel(pr: Problem): string {
-  if (pr.dir > 0) return String(10 ** pr.p);
+  if (pr.dir < 0) return String(10 ** pr.p);
   return "0," + "0".repeat(pr.p - 1) + "1";
 }
 
@@ -127,5 +127,5 @@ export function generateProblem(prev?: Problem | null): Problem {
       return cand;
     }
   }
-  return { digits: "347", c0: 1, p: 2, dir: 1 };
+  return { digits: "347", c0: 1, p: 2, dir: -1 };
 }
