@@ -1,11 +1,11 @@
-name: Build React decimal preview
+name: Build React decimal archive trainer
 
 on:
   workflow_dispatch:
   push:
     branches: [main]
     paths:
-      - 'react-apps/decimal-multiplication/**'
+      - 'react-apps/decimal-multiplication-archive/**'
       - '.github/workflows/build-react-preview.yml'
 
 permissions:
@@ -24,27 +24,27 @@ jobs:
           node-version: '22'
 
       - name: Install dependencies
-        working-directory: react-apps/decimal-multiplication
+        working-directory: react-apps/decimal-multiplication-archive
         run: npm install --no-audit --no-fund
 
       - name: Build
-        working-directory: react-apps/decimal-multiplication
+        working-directory: react-apps/decimal-multiplication-archive
         run: npm run build
 
-      - name: Publish preview into Pages tree
+      - name: Publish trainer into Pages tree
         run: |
           rm -rf math/grade-5-6/decimal-multiplication-react
           mkdir -p math/grade-5-6/decimal-multiplication-react
-          cp -R react-apps/decimal-multiplication/dist/. math/grade-5-6/decimal-multiplication-react/
+          cp -R react-apps/decimal-multiplication-archive/dist/. math/grade-5-6/decimal-multiplication-react/
 
-      - name: Commit built preview
+      - name: Commit built trainer and lockfile
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add math/grade-5-6/decimal-multiplication-react
+          git add react-apps/decimal-multiplication-archive/package-lock.json math/grade-5-6/decimal-multiplication-react
           if git diff --cached --quiet; then
             echo "No build changes"
           else
-            git commit -m "Build React preview of decimal trainer"
+            git commit -m "Build archive decimal trainer [skip ci]"
             git push
           fi
