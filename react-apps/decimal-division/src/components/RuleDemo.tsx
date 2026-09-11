@@ -19,7 +19,7 @@ interface RuleDemoProps {
 export default function RuleDemo({ digits, c0, p, dir, size = "md", resetKey = 0 }: RuleDemoProps) {
   const target = useMemo(() => c0 + dir * p, [c0, dir, p]);
   const result = useMemo(() => formatNumber(digits, target), [digits, target]);
-  const mult = useMemo(() => (dir > 0 ? String(10 ** p) : "0," + "0".repeat(p - 1) + "1"), [dir, p]);
+  const mult = useMemo(() => (dir < 0 ? String(10 ** p) : "0," + "0".repeat(p - 1) + "1"), [dir, p]);
 
   const [slot, setSlot] = useState(c0);
   const [done, setDone] = useState(false);
@@ -52,8 +52,8 @@ export default function RuleDemo({ digits, c0, p, dir, size = "md", resetKey = 0
     <div className="flex flex-col items-center gap-3">
       <div className="font-display flex items-center gap-2 text-lg font-bold text-white sm:text-xl">
         <span className="text-white/90">{formatNumber(digits, c0)}</span>
-        <span className="text-white/40">×</span>
-        <span className={dir > 0 ? "text-sky-300" : "text-amber-300"}>{mult}</span>
+        <span className="text-white/40">÷</span>
+        <span className={dir < 0 ? "text-sky-300" : "text-amber-300"}>{mult}</span>
         <span className="text-white/40">=</span>
         <span className="inline-flex min-w-10 justify-center">
           <AnimatePresence mode="wait">
@@ -80,7 +80,7 @@ export default function RuleDemo({ digits, c0, p, dir, size = "md", resetKey = 0
         {Array.from({ length: p }).map((_, i) => (
           <motion.span
             key={i}
-            className={dir > 0 ? "text-sky-300" : "text-amber-300"}
+            className={dir < 0 ? "text-sky-300" : "text-amber-300"}
             animate={{ opacity: [0.2, 1, 0.2], x: dir > 0 ? [0, 4, 0] : [0, -4, 0] }}
             transition={{ duration: 0.9, repeat: Infinity, delay: i * 0.22 }}
           >
