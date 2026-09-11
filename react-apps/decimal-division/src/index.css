@@ -18,7 +18,7 @@ body {
 
 body {
   font-family: var(--font-body);
-  background: #12101d;
+  background: #eef7ff;
   color: #17132b;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
@@ -29,13 +29,12 @@ body {
 }
 
 .text-gradient {
-  background: linear-gradient(92deg, #ffc53d 0%, #ff5d73 45%, #a78bfa 100%);
+  background: linear-gradient(92deg, #0ea5e9 0%, #8b5cf6 48%, #f59e0b 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-/* Тактильная «игрушечная» кнопка */
 .btn-push {
   transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.15s ease;
 }
@@ -43,7 +42,6 @@ body {
   transform: translateY(4px);
 }
 
-/* Плитки цифр */
 .tile-digit {
   background: linear-gradient(180deg, #ffffff 0%, #f1eefc 100%);
   border-bottom: 5px solid #d8d2f0;
@@ -55,7 +53,6 @@ body {
   box-shadow: 0 10px 24px -10px rgba(23, 19, 43, 0.4), inset 0 1px 0 #fffaf0;
 }
 
-/* Пунктирная зона-призрак */
 .ghost-slot {
   background: repeating-linear-gradient(
     -45deg,
@@ -66,18 +63,16 @@ body {
   );
 }
 
-/* Зернистость поверх фона */
 .noise-overlay {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 60;
-  opacity: 0.05;
-  mix-blend-mode: overlay;
+  opacity: 0.035;
+  mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* Свечение запятой */
 @keyframes commaGlow {
   0%,
   100% {
@@ -91,14 +86,25 @@ body {
   animation: commaGlow 2.2s ease-in-out infinite;
 }
 
-/* Точечная сетка фона */
 .dot-grid {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.09) 1.2px, transparent 1.2px);
+  background-image: radial-gradient(rgba(71, 85, 105, 0.12) 1.2px, transparent 1.2px);
   background-size: 34px 34px;
   mask-image: radial-gradient(ellipse 90% 70% at 50% 30%, black 30%, transparent 75%);
 }
 
 ::selection {
-  background: #ffc53d;
-  color: #17132b;
+  background: #bae6fd;
+  color: #0f172a;
 }
+
+/* Светлая тема тренажёра деления */
+.division-theme [class*="text-white"] { color: #334155 !important; }
+.division-theme [class*="bg-white/"] { background-color: rgba(255,255,255,.74) !important; }
+.division-theme [class*="ring-white/"] { --tw-ring-color: rgba(100,116,139,.18) !important; }
+.division-theme [class*="border-white/"] { border-color: rgba(148,163,184,.28) !important; }
+.division-theme button[class*="bg-emerald"],
+.division-theme button[class*="bg-sky"],
+.division-theme button[class*="bg-violet-6"],
+.division-theme [class*="from-[#ff7a8c]"] { color: #fff !important; }
+.division-theme .tile-digit { box-shadow: 0 10px 25px -14px rgba(51,65,85,.28), inset 0 1px 0 #fff; }
+.division-theme .ghost-slot { background: repeating-linear-gradient(-45deg, rgba(100,116,139,.08), rgba(100,116,139,.08) 6px, transparent 6px, transparent 12px); }
