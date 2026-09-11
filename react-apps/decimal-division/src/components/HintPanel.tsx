@@ -9,12 +9,11 @@ interface HintPanelProps {
   onSkip: () => void;
 }
 
-/** Подсказка с правилом быстрого умножения — появляется после ошибки */
+/** Подсказка с правилом быстрого деления — появляется после ошибки */
 export default function HintPanel({ problem, onSkip }: HintPanelProps) {
   const { dir, p } = problem;
   const rootRef = useRef<HTMLDivElement>(null);
 
-  // плавно подскролливаем, чтобы подсказка точно попала в поле зрения
   useEffect(() => {
     const t = setTimeout(() => {
       rootRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -33,7 +32,6 @@ export default function HintPanel({ problem, onSkip }: HintPanelProps) {
     >
       <div className="rounded-[calc(2rem-3px)] bg-[#241c12]/95 p-5 sm:p-6">
         <div className="flex flex-col items-center gap-5 md:flex-row md:items-stretch md:gap-8">
-          {/* Текст правила */}
           <div className="flex-1">
             <div className="flex items-center gap-2.5">
               <span className="grid h-9 w-9 place-items-center rounded-xl bg-amber-400 text-amber-950 shadow-lg shadow-amber-500/30">
@@ -43,13 +41,13 @@ export default function HintPanel({ problem, onSkip }: HintPanelProps) {
             </div>
 
             <p className="mt-3 text-[15px] font-semibold leading-relaxed text-amber-100/90 sm:text-base">
-              Чтобы умножить на <b className="text-amber-300">{multiplierLabel(problem)}</b>, запятую переносим{" "}
+              Чтобы разделить на <b className="text-amber-300">{multiplierLabel(problem)}</b>, запятую переносим{" "}
               <span className="inline-flex translate-y-0.5 items-center gap-1 rounded-md bg-amber-400/15 px-2 py-0.5 font-extrabold text-amber-300">
                 {dir > 0 ? <MoveRight className="h-4 w-4" /> : <MoveLeft className="h-4 w-4" />}
                 {dir > 0 ? "ВПРАВО" : "ВЛЕВО"}
               </span>{" "}
               на <b className="text-amber-300">{p} {znakWord(p)}</b> —{" "}
-              {dir > 0 ? "столько, сколько нулей в множителе." : "столько, сколько цифр после запятой в множителе."}
+              {dir < 0 ? "столько, сколько нулей в делителе." : "столько, сколько цифр после запятой в делителе."}
             </p>
 
             <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -68,7 +66,6 @@ export default function HintPanel({ problem, onSkip }: HintPanelProps) {
             </div>
           </div>
 
-          {/* Живая демонстрация именно этого примера */}
           <div className="shrink-0 rounded-3xl bg-white/[0.05] p-4 ring-1 ring-white/10">
             <RuleDemo digits={problem.digits} c0={problem.c0} p={problem.p} dir={problem.dir} />
           </div>
