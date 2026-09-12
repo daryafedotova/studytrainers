@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Интерактивный тренажёр по фазовым переходам и графикам нагревания и охлаждения для 8 класса">
+  <title>Фазовые переходы на графике · Физика 8 класс</title>
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <main class="page">
+    <section class="shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">Δ</span>
+          <div><strong>ФАЗОВЫЕ ПЕРЕХОДЫ НА ГРАФИКЕ</strong><small>физика · 8 класс</small></div>
+        </div>
+        <div class="top-status">
+          <span class="stage-pill" id="stage-pill">Старт</span>
+          <span class="progress-pill" id="progress-pill">0 / 10</span>
+          <button class="top-btn" id="rule-btn" type="button">? Правило</button>
+        </div>
+      </header>
+
+      <section class="screen active" id="intro-screen">
+        <div class="intro-grid">
+          <article class="panel hero-panel">
+            <span class="eyebrow">Освоение навыка</span>
+            <h1>От распознавания к построению графика</h1>
+            <p>Сначала научись узнавать фазовый переход по участку графика, затем решай задачи по полному графику и построй график самостоятельно.</p>
+            <div class="intro-levels">
+              <div class="level-card blue"><b>1. Определи участок</b><span>10 заданий · нужно 8 самостоятельных ответов.</span></div>
+              <div class="level-card green"><b>2. Реши задачу по графику</b><span>10 задач с разными форматами ответа.</span></div>
+              <div class="level-card purple"><b>★ Бонус: построй график</b><span>6 заданий: от двух переходов до полного цикла.</span></div>
+            </div>
+            <button class="btn primary" id="start-btn" type="button">Начать уровень 1 →</button>
+          </article>
+          <article class="panel theory-panel">
+            <span class="eyebrow">Что понадобится</span>
+            <h2>Четыре перехода</h2>
+            <div class="transition-grid">
+              <div><b>Плавление</b><span>твёрдое → жидкое</span></div>
+              <div><b>Кристаллизация</b><span>жидкое → твёрдое</span></div>
+              <div><b>Кипение</b><span>жидкое → газ</span></div>
+              <div><b>Конденсация</b><span>газ → жидкое</span></div>
+            </div>
+            <div class="note"><b>Ключ:</b> при фазовом переходе чистого вещества температура остаётся постоянной. Направление графика до и после площадки помогает понять, нагревают вещество или охлаждают.</div>
+          </article>
+        </div>
+      </section>
+
+      <section class="screen" id="level1-screen">
+        <div class="workspace">
+          <aside class="sidebar">
+            <div class="panel compact"><span class="eyebrow">Уровень 1</span><div id="level1-side-progress"></div></div>
+            <div class="panel compact rule-card"><b>Алгоритм</b><p>1. Определи направление процесса.<br>2. Найди горизонтальный участок.<br>3. Определи переход и две фазы.<br>4. Считай температуру.</p></div>
+          </aside>
+          <article class="panel task-panel">
+            <div class="task-head"><span class="task-number" id="l1-number">Задание 1 из 10</span><span class="instrument-pill" id="l1-title">Фазовый переход</span></div>
+            <h2>Определи выделенный участок графика</h2>
+            <div class="task-grid">
+              <div class="visual-column">
+                <div class="graph-card" id="l1-graph"></div>
+                <div class="message info" id="l1-feedback">Собери паспорт выделенного участка.</div>
+                <div class="hint-box" id="l1-hint-box" hidden></div>
+              </div>
+              <div class="passport" id="l1-passport"></div>
+            </div>
+            <div class="actions">
+              <button class="btn secondary" id="l1-hint" type="button">Подсказка</button>
+              <button class="btn check" id="l1-check" type="button">Проверить</button>
+              <button class="btn primary" id="l1-next" type="button" disabled>Следующее →</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="screen" id="level2-screen">
+        <article class="panel task-panel wide-task">
+          <div class="task-head"><span class="task-number green-tag" id="l2-number">Задание 1 из 10</span><span class="instrument-pill">Полный график</span></div>
+          <h2 id="l2-question">Реши задачу по графику</h2>
+          <div class="level2-grid">
+            <div>
+              <div class="graph-card" id="l2-graph"></div>
+              <div class="message info" id="l2-feedback">Изучи график и выбери ответ.</div>
+              <div class="hint-box" id="l2-hint-box" hidden></div>
+            </div>
+            <div class="answer-panel" id="l2-answer"></div>
+          </div>
+          <div class="actions">
+            <button class="btn secondary" id="l2-hint" type="button">Подсказка</button>
+            <button class="btn check" id="l2-check" type="button">Проверить</button>
+            <button class="btn primary" id="l2-next" type="button" disabled>Следующее →</button>
+          </div>
+        </article>
+      </section>
+
+      <section class="screen" id="bonus-screen">
+        <article class="panel task-panel bonus-panel">
+          <div class="task-head"><span class="task-number purple-tag" id="bonus-number">Бонус 1 из 6</span><span class="instrument-pill">Конструктор графика</span></div>
+          <h2 id="bonus-title">Построй график</h2>
+          <div class="bonus-grid">
+            <div class="condition-card"><span class="eyebrow">Условие</span><p id="bonus-text"></p><div class="message info" id="bonus-feedback">Выбирай по одному узлу в каждом следующем столбце.</div><div class="hint-box" id="bonus-hint-box" hidden></div></div>
+            <div><div class="graph-card builder-card" id="bonus-graph"></div><div class="builder-actions"><button class="mini-btn" id="bonus-undo" type="button">↶ Отменить точку</button><button class="mini-btn" id="bonus-clear" type="button">Очистить</button></div></div>
+          </div>
+          <div class="actions">
+            <button class="btn secondary" id="bonus-hint" type="button">Подсказка</button>
+            <button class="btn check" id="bonus-check" type="button">Проверить график</button>
+            <button class="btn primary" id="bonus-next" type="button" disabled>Следующее →</button>
+          </div>
+        </article>
+      </section>
+
+      <section class="screen" id="gate-screen">
+        <article class="panel result-panel">
+          <span class="eyebrow" id="gate-kicker">Результат уровня</span>
+          <h1 id="gate-title">Уровень пройден</h1>
+          <p id="gate-text"></p>
+          <div class="score-ring" id="gate-score">8/10</div>
+          <div class="actions result-actions">
+            <button class="btn secondary" id="gate-retry" type="button">Повторить уровень</button>
+            <button class="btn primary" id="gate-continue" type="button">Продолжить →</button>
+          </div>
+        </article>
+      </section>
+
+      <section class="screen" id="result-screen">
+        <article class="panel result-panel">
+          <span class="eyebrow">Итог</span>
+          <h1>Тренажёр завершён</h1>
+          <p id="final-text"></p>
+          <div class="skill-grid" id="skill-grid"></div>
+          <div class="actions result-actions">
+            <a class="btn secondary link-btn" href="../../../#physics-8">← В библиотеку</a>
+            <button class="btn primary" id="restart-btn" type="button">Пройти ещё раз</button>
+          </div>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <div class="rule-modal" id="rule-modal" hidden role="dialog" aria-modal="true" aria-labelledby="rule-modal-title">
+    <div class="rule-modal-backdrop" data-rule-close></div>
+    <section class="rule-modal-card">
+      <div class="rule-modal-head"><div><span class="eyebrow">Правило</span><h2 id="rule-modal-title">Как читать график фазовых переходов</h2></div><button class="rule-close" id="rule-close" type="button" aria-label="Закрыть правило">×</button></div>
+      <ol class="rule-modal-steps">
+        <li>Наклон вверх означает нагревание, наклон вниз — охлаждение.</li>
+        <li>Горизонтальный участок означает фазовый переход при постоянной температуре.</li>
+        <li>При нагревании: твёрдое → жидкое — плавление; жидкое → газ — кипение.</li>
+        <li>При охлаждении: газ → жидкое — конденсация; жидкое → твёрдое — кристаллизация.</li>
+        <li>Во время перехода одновременно существуют две фазы вещества.</li>
+      </ol>
+      <div class="rule-example"><b>Важно:</b> температура плавления и кипения зависит от вещества. Не привязывайся только к 0 °C и 100 °C.</div>
+      <button class="btn primary rule-done" type="button" data-rule-close>Понятно</button>
+    </section>
+  </div>
+</body>
+</html>
