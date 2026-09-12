@@ -86,8 +86,79 @@
     for(let i=0;i<=total;i++){const v=t.min+i*minor(t),x=left+i*px,maj=i%t.parts===0;s+=`<line class="${tickClass(v,maj)}" x1="${x}" y1="${y}" x2="${x}" y2="${y-(maj?43:21)}"/>`;if(maj)s+=`<text class="${labelClass(v)}" data-mark="${v}" x="${x}" y="${y-54}" text-anchor="middle" font-size="20" font-weight="900" style="cursor:pointer">${fmt(v)}</text>`}s+=`<line class="needle" x1="${rx}" y1="62" x2="${rx}" y2="154" stroke-dasharray="6 5"/><text x="${rx}" y="190" text-anchor="middle" font-size="17" font-weight="800">край предмета</text>`;return `<svg viewBox="0 0 700 210" aria-label="Линейка, единицы ${t.unit}">${s}</svg>`
   }
   function cylinder(t){
-    const top=45,bottom=330,total=Math.round((t.max-t.min)/minor(t)),px=(bottom-top)/total,lh=(t.reading-t.min)/minor(t)*px;let s=`<rect class="glass" x="220" y="28" width="145" height="312" rx="20"/><rect class="liquid" x="232" y="${bottom-lh}" width="121" height="${lh}" rx="12"/><text class="unit-label" x="470" y="45">${t.unit}</text>`;for(let i=0;i<=total;i++){const v=t.min+i*minor(t),yy=bottom-i*px,maj=i%t.parts===0;s+=`<line class="${tickClass(v,maj)}" x1="415" y1="${yy}" x2="${415-(maj?34:18)}" y2="${yy}"/>`;if(maj)s+=`<text class="${labelClass(v)}" data-mark="${v}" x="430" y="${yy+6}" font-size="19" font-weight="900" style="cursor:pointer">${fmt(v)}</text>`}return `<svg viewBox="0 0 700 370" aria-label="Мензурка, единицы ${t.unit}">${s}</svg>`
+  const x = 220;
+  const y = 30;
+  const w = 140;
+  const h = 300;
+
+  const scaleX = 410;
+  const scaleY1 = 50;
+  const scaleY2 = 320;
+
+  const total = Math.round((t.max - t.min) / minor(t));
+  const px = (scaleY2 - scaleY1) / total;
+
+  const liquidHeight = ((t.reading - t.min) / minor(t)) * px;
+  const liquidTopY = scaleY2 - liquidHeight;
+
+  // Правая граница жидкости внутри мензурки
+  const liquidRightX = x + w - 10;
+
+  let s = `
+    <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="22" class="glass"/>
+    <rect x="${x + 10}" y="${liquidTopY}" width="${w - 20}" height="${liquidHeight}" rx="14" class="liquid" opacity="0.9"/>
+
+    <line x1="${scaleX}" y1="${scaleY1}" x2="${scaleX}" y2="${scaleY2}" class="major-line"/>
+
+    <!-- красная направляющая линия от уровня жидкости к шкале -->
+    <line
+      x1="${liquidRightX}"
+      y1="${liquidTopY}"
+      x2="${scaleX}"
+      y2="${liquidTopY}"
+      stroke="#e96767"
+      stroke-width="3"
+      stroke-dasharray="6 4"
+      opacity="0.9"
+    />
+  `;
+
+  for(let i = 0; i <= total; i++){
+    const yy = scaleY2 - i * px;
+    const v = t.min + i * minor(t);
+    const maj = i % t.parts === 0;
+
+    s += `
+      <line
+        class="${tickClass(v, maj)}"
+        x1="${scaleX}"
+        y1="${yy}"
+        x2="${scaleX - (maj ? 36 : 20)}"
+        y2="${yy}"
+      />
+    `;
+
+    if(maj){
+      s += `
+        <text
+          class="${labelClass(v)}"
+          data-mark="${v}"
+          x="${scaleX + 12}"
+          y="${yy + 6}"
+          font-size="20"
+          font-weight="800"
+          style="cursor:pointer"
+        >
+          ${fmt(v)}
+        </text>
+      `;
+    }
   }
+
+  s += `<text x="${scaleX + 74}" y="${scaleY1 - 8}" font-size="18" font-weight="800">${t.unit}</text>`;
+
+  return `<svg viewBox="0 0 700 360" aria-label="Мензурка, единицы ${t.unit}">${s}</svg>`;
+}
   function thermometer(t){
   const top = 45;
   const bottom = 315;
