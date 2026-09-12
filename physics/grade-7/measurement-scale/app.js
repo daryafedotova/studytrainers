@@ -151,7 +151,6 @@
     </svg>
   `;
 }
-  }
   function dynamometer(t){
     const top=55,bottom=310,total=Math.round((t.max-t.min)/minor(t)),px=(bottom-top)/total,ry=bottom-(t.reading-t.min)/minor(t)*px;let s=`<rect x="240" y="25" width="175" height="310" rx="22" fill="#fff" stroke="#27344a" stroke-width="4"/><text class="unit-label" x="445" y="48">${t.unit}</text>`;for(let i=0;i<=total;i++){const v=t.min+i*minor(t),yy=bottom-i*px,maj=i%t.parts===0;s+=`<line class="${tickClass(v,maj)}" x1="365" y1="${yy}" x2="${365-(maj?35:18)}" y2="${yy}"/>`;if(maj)s+=`<text class="${labelClass(v)}" data-mark="${v}" x="385" y="${yy+6}" font-size="19" font-weight="900" style="cursor:pointer">${fmt(v)}</text>`}s+=`<line class="needle" x1="300" y1="${ry}" x2="345" y2="${ry}"/>`;return `<svg viewBox="0 0 700 365" aria-label="Динамометр, единицы ${t.unit}">${s}</svg>`
   }
