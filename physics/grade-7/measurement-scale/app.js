@@ -100,16 +100,38 @@
   const tubeW = 64;
   const bulbCx = 242;
 
-  const scaleX = 330;   // сама шкала
-  const labelX = 380;   // подписи чисел справа от шкалы
-  const unitX = 455;    // единицы ещё правее
+  // Шкалу подвигаем ближе к термометру
+  const scaleX = 305;
+
+  // Подписи остаются справа от шкалы
+  const labelX = 320;
+  const unitX = 385;
+
+  // Верхушка красного столбика
+  const liquidTopY = bottom - lh;
+
+  // Центр красного столбика
+  const liquidCenterX = tubeX + 32;
 
   let s = `
     <rect class="glass" x="${tubeX}" y="25" width="${tubeW}" height="286" rx="32"/>
     <circle class="glass" cx="${bulbCx}" cy="324" r="34"/>
-    <rect x="${tubeX + 19}" y="${bottom - lh}" width="26" height="${lh}" rx="12" fill="#e96767"/>
+    <rect x="${tubeX + 19}" y="${liquidTopY}" width="26" height="${lh}" rx="12" fill="#e96767"/>
     <circle cx="${bulbCx}" cy="324" r="23" fill="#e96767"/>
+
     <text class="unit-label" x="${unitX}" y="43">${t.unit}</text>
+
+    <!-- направляющая линия от уровня жидкости к шкале -->
+    <line
+      x1="${liquidCenterX}"
+      y1="${liquidTopY}"
+      x2="${scaleX}"
+      y2="${liquidTopY}"
+      stroke="#e96767"
+      stroke-width="3"
+      stroke-dasharray="6 4"
+      opacity="0.9"
+    />
   `;
 
   for(let i = 0; i <= total; i++){
@@ -117,12 +139,13 @@
     const yy = bottom - i * px;
     const maj = i % t.parts === 0;
 
+    // Риски направлены влево, к термометру
     s += `
       <line
         class="${tickClass(v, maj)}"
         x1="${scaleX}"
         y1="${yy}"
-        x2="${scaleX + (maj ? 30 : 16)}"
+        x2="${scaleX - (maj ? 30 : 16)}"
         y2="${yy}"
       />
     `;
