@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Интерактивный тренажёр по фазовым переходам и графикам нагревания и охлаждения для 8 класса">
+  <meta name="description" content="Интерактивный тренажёр по графикам нагревания, охлаждения и фазовых переходов для 8 класса">
   <title>Фазовые переходы на графике · Физика 8 класс</title>
   <link rel="stylesheet" href="styles.css">
   <script type="module" src="app.js"></script>
@@ -14,9 +14,10 @@
       <header class="topbar">
         <div class="brand">
           <span class="brand-mark" aria-hidden="true">Δ</span>
-          <div><strong>ФАЗОВЫЕ ПЕРЕХОДЫ НА ГРАФИКЕ</strong><small>физика · 8 класс</small></div>
+          <div><strong>ТЕПЛОВЫЕ ПРОЦЕССЫ НА ГРАФИКЕ</strong><small>физика · 8 класс</small></div>
         </div>
         <div class="top-status">
+          <a class="top-btn library-link" href="../../../#physics-8">← В библиотеку</a>
           <span class="stage-pill" id="stage-pill">Старт</span>
           <span class="progress-pill" id="progress-pill">0 / 10</span>
           <button class="top-btn" id="rule-btn" type="button">? Правило</button>
@@ -27,25 +28,25 @@
         <div class="intro-grid">
           <article class="panel hero-panel">
             <span class="eyebrow">Освоение навыка</span>
-            <h1>От распознавания к построению графика</h1>
-            <p>Сначала научись узнавать фазовый переход по участку графика, затем решай задачи по полному графику и построй график самостоятельно.</p>
+            <h1>От чтения участка к построению графика</h1>
+            <p>Сначала научись различать нагревание, охлаждение и фазовые переходы по отдельным участкам, затем решай задачи по полным графикам и построй график самостоятельно.</p>
             <div class="intro-levels">
-              <div class="level-card blue"><b>1. Определи участок</b><span>10 заданий · нужно 8 самостоятельных ответов.</span></div>
-              <div class="level-card green"><b>2. Реши задачу по графику</b><span>10 задач с разными форматами ответа.</span></div>
+              <div class="level-card blue"><b>1. Определи участок</b><span>10 заданий из большого банка · нужно 8 самостоятельных ответов.</span></div>
+              <div class="level-card green"><b>2. Реши задачу по графику</b><span>10 задач на нагревание, охлаждение и фазовые переходы.</span></div>
               <div class="level-card purple"><b>★ Бонус: построй график</b><span>6 заданий: от двух переходов до полного цикла.</span></div>
             </div>
             <button class="btn primary" id="start-btn" type="button">Начать уровень 1 →</button>
           </article>
           <article class="panel theory-panel">
             <span class="eyebrow">Что понадобится</span>
-            <h2>Четыре перехода</h2>
+            <h2>Читай форму графика</h2>
             <div class="transition-grid">
-              <div><b>Плавление</b><span>твёрдое → жидкое</span></div>
-              <div><b>Кристаллизация</b><span>жидкое → твёрдое</span></div>
-              <div><b>Кипение</b><span>жидкое → газ</span></div>
-              <div><b>Конденсация</b><span>газ → жидкое</span></div>
+              <div><b>Наклон вверх</b><span>нагревание, температура растёт</span></div>
+              <div><b>Наклон вниз</b><span>охлаждение, температура падает</span></div>
+              <div><b>Горизонталь при нагревании</b><span>плавление или кипение</span></div>
+              <div><b>Горизонталь при охлаждении</b><span>конденсация или кристаллизация</span></div>
             </div>
-            <div class="note"><b>Ключ:</b> при фазовом переходе чистого вещества температура остаётся постоянной. Направление графика до и после площадки помогает понять, нагревают вещество или охлаждают.</div>
+            <div class="note"><b>Ключ:</b> агрегатное состояние наклонного участка определяется его положением относительно фазовых переходов.</div>
           </article>
         </div>
       </section>
@@ -54,21 +55,26 @@
         <div class="workspace">
           <aside class="sidebar">
             <div class="panel compact"><span class="eyebrow">Уровень 1</span><div id="level1-side-progress"></div></div>
-            <div class="panel compact rule-card"><b>Алгоритм</b><p>1. Определи направление процесса.<br>2. Найди горизонтальный участок.<br>3. Определи переход и две фазы.<br>4. Считай температуру.</p></div>
+            <div class="panel compact rule-card"><b>Алгоритм</b><p>1. Посмотри на форму выделенного участка.<br>2. Определи: нагревание, охлаждение или фазовый переход.<br>3. Установи агрегатное состояние.<br>4. Для горизонтали определи переход и его температуру.</p></div>
           </aside>
           <article class="panel task-panel">
-            <div class="task-head"><span class="task-number" id="l1-number">Задание 1 из 10</span><span class="instrument-pill" id="l1-title">Фазовый переход</span></div>
+            <div class="task-head">
+              <span class="task-number" id="l1-number">Задание 1 из 10</span>
+              <div class="task-head-actions">
+                <span class="instrument-pill context-pill" id="l1-context">Исходные данные</span>
+                <button class="top-btn hint-top" id="l1-hint" type="button">💡 Подсказка</button>
+              </div>
+            </div>
             <h2>Определи выделенный участок графика</h2>
             <div class="task-grid">
               <div class="visual-column">
                 <div class="graph-card" id="l1-graph"></div>
-                <div class="message info" id="l1-feedback">Собери паспорт выделенного участка.</div>
+                <div class="message info" id="l1-feedback">Опиши выделенный участок, отвечая на вопросы справа.</div>
                 <div class="hint-box" id="l1-hint-box" hidden></div>
               </div>
               <div class="passport" id="l1-passport"></div>
             </div>
             <div class="actions">
-              <button class="btn secondary" id="l1-hint" type="button">Подсказка</button>
               <button class="btn check" id="l1-check" type="button">Проверить</button>
               <button class="btn primary" id="l1-next" type="button" disabled>Следующее →</button>
             </div>
@@ -114,7 +120,7 @@
 
       <section class="screen" id="gate-screen">
         <article class="panel result-panel">
-          <span class="eyebrow" id="gate-kicker">Результат уровня</span>
+          <span class="eyebrow">Результат уровня</span>
           <h1 id="gate-title">Уровень пройден</h1>
           <p id="gate-text"></p>
           <div class="score-ring" id="gate-score">8/10</div>
@@ -143,13 +149,15 @@
   <div class="rule-modal" id="rule-modal" hidden role="dialog" aria-modal="true" aria-labelledby="rule-modal-title">
     <div class="rule-modal-backdrop" data-rule-close></div>
     <section class="rule-modal-card">
-      <div class="rule-modal-head"><div><span class="eyebrow">Правило</span><h2 id="rule-modal-title">Как читать график фазовых переходов</h2></div><button class="rule-close" id="rule-close" type="button" aria-label="Закрыть правило">×</button></div>
+      <div class="rule-modal-head"><div><span class="eyebrow">Правило</span><h2 id="rule-modal-title">Как читать график температуры</h2></div><button class="rule-close" id="rule-close" type="button" aria-label="Закрыть правило">×</button></div>
       <ol class="rule-modal-steps">
-        <li>Наклон вверх означает нагревание, наклон вниз — охлаждение.</li>
+        <li>Наклон вверх: вещество нагревается, температура и внутренняя энергия увеличиваются.</li>
+        <li>Наклон вниз: вещество охлаждается, температура и внутренняя энергия уменьшаются.</li>
+        <li>До плавления вещество твёрдое; между плавлением и кипением — жидкое; после кипения — газообразное.</li>
         <li>Горизонтальный участок означает фазовый переход при постоянной температуре.</li>
         <li>При нагревании: твёрдое → жидкое — плавление; жидкое → газ — кипение.</li>
         <li>При охлаждении: газ → жидкое — конденсация; жидкое → твёрдое — кристаллизация.</li>
-        <li>Во время перехода одновременно существуют две фазы вещества.</li>
+        <li>Во время фазового перехода одновременно существуют две фазы вещества.</li>
       </ol>
       <div class="rule-example"><b>Важно:</b> температура плавления и кипения зависит от вещества. Не привязывайся только к 0 °C и 100 °C.</div>
       <button class="btn primary rule-done" type="button" data-rule-close>Понятно</button>
