@@ -9,7 +9,12 @@ export function segmentKind(a,b){
 
 export function phaseProcess(beforeState,afterState){
   const key=`${beforeState}-${afterState}`;
-  return ({'solid-liquid':'melting','liquid-solid':'crystallization','liquid-gas':'boiling','gas-liquid':'condensation'})[key] ?? null;
+  return ({
+    'solid-liquid':'melting',
+    'liquid-solid':'crystallization',
+    'liquid-gas':'boiling',
+    'gas-liquid':'condensation'
+  })[key] ?? null;
 }
 
 const num=v=>Number(String(v).trim().replace(',','.'));
@@ -17,9 +22,11 @@ const sameNumber=(a,b)=>Number.isFinite(num(a)) && Math.abs(num(a)-num(b))<1e-9;
 
 export function validateLevel1Answer(task,answer){
   const expected=task.answer;
-  const fields=['process','transition','state','tempChange','energy'];
-  const details=Object.fromEntries(fields.map(k=>[k,answer?.[k]===expected[k]]));
-  details.temperature=sameNumber(answer?.temperature,expected.temperature);
+  const fields=task.kind==='slope'
+    ? ['action','phaseState','tempChange','energy']
+    : ['process','transition','state','tempChange','energy'];
+  const details=Object.fromEntries(fields.map(key=>[key,answer?.[key]===expected[key]]));
+  if(task.kind==='phase') details.temperature=sameNumber(answer?.temperature,expected.temperature);
   return {ok:Object.values(details).every(Boolean),details};
 }
 
@@ -40,7 +47,7 @@ export function isCleanPass(record){
 }
 
 export function cleanCount(records){
-  return records.filter(r=>r.clean===true || isCleanPass(r)).length;
+  return records.filter(record=>record.clean===true || isCleanPass(record)).length;
 }
 
 export function graphBounds(points){
@@ -50,6 +57,24 @@ export function graphBounds(points){
     minY:Math.min(...points.map(p=>p.y)),
     maxY:Math.max(...points.map(p=>p.y))
   };
+}
+
+export function pickLevel1Set(tasks,random=Math.random){
+  const groups=new Map();
+  for(const task of tasks){
+    if(!groups.has(task.category)) groups.set(task.category,[]);
+    groups.get(task.category).push(task);
+  }
+  const selected=[];
+  for(const variants of groups.values()){
+    const index=Math.min(variants.length-1,Math.floor(random()*variants.length));
+    selected.push(variants[index]);
+  }
+  for(let i=selected.length-1;i>0;i--){
+    const j=Math.min(i,Math.floor(random()*(i+1)));
+    [selected[i],selected[j]]=[selected[j],selected[i]];
+  }
+  return selected;
 }
 
 export function validateBonusPath(task,points){
