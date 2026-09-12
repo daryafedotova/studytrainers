@@ -89,7 +89,68 @@
     const top=45,bottom=330,total=Math.round((t.max-t.min)/minor(t)),px=(bottom-top)/total,lh=(t.reading-t.min)/minor(t)*px;let s=`<rect class="glass" x="220" y="28" width="145" height="312" rx="20"/><rect class="liquid" x="232" y="${bottom-lh}" width="121" height="${lh}" rx="12"/><text class="unit-label" x="470" y="45">${t.unit}</text>`;for(let i=0;i<=total;i++){const v=t.min+i*minor(t),yy=bottom-i*px,maj=i%t.parts===0;s+=`<line class="${tickClass(v,maj)}" x1="415" y1="${yy}" x2="${415-(maj?34:18)}" y2="${yy}"/>`;if(maj)s+=`<text class="${labelClass(v)}" data-mark="${v}" x="430" y="${yy+6}" font-size="19" font-weight="900" style="cursor:pointer">${fmt(v)}</text>`}return `<svg viewBox="0 0 700 370" aria-label="Мензурка, единицы ${t.unit}">${s}</svg>`
   }
   function thermometer(t){
-    const top=45,bottom=315,total=Math.round((t.max-t.min)/minor(t)),px=(bottom-top)/total,lh=(t.reading-t.min)/minor(t)*px;let s=`<rect class="glass" x="265" y="25" width="64" height="286" rx="32"/><circle class="glass" cx="297" cy="324" r="34"/><rect x="284" y="${bottom-lh}" width="26" height="${lh}" rx="12" fill="#e96767"/><circle cx="297" cy="324" r="23" fill="#e96767"/><text class="unit-label" x="422" y="43">${t.unit}</text>`;for(let i=0;i<=total;i++){const v=t.min+i*minor(t),yy=bottom-i*px,maj=i%t.parts===0;s+=`<line class="${tickClass(v,maj)}" x1="360" y1="${yy}" x2="${360+(maj?33:17)}" y2="${yy}"/>`;if(maj)s+=`<text class="${labelClass(v)}" data-mark="${v}" x="344" y="${yy+6}" text-anchor="end" font-size="19" font-weight="900" style="cursor:pointer">${fmt(v)}</text>`}return `<svg viewBox="0 0 700 375" aria-label="Термометр, единицы ${t.unit}">${s}</svg>`
+  const top = 45;
+  const bottom = 315;
+  const total = Math.round((t.max - t.min) / minor(t));
+  const px = (bottom - top) / total;
+  const lh = ((t.reading - t.min) / minor(t)) * px;
+
+  // Положение элементов
+  const tubeX = 210;
+  const tubeW = 64;
+  const bulbCx = 242;
+
+  const scaleX = 330;   // сама шкала
+  const labelX = 380;   // подписи чисел справа от шкалы
+  const unitX = 455;    // единицы ещё правее
+
+  let s = `
+    <rect class="glass" x="${tubeX}" y="25" width="${tubeW}" height="286" rx="32"/>
+    <circle class="glass" cx="${bulbCx}" cy="324" r="34"/>
+    <rect x="${tubeX + 19}" y="${bottom - lh}" width="26" height="${lh}" rx="12" fill="#e96767"/>
+    <circle cx="${bulbCx}" cy="324" r="23" fill="#e96767"/>
+    <text class="unit-label" x="${unitX}" y="43">${t.unit}</text>
+  `;
+
+  for(let i = 0; i <= total; i++){
+    const v = t.min + i * minor(t);
+    const yy = bottom - i * px;
+    const maj = i % t.parts === 0;
+
+    s += `
+      <line
+        class="${tickClass(v, maj)}"
+        x1="${scaleX}"
+        y1="${yy}"
+        x2="${scaleX + (maj ? 30 : 16)}"
+        y2="${yy}"
+      />
+    `;
+
+    if(maj){
+      s += `
+        <text
+          class="${labelClass(v)}"
+          data-mark="${v}"
+          x="${labelX}"
+          y="${yy + 6}"
+          text-anchor="start"
+          font-size="18"
+          font-weight="900"
+          style="cursor:pointer"
+        >
+          ${fmt(v)}
+        </text>
+      `;
+    }
+  }
+
+  return `
+    <svg viewBox="0 0 700 375" aria-label="Термометр, единицы ${t.unit}">
+      ${s}
+    </svg>
+  `;
+}
   }
   function dynamometer(t){
     const top=55,bottom=310,total=Math.round((t.max-t.min)/minor(t)),px=(bottom-top)/total,ry=bottom-(t.reading-t.min)/minor(t)*px;let s=`<rect x="240" y="25" width="175" height="310" rx="22" fill="#fff" stroke="#27344a" stroke-width="4"/><text class="unit-label" x="445" y="48">${t.unit}</text>`;for(let i=0;i<=total;i++){const v=t.min+i*minor(t),yy=bottom-i*px,maj=i%t.parts===0;s+=`<line class="${tickClass(v,maj)}" x1="365" y1="${yy}" x2="${365-(maj?35:18)}" y2="${yy}"/>`;if(maj)s+=`<text class="${labelClass(v)}" data-mark="${v}" x="385" y="${yy+6}" font-size="19" font-weight="900" style="cursor:pointer">${fmt(v)}</text>`}s+=`<line class="needle" x1="300" y1="${ry}" x2="345" y2="${ry}"/>`;return `<svg viewBox="0 0 700 365" aria-label="Динамометр, единицы ${t.unit}">${s}</svg>`
