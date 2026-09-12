@@ -26,7 +26,7 @@
 
   const $ = id => document.getElementById(id);
   const el = {
-    intro:$('intro-screen'),game:$('game-screen'),result:$('result-screen'),start:$('start-btn'),restart:$('restart-btn'),rule:$('rule-btn'),ruleCard:$('rule-card'),stagePill:$('stage-pill'),progressPill:$('progress-pill'),stageProgress:$('stage-progress'),taskNumber:$('task-number'),instrumentPill:$('instrument-pill'),taskPrompt:$('task-prompt'),instrument:$('instrument-card'),selection:$('selection-message'),formula:$('formula-box'),intervals:$('intervals'),difference:$('difference'),division:$('division'),error:$('error'),reading:$('reading'),resultInput:$('result'),resultHint:$('result-hint'),feedback:$('feedback'),hint:$('hint-btn'),check:$('check-btn'),next:$('next-btn'),finalTitle:$('final-title'),finalText:$('final-text'),skillGrid:$('skill-grid'),ruleModal:$('rule-modal'),ruleClose:$('rule-close')
+    intro:$('intro-screen'),game:$('game-screen'),result:$('result-screen'),start:$('start-btn'),skip:$('skip-learning-btn'),restart:$('restart-btn'),rule:$('rule-btn'),ruleCard:$('rule-card'),stagePill:$('stage-pill'),progressPill:$('progress-pill'),stageProgress:$('stage-progress'),taskNumber:$('task-number'),instrumentPill:$('instrument-pill'),taskPrompt:$('task-prompt'),instrument:$('instrument-card'),selection:$('selection-message'),formula:$('formula-box'),intervals:$('intervals'),difference:$('difference'),division:$('division'),error:$('error'),reading:$('reading'),resultInput:$('result'),resultHint:$('result-hint'),feedback:$('feedback'),hint:$('hint-btn'),check:$('check-btn'),next:$('next-btn'),finalTitle:$('final-title'),finalText:$('final-text'),skillGrid:$('skill-grid'),ruleModal:$('rule-modal'),ruleClose:$('rule-close')
   };
   const state = {index:0,marks:[],intervals:0,hintUsed:false,attempts:0,firstCheck:null,records:[]};
 
@@ -293,10 +293,10 @@
     el.skillGrid.innerHTML=stats.map(([name,key])=>{const ok=check.filter(r=>r[key]).length;return `<div class="skill"><b>${name}</b><span>${ok}/10</span></div>`}).join('');
     el.stagePill.textContent='Итог';el.progressPill.textContent=`${state.records.length} / ${BANK.length}`;
   }
-  function start(){state.index=0;state.records=[];screen(el.game);renderTask()}
+  function start(index=0){state.index=index;state.records=[];screen(el.game);renderTask()}
   function openRule(){el.ruleModal.hidden=false;document.body.classList.add('rule-open');el.ruleClose.focus()}
   function closeRule(){el.ruleModal.hidden=true;document.body.classList.remove('rule-open');el.rule.focus()}
 
-  el.start.addEventListener('click',start);el.restart.addEventListener('click',start);el.rule.addEventListener('click',openRule);el.ruleClose.addEventListener('click',closeRule);el.ruleModal.querySelectorAll('[data-rule-close]').forEach(x=>x.addEventListener('click',closeRule));document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!el.ruleModal.hidden)closeRule()});el.hint.addEventListener('click',hint);el.check.addEventListener('click',check);el.next.addEventListener('click',next);
+  el.start.addEventListener('click',()=>start(0));el.skip.addEventListener('click',()=>start(2));el.restart.addEventListener('click',()=>start(0));el.rule.addEventListener('click',openRule);el.ruleClose.addEventListener('click',closeRule);el.ruleModal.querySelectorAll('[data-rule-close]').forEach(x=>x.addEventListener('click',closeRule));document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!el.ruleModal.hidden)closeRule()});el.hint.addEventListener('click',hint);el.check.addEventListener('click',check);el.next.addEventListener('click',next);
   updateProgress();
 })();
