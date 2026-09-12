@@ -99,7 +99,7 @@ function renderL1(){
   s.attempts=0;s.hintUsed=false;s.selections={};s.firstDetails=null;s.solved=false;
   screen(el.level1);setStatus('Уровень 1',s.index,10);
   el.l1Number.textContent=`Задание ${s.index+1} из 10`;
-  el.l1Context.textContent=t.context;
+  el.l1Context.textContent=`Неизвестное вещество · начальная температура ${fmt(t.points[0].y)} °C`;
   el.l1Graph.innerHTML=graphSvg(t.points,{highlightSegment:t.highlightSegment});
   el.l1Feedback.className='message info';
   el.l1Feedback.textContent='Опиши выделенный участок, отвечая на вопросы справа.';
