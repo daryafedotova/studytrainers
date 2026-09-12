@@ -59,6 +59,7 @@ test('bonus path validates plateaus and direction reversal', () => {
   assert.equal(validateBonusPath(task,wrong).ok,false);
 });
 
+
 test('task banks have approved sizes and coverage', () => {
   assert.equal(LEVEL1_TASKS.length,10);
   assert.equal(LEVEL2_TASKS.length,10);
