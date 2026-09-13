@@ -33,6 +33,14 @@ test('deca prefix is not used in the trainer', () => {
   assert.ok(tasks.every(task => task.answer !== 'дека' && !(task.choices || []).includes('дека')));
 });
 
+test('deci is hidden from 8-9 prefix drills while dm units remain available elsewhere', () => {
+  assert.ok(UNITS.some(unit => unit.id === 'dm3'), 'dm³ must remain available for volume work');
+  for (const rngValue of [0.11,0.27,0.43,0.61,0.79]) {
+    const tasks = pickTaskSet({mode:'89',blockId:'prefix-drill',count:20,rng:()=>rngValue});
+    assert.ok(tasks.every(task => task.answer !== 'деци' && !(task.choices || []).includes('деци')));
+  }
+});
+
 test('8-9 mixed run always includes mantissa normalization', () => {
   const tasks = pickTaskSet({mode:'89',blockId:'mixed',count:10,rng:()=>0.51});
   assert.ok(tasks.some(task => task.answerType === 'multi-part' && /мантисс|· 10/.test((task.solutionSteps || []).join(' '))));
@@ -67,7 +75,28 @@ test('prefix-power coefficient is not mislabeled as a normalized mantissa', () =
   assert.equal(task.answer.prefixMantissa, 250);
   assert.ok(!Object.hasOwn(task.answer, 'mantissa'), 'intermediate coefficient must not be called mantissa');
   const app = readFileSync(new URL('../physics/units-prefixes-scientific-notation/app.js', import.meta.url), 'utf8');
-  assert.match(app, /prefixMantissa:'До нормализации'/);
+  assert.match(app, /prefixMantissa:'Коэффициент'/);
+});
+
+test('prefix-power shows a worked example before training starts', () => {
+  const html = readFileSync(new URL('../physics/units-prefixes-scientific-notation/index.html', import.meta.url), 'utf8');
+  assert.match(html, /id="prefix-power-intro-screen"/);
+  assert.match(html, /250 гПа/);
+  assert.match(html, /250 · 10<sup>2<\/sup> Па/);
+  assert.match(html, /Коэффициент[^<]*250/);
+  assert.match(html, /id="prefix-power-intro-start"/);
+  assert.match(html, /src="prefix-power-intro\.js"/);
+  const introScript = readFileSync(new URL('../physics/units-prefixes-scientific-notation/prefix-power-intro.js', import.meta.url), 'utf8');
+  assert.match(introScript, /currentBlock\s*!==\s*'prefix-power'/);
+  assert.match(introScript, /stopImmediatePropagation\(\)/);
+});
+
+test('choice powers are rendered with real sup elements for readability', () => {
+  const app = readFileSync(new URL('../physics/units-prefixes-scientific-notation/app.js', import.meta.url), 'utf8');
+  const css = readFileSync(new URL('../physics/units-prefixes-scientific-notation/styles.css', import.meta.url), 'utf8');
+  assert.match(app, /powerChoiceHTML/);
+  assert.match(app, /btn\.innerHTML\s*=\s*powerChoiceHTML\(choice\)/);
+  assert.match(css, /\.choice-btn\s+sup\s*\{[^}]*font-size/i);
 });
 
 test('mantissa-shift shows a worked guide before the first task', () => {
