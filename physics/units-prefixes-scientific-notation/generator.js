@@ -12,6 +12,11 @@ function numberFromPrompt(prompt) {
   return match ? Number(match[0]) : NaN;
 }
 
+function exponentFromPrompt(task) {
+  const match = String(task?.prompt ?? '').match(/10\^(-?\d+)/);
+  return match ? Number(match[1]) : NaN;
+}
+
 function fixMassPrefixEquivalence(task) {
   if (task?.blockId !== 'prefix-drill' || task?.metadata?.fromUnitId !== 'mg' || task.answerType !== 'number-unit') return task;
   const sourceNumber = numberFromPrompt(task.prompt);
@@ -44,8 +49,11 @@ function fixPrefixPowerTerminology(task) {
   const { mantissa, exponent, unitId } = task.answer;
   return {
     ...task,
-    answer:{coefficient:mantissa,exponent,unitId},
-    solutionSteps:[...(task.solutionSteps || []),'Это промежуточная запись после замены приставки степенью десяти; число перед степенью здесь является коэффициентом, а не мантиссой стандартного вида.'],
+    answer:{prefixMantissa:mantissa,prefixExponent:exponent,unitId},
+    solutionSteps:[
+      ...(task.solutionSteps || []),
+      'Это промежуточная запись после замены приставки степенью десяти; число перед степенью здесь является коэффициентом, а не мантиссой стандартного вида.'
+    ],
   };
 }
 
@@ -58,7 +66,7 @@ function reversePrefixTask(task, index) {
     signature:`${task.signature}|reverse-${index}`,
     answerType:'choice',
     prompt:`Как называется приставка, соответствующая ${powerLabel(prefix.exponent)}?`,
-    choices:['гига','мега','кило','гекто','санти','милли','микро','нано'],
+    choices:['гига','мега','кило','гекто','деци','санти','милли','микро','нано'],
     answer:prefix.name,
     hintKey:'prefix-name',
     solutionSteps:[`${powerLabel(prefix.exponent)} соответствует приставке «${prefix.name}».`],
@@ -79,6 +87,30 @@ function shuffleMantissaChoices(task, rng = Math.random) {
 
 function normalizeTask(task) {
   return fixPrefixPowerTerminology(fixExponentPresentation(fixMassPrefixEquivalence(task)));
+}
+
+function balanceFromScientific(tasks, args) {
+  if (args.mode !== '89' || args.blockId !== 'from-scientific' || tasks.length < 4) return tasks;
+  const minimumPositive = Math.max(1, Math.ceil(tasks.length * 0.3));
+  const positiveCount = tasks.filter(task => exponentFromPrompt(task) > 0).length;
+  if (positiveCount >= minimumPositive) return tasks;
+
+  const replacements = [];
+  const used = new Set(tasks.map(task => task.signature));
+  for (let i = 0; i < 360 && replacements.length < minimumPositive - positiveCount; i += 1) {
+    const sample = normalizeTask(createCoreTask({mode:'89',blockId:'from-scientific',rng:()=>Math.min((i + 0.5) / 360, 0.999999)}));
+    if (exponentFromPrompt(sample) <= 0 || used.has(sample.signature)) continue;
+    used.add(sample.signature);
+    replacements.push(sample);
+  }
+
+  if (!replacements.length) return tasks;
+  const result = [...tasks];
+  let replacementIndex = 0;
+  for (let i = result.length - 1; i >= 0 && replacementIndex < replacements.length; i -= 1) {
+    if (exponentFromPrompt(result[i]) < 0) result[i] = replacements[replacementIndex++];
+  }
+  return result;
 }
 
 export function createTask(args) {
@@ -110,6 +142,7 @@ export function pickTaskSet(args) {
     }
   }
 
+  tasks = balanceFromScientific(tasks, args);
   return tasks.map(task => shuffleMantissaChoices(task, args.rng));
 }
 
