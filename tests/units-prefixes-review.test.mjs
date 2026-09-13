@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { createTask, pickTaskSet } from '../physics/units-prefixes-scientific-notation/generator.js';
 
 test('milligram prefix drill teaches milli relative to gram', () => {
@@ -27,4 +28,12 @@ test('8-9 prefix drill contains reverse power-to-name questions', () => {
 test('8-9 mixed run always includes mantissa normalization', () => {
   const tasks = pickTaskSet({mode:'89',blockId:'mixed',count:10,rng:()=>0.51});
   assert.ok(tasks.some(task => task.answerType === 'multi-part' && /мантисс|· 10/.test((task.solutionSteps || []).join(' '))));
+});
+
+test('library units card has a complete visual theme', () => {
+  const css = readFileSync(new URL('../assets/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /\.physics-units-card\s*\{[^}]*background:/s);
+  assert.match(css, /\.physics-units-card \.trainer-badge\s*\{/);
+  assert.match(css, /\.physics-units-card \.new-badge\s*\{/);
+  assert.match(css, /\.physics-units-card \.open-btn\s*\{/);
 });
