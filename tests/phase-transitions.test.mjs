@@ -43,6 +43,13 @@ test('validates slope level-1 answer without transition-only fields', () => {
   assert.deepEqual(Object.keys(good.details).sort(),['action','energy','phaseState','tempChange'].sort());
 });
 
+test('does not require phase state when it is given as the initial condition', () => {
+  const task = {kind:'slope',askPhaseState:false,answer:{action:'heating',phaseState:'solid',tempChange:'increases',energy:'increases'}};
+  const result = validateLevel1Answer(task,{action:'heating',tempChange:'increases',energy:'increases'});
+  assert.equal(result.ok,true);
+  assert.deepEqual(Object.keys(result.details).sort(),['action','energy','tempChange'].sort());
+});
+
 test('picks exactly one level-1 task from each category', () => {
   const chosen = pickLevel1Set(LEVEL1_TASKS, () => 0.25);
   assert.equal(chosen.length,10);
@@ -87,6 +94,17 @@ test('level-1 bank covers ten categories with at least two variants each', () =>
   }
   assert.equal(counts.size,10);
   for(const count of counts.values()) assert.ok(count>=2);
+});
+
+test('all core tasks state the initial aggregate state and temperature', () => {
+  for(const task of [...LEVEL1_TASKS,...LEVEL2_TASKS]){
+    assert.ok(['solid','liquid','gas'].includes(task.initialState),task.id);
+    assert.equal(typeof task.initialTemperature,'number',task.id);
+    assert.equal(task.points[0].y,task.initialTemperature,task.id);
+  }
+  for(const task of LEVEL1_TASKS.filter(task=>task.kind==='slope' && task.highlightSegment===0)){
+    assert.equal(task.askPhaseState,false,task.id);
+  }
 });
 
 test('level-2 bank includes heating, cooling and phase-transition interpretation', () => {
