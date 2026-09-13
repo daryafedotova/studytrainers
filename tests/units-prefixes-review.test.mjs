@@ -30,10 +30,7 @@ test('8-9 mixed run always includes mantissa normalization', () => {
   assert.ok(tasks.some(task => task.answerType === 'multi-part' && /мантисс|· 10/.test((task.solutionSteps || []).join(' '))));
 });
 
-test('library units card has a complete visual theme', () => {
-  const css = readFileSync(new URL('../assets/styles.css', import.meta.url), 'utf8');
-  assert.match(css, /\.physics-units-card\s*\{[^}]*background:/s);
-  assert.match(css, /\.physics-units-card \.trainer-badge\s*\{/);
-  assert.match(css, /\.physics-units-card \.new-badge\s*\{/);
-  assert.match(css, /\.physics-units-card \.open-btn\s*\{/);
+test('library units card reuses a complete visual card theme', () => {
+  const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+  assert.match(html, /class="trainer-card division-card physics-units-card"[^>]*data-subject="physics"[^>]*data-grades="7 8 9"/);
 });
