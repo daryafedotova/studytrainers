@@ -61,7 +61,7 @@ function reversePrefixTask(task, index) {
     signature:`${task.signature}|reverse-${index}`,
     answerType:'choice',
     prompt:`Как называется приставка, соответствующая ${powerLabel(prefix.exponent)}?`,
-    choices:['гига','мега','кило','гекто','дека','деци','санти','милли','микро','нано'],
+    choices:['гига','мега','кило','гекто','деци','санти','милли','микро','нано'],
     answer:prefix.name,
     hintKey:'prefix-name',
     solutionSteps:[`${powerLabel(prefix.exponent)} соответствует приставке «${prefix.name}».`],
