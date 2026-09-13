@@ -38,6 +38,20 @@ function fixExponentPresentation(task) {
   };
 }
 
+function fixPrefixPowerTerminology(task) {
+  if (task?.mode !== '89' || task?.blockId !== 'prefix-power' || task.answerType !== 'multi-part') return task;
+  if (!task.answer || !Object.hasOwn(task.answer, 'mantissa') || !Object.hasOwn(task.answer, 'exponent')) return task;
+  const { mantissa, exponent, unitId } = task.answer;
+  return {
+    ...task,
+    answer:{prefixMantissa:mantissa,prefixExponent:exponent,unitId},
+    solutionSteps:[
+      ...(task.solutionSteps || []),
+      'Это промежуточная запись после замены приставки степенью десяти; первое число здесь ещё не обязано быть мантиссой стандартного вида.'
+    ],
+  };
+}
+
 function reversePrefixTask(task, index) {
   if (task?.mode !== '89' || task?.blockId !== 'prefix-drill' || !task.metadata?.prefixId) return task;
   const prefix = getPrefix(task.metadata.prefixId);
@@ -67,7 +81,7 @@ function shuffleMantissaChoices(task, rng = Math.random) {
 }
 
 function normalizeTask(task) {
-  return fixExponentPresentation(fixMassPrefixEquivalence(task));
+  return fixPrefixPowerTerminology(fixExponentPresentation(fixMassPrefixEquivalence(task)));
 }
 
 export function createTask(args) {
