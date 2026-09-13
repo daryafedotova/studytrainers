@@ -6,7 +6,7 @@ const el={
   intro:$('intro-screen'),level1:$('level1-screen'),level2:$('level2-screen'),bonus:$('bonus-screen'),gate:$('gate-screen'),result:$('result-screen'),
   start:$('start-btn'),restart:$('restart-btn'),stage:$('stage-pill'),progress:$('progress-pill'),rule:$('rule-btn'),ruleModal:$('rule-modal'),ruleClose:$('rule-close'),
   l1Number:$('l1-number'),l1Context:$('l1-context'),l1Graph:$('l1-graph'),l1Passport:$('l1-passport'),l1Feedback:$('l1-feedback'),l1HintBox:$('l1-hint-box'),l1Hint:$('l1-hint'),l1Check:$('l1-check'),l1Next:$('l1-next'),l1Side:$('level1-side-progress'),
-  l2Number:$('l2-number'),l2Question:$('l2-question'),l2Graph:$('l2-graph'),l2Answer:$('l2-answer'),l2Feedback:$('l2-feedback'),l2HintBox:$('l2-hint-box'),l2Hint:$('l2-hint'),l2Check:$('l2-check'),l2Next:$('l2-next'),
+  l2Number:$('l2-number'),l2Context:$('l2-context'),l2Question:$('l2-question'),l2Graph:$('l2-graph'),l2Answer:$('l2-answer'),l2Feedback:$('l2-feedback'),l2HintBox:$('l2-hint-box'),l2Hint:$('l2-hint'),l2Check:$('l2-check'),l2Next:$('l2-next'),
   bonusNumber:$('bonus-number'),bonusTitle:$('bonus-title'),bonusText:$('bonus-text'),bonusGraph:$('bonus-graph'),bonusFeedback:$('bonus-feedback'),bonusHintBox:$('bonus-hint-box'),bonusHint:$('bonus-hint'),bonusCheck:$('bonus-check'),bonusNext:$('bonus-next'),bonusUndo:$('bonus-undo'),bonusClear:$('bonus-clear'),
   gateTitle:$('gate-title'),gateText:$('gate-text'),gateScore:$('gate-score'),gateRetry:$('gate-retry'),gateContinue:$('gate-continue'),finalText:$('final-text'),skillGrid:$('skill-grid')
 };
@@ -18,6 +18,8 @@ const state={
   gateMode:null
 };
 
+const INITIAL_STATE_LABELS={solid:'твёрдое',liquid:'жидкое',gas:'газообразное'};
+
 function shuffle(a){
   const copy=[...a];
   for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]];}
@@ -27,6 +29,7 @@ function screen(target){[el.intro,el.level1,el.level2,el.bonus,el.gate,el.result
 function setStatus(stage,done,total){el.stage.textContent=stage;el.progress.textContent=`${done} / ${total}`;}
 function fmt(n){return String(n).replace('.',',');}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));}
+function initialConditionText(task){return `Начальное состояние: ${INITIAL_STATE_LABELS[task.initialState] ?? task.initialState} · T = ${fmt(task.initialTemperature)}\u00A0°C`;}
 
 function paddedRange(points){
   let min=Math.min(...points.map(p=>p.y)),max=Math.max(...points.map(p=>p.y));
@@ -99,19 +102,20 @@ function renderL1(){
   s.attempts=0;s.hintUsed=false;s.selections={};s.firstDetails=null;s.solved=false;
   screen(el.level1);setStatus('Уровень 1',s.index,10);
   el.l1Number.textContent=`Задание ${s.index+1} из 10`;
-  el.l1Context.textContent=`Неизвестное вещество · начальная температура ${fmt(t.points[0].y)} °C`;
+  el.l1Context.textContent=initialConditionText(t);
   el.l1Graph.innerHTML=graphSvg(t.points,{highlightSegment:t.highlightSegment});
   el.l1Feedback.className='message info';
   el.l1Feedback.textContent='Опиши выделенный участок, отвечая на вопросы справа.';
   el.l1HintBox.hidden=true;el.l1HintBox.textContent='';el.l1Next.disabled=true;
 
   if(t.kind==='slope'){
-    el.l1Passport.innerHTML=[
-      selectField('Что происходит?',ANSWER_OPTIONS.action,'action'),
-      selectField('Агрегатное состояние вещества',ANSWER_OPTIONS.phaseState,'phaseState'),
+    const fields=[selectField('Что происходит?',ANSWER_OPTIONS.action,'action')];
+    if(t.askPhaseState!==false) fields.push(selectField('Агрегатное состояние вещества',ANSWER_OPTIONS.phaseState,'phaseState'));
+    fields.push(
       selectField('Как изменяется температура?',ANSWER_OPTIONS.tempChange.filter(([v])=>v!=='constant'),'tempChange'),
       selectField('Как изменяется внутренняя энергия?',ANSWER_OPTIONS.energy,'energy')
-    ].join('');
+    );
+    el.l1Passport.innerHTML=fields.join('');
   }else{
     el.l1Passport.innerHTML=[
       selectField('Какой процесс происходит?',ANSWER_OPTIONS.process,'process'),
@@ -159,7 +163,7 @@ function renderL2(){
   const s=state.l2,t=s.tasks[s.index];
   s.attempts=0;s.hintUsed=false;s.answer=t.answerType==='multiChoice'?[]:null;s.firstOk=false;s.solved=false;
   screen(el.level2);setStatus('Уровень 2',s.index,10);
-  el.l2Number.textContent=`Задание ${s.index+1} из 10`;el.l2Question.textContent=t.question;
+  el.l2Number.textContent=`Задание ${s.index+1} из 10`;el.l2Context.textContent=initialConditionText(t);el.l2Question.textContent=t.question;
   el.l2Feedback.className='message info';el.l2Feedback.textContent='Изучи график и выбери ответ.';el.l2HintBox.hidden=true;el.l2Next.disabled=true;
   renderL2Graph();renderL2Answer();
 }
@@ -279,7 +283,8 @@ function finish(){
   screen(el.result);setStatus('Итог',6,6);
   const l1=state.l1.records,l2=state.l2.records,b=state.bonus.records;
   const recognition=cleanCount(l1);
-  const states=l1.filter(r=>r.details?.phaseState||r.details?.state).length;
+  const stateRecords=l1.filter(r=>r.details && ('phaseState' in r.details || 'state' in r.details));
+  const states=stateRecords.filter(r=>r.details?.phaseState||r.details?.state).length;
   const phaseTasks=l1.filter(r=>r.kind==='phase');
   const tempL1=phaseTasks.filter(r=>r.details?.temperature).length;
   const numberL2=l2.filter(r=>r.type==='number');
@@ -288,7 +293,7 @@ function finish(){
   const bonus=b.filter(r=>r.correct).length;
   const skills=[
     ['Распознавание участков',`${recognition}/10`,pct(recognition,10)],
-    ['Агрегатные состояния',`${states}/10`,pct(states,10)],
+    ['Агрегатные состояния',`${states}/${stateRecords.length}`,pct(states,stateRecords.length)],
     ['Чтение температуры',`${tempL1+tempL2}/${phaseTasks.length+numberL2.length}`,pct(tempL1+tempL2,phaseTasks.length+numberL2.length)],
     ['Задачи по графику',`${interpretation}/10`,pct(interpretation,10)],
     ['Построение графика',`${bonus}/6`,pct(bonus,6)]
