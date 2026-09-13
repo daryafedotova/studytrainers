@@ -47,6 +47,11 @@ test('scientific notation in the task prompt cannot split exponent onto a separa
   assert.match(css, /\.task-prompt\s+\.formula\s*\{[^}]*white-space\s*:\s*nowrap/i);
 });
 
+test('scientific exponent in the task prompt is large and clearly raised', () => {
+  const css = readFileSync(new URL('../physics/units-prefixes-scientific-notation/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /\.task-prompt\s+\.formula\s+sup\s*\{[^}]*font-size\s*:\s*\.8em[^}]*position\s*:\s*relative[^}]*top\s*:\s*-\.45em/i);
+});
+
 test('library units card reuses a complete visual card theme', () => {
   const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
   assert.match(html, /class="trainer-card division-card physics-units-card"[^>]*data-subject="physics"[^>]*data-grades="7 8 9"/);
