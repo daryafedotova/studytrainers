@@ -3,7 +3,6 @@ export const PREFIXES = [
   {id:'mega', name:'мега', symbol:'М', factor:1e6, exponent:6, modes:['7','89'], rare:false},
   {id:'kilo', name:'кило', symbol:'к', factor:1e3, exponent:3, modes:['7','89'], rare:false},
   {id:'hecto', name:'гекто', symbol:'г', factor:1e2, exponent:2, modes:['89'], rare:true},
-  {id:'deca', name:'дека', symbol:'да', factor:1e1, exponent:1, modes:['89'], rare:true},
   {id:'deci', name:'деци', symbol:'д', factor:1e-1, exponent:-1, modes:['89'], rare:true},
   {id:'centi', name:'санти', symbol:'с', factor:1e-2, exponent:-2, modes:['7','89'], rare:false},
   {id:'milli', name:'милли', symbol:'м', factor:1e-3, exponent:-3, modes:['7','89'], rare:false},
@@ -22,7 +21,6 @@ export const UNITS = [
   {id:'um',symbol:'мкм',dimension:'length',factorToSI:1e-6,prefixId:'micro',modes:OLD,systemUnitId:'m',power:1},
   {id:'nm',symbol:'нм',dimension:'length',factorToSI:1e-9,prefixId:'nano',modes:OLD,systemUnitId:'m',power:1},
   {id:'dm',symbol:'дм',dimension:'length',factorToSI:1e-1,prefixId:'deci',modes:OLD,systemUnitId:'m',power:1,rare:true},
-  {id:'dam',symbol:'дам',dimension:'length',factorToSI:1e1,prefixId:'deca',modes:OLD,systemUnitId:'m',power:1,rare:true},
 
   {id:'s',symbol:'с',dimension:'time',factorToSI:1,prefixId:null,modes:BOTH,systemUnitId:'s',power:1},
   {id:'ms',symbol:'мс',dimension:'time',factorToSI:1e-3,prefixId:'milli',modes:BOTH,systemUnitId:'s',power:1},
@@ -35,7 +33,6 @@ export const UNITS = [
 
   {id:'N',symbol:'Н',dimension:'force',factorToSI:1,prefixId:null,modes:BOTH,systemUnitId:'N',power:1},
   {id:'kN',symbol:'кН',dimension:'force',factorToSI:1e3,prefixId:'kilo',modes:BOTH,systemUnitId:'N',power:1},
-  {id:'daN',symbol:'даН',dimension:'force',factorToSI:1e1,prefixId:'deca',modes:OLD,systemUnitId:'N',power:1,rare:true},
 
   {id:'Pa',symbol:'Па',dimension:'pressure',factorToSI:1,prefixId:null,modes:BOTH,systemUnitId:'Pa',power:1},
   {id:'kPa',symbol:'кПа',dimension:'pressure',factorToSI:1e3,prefixId:'kilo',modes:BOTH,systemUnitId:'Pa',power:1},
