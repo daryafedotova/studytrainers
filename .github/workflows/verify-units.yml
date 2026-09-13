@@ -1,0 +1,25 @@
+name: Verify units trainer
+
+on:
+  push:
+    branches:
+      - feature/units-prefixes-scientific-notation
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run tests
+        run: node --test tests/phase-transitions.test.mjs tests/units-prefixes-scientific-notation.test.mjs
+      - name: Check syntax
+        run: |
+          node --check physics/units-prefixes-scientific-notation/app.js
+          node --check physics/units-prefixes-scientific-notation/data.js
+          node --check physics/units-prefixes-scientific-notation/logic.js
+          node --check physics/units-prefixes-scientific-notation/generator.js
+          node --check physics/units-prefixes-scientific-notation/progress.js
