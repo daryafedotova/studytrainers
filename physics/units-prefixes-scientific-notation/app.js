@@ -15,7 +15,7 @@ const BLOCK_INFO = {
   'mantissa-warmup': {title:'Правильная мантисса',description:'5 коротких вопросов перед основной работой со стандартным видом.',rule:'scientific',learningOnly:true,fixedCount:5},
   'to-scientific': {title:'В стандартный вид',description:'Преобразуй обычную запись числа в a · 10ⁿ.',rule:'scientific'},
   'from-scientific': {title:'Из стандартного вида',description:'Верни число из записи a · 10ⁿ в обычную десятичную форму.',rule:'from-scientific'},
-  'prefix-power': {title:'Приставка и степень 10',description:'Замени приставку соответствующей степенью десяти.',rule:'prefix-power'},
+  'prefix-power': {title:'Приставка и степень 10',description:'Замени приставку степенью десяти: запиши коэффициент, показатель степени и единицу без приставки.',rule:'prefix-power'},
   'mantissa-shift': {title:'Изменение мантиссы',description:'Свяжи приставку, её степень и нормализацию мантиссы.',rule:'mantissa-shift',learningOnly:true,fixedCount:6},
   'unit-conversion': {title:'Перевод единиц',description:'Переводи величины между единицами с разными приставками.',rule:'unit-conversion'},
 };
@@ -144,9 +144,10 @@ function ruleHTML(){
   }
   if(block==='mantissa-warmup'||block==='to-scientific') return '<p>Стандартный вид: <span class="formula">a · 10<sup>n</sup></span>, где <span class="formula">1 ≤ |a| &lt; 10</span>, а n — целое число.</p>';
   if(block==='from-scientific') return '<p>Положительный показатель переносит запятую вправо, отрицательный — влево. Число переносов задаётся модулем показателя.</p>';
-  if(block==='prefix-drill'||block==='prefix-power') return '<p>Приставка задаёт степень десяти: кило = 10³, мега = 10⁶, милли = 10⁻³, микро = 10⁻⁶, нано = 10⁻⁹.</p>';
+  if(block==='prefix-drill') return '<p>Приставка задаёт степень десяти: кило = <span class="formula">10<sup>3</sup></span>, мега = <span class="formula">10<sup>6</sup></span>, милли = <span class="formula">10<sup>−3</sup></span>, микро = <span class="formula">10<sup>−6</sup></span>, нано = <span class="formula">10<sup>−9</sup></span>.</p>';
+  if(block==='prefix-power') return '<p><b>В этом блоке не нужно приводить число к стандартному виду.</b> Замени приставку степенью десяти, сохрани исходный коэффициент и запиши единицу без приставки. Например: <span class="formula">250 гПа = 250 · 10<sup>2</sup> Па</span>.</p>';
   if(block==='mantissa-shift') return '<p>Если мантиссу увеличили в 10 раз, показатель степени уменьшается на 1. Если мантиссу уменьшили в 10 раз — показатель увеличивается на 1.</p>';
-  if(block==='area-volume') return '<p>Для квадратной единицы показатель приставки умножается на 2, для кубической — на 3. Например: 1 см² = (10⁻²)² м² = 10⁻⁴ м².</p>';
+  if(block==='area-volume') return '<p>Для квадратной единицы показатель приставки умножается на 2, для кубической — на 3. Например: <span class="formula">1 см² = (10<sup>−2</sup>)² м² = 10<sup>−4</sup> м²</span>.</p>';
   return '<p>Сопоставь приставку со степенью десяти и следи, чтобы итоговая мантисса была от 1 включительно до 10 не включительно по модулю.</p>';
 }
 
@@ -181,6 +182,17 @@ function unitOptions(task){
   return [...ids].map(id=>getUnit(id));
 }
 
+function escapeHTML(value){return String(value).replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));}
+
+function powerChoiceHTML(choice){
+  const value=String(choice);
+  const match=value.match(/^10([⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+)$/);
+  if(!match)return escapeHTML(value);
+  const normal={'⁻':'−','⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9'};
+  const exponent=[...match[1]].map(char=>normal[char]??char).join('');
+  return `<span class="formula">10<sup>${escapeHTML(exponent)}</sup></span>`;
+}
+
 function renderAnswer(task){
   answerZone.innerHTML='';
   if(task.answerType==='number-unit'){
@@ -202,11 +214,11 @@ function renderAnswer(task){
   }
   if(task.answerType==='choice'){
     const grid=document.createElement('div');grid.className='choice-grid';
-    for(const choice of task.choices||[]){const btn=document.createElement('button');btn.type='button';btn.className='choice-btn';btn.textContent=choice;btn.dataset.value=choice;btn.addEventListener('click',()=>{state.choiceValue=choice;[...grid.children].forEach(node=>node.classList.toggle('is-selected',node===btn));});grid.append(btn);}answerZone.append(grid);return;
+    for(const choice of task.choices||[]){const btn=document.createElement('button');btn.type='button';btn.className='choice-btn';btn.innerHTML=powerChoiceHTML(choice);btn.dataset.value=choice;btn.addEventListener('click',()=>{state.choiceValue=choice;[...grid.children].forEach(node=>node.classList.toggle('is-selected',node===btn));});grid.append(btn);}answerZone.append(grid);return;
   }
   if(task.answerType==='multi-part'){
     const wrap=document.createElement('div');wrap.className='multi-answer';wrap.dataset.answerType='multi-part';
-    const labels={prefixMantissa:'До нормализации',prefixExponent:'Степень приставки',mantissa:'Мантисса',exponent:'Итоговая степень',unitId:'Единица'};
+    const labels={prefixMantissa:'Коэффициент',prefixExponent:'Степень приставки',mantissa:'Мантисса',exponent:'Итоговая степень',unitId:'Единица'};
     for(const key of Object.keys(task.answer)){
       const group=document.createElement('div');group.className='multi-group';group.dataset.key=key;
       const label=document.createElement('label');label.textContent=labels[key]||key;group.append(label);
@@ -222,8 +234,6 @@ function renderAnswer(task){
   }
 }
 
-function escapeHTML(value){return String(value).replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));}
-
 function collectResponse(task){
   if(task.answerType==='number-unit') return {number:answerZone.querySelector('.number-input')?.value,unitId:answerZone.querySelector('.unit-select')?.value};
   if(task.answerType==='scientific') return {mantissa:answerZone.querySelector('.mantissa-input')?.value,exponent:answerZone.querySelector('.exponent-input')?.value};
@@ -237,8 +247,9 @@ function collectResponse(task){
 
 function diagnosticHint(task,details={}){
   if(details.unit===false||details.unitId===false) return 'Проверь единицу: сравни размер исходной и целевой единицы.';
+  if(details.prefixMantissa===false) return 'Проверь коэффициент: в этом блоке число перед степенью десяти нужно сохранить без нормализации.';
   if(details.mantissa===false) return 'Мантисса должна быть не меньше 1 и меньше 10 по модулю.';
-  if(details.exponent===false||details.prefixExponent===false) return 'Проверь степень: при изменении мантиссы показатель должен компенсировать это изменение.';
+  if(details.exponent===false||details.prefixExponent===false) return state.blockId==='prefix-power'?'Проверь показатель степени, соответствующий приставке.':'Проверь степень: при изменении мантиссы показатель должен компенсировать это изменение.';
   if(state.blockId==='area-volume') return 'Не забудь: для площади коэффициент действует два раза, для объёма — три.';
   if(state.blockId==='prefix-drill'||state.blockId==='prefix-power') return 'Вспомни, какой множитель или степень соответствует этой приставке.';
   return 'Сравни размеры единиц и подумай: числовое значение должно увеличиться или уменьшиться?';
