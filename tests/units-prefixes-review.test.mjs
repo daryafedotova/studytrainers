@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createTask, pickTaskSet } from '../physics/units-prefixes-scientific-notation/generator.js';
+import { PREFIXES, UNITS } from '../physics/units-prefixes-scientific-notation/data.js';
 
 test('milligram prefix drill teaches milli relative to gram', () => {
   const samples = Array.from({length:100},(_,i)=>createTask({mode:'7',blockId:'prefix-drill',rng:()=>i/100}));
@@ -23,6 +24,13 @@ test('8-9 prefix exponent choices are shown as powers of ten', () => {
 test('8-9 prefix drill contains reverse power-to-name questions', () => {
   const tasks = pickTaskSet({mode:'89',blockId:'prefix-drill',count:10,rng:()=>0.37});
   assert.ok(tasks.some(task => /^Как называется приставка, соответствующая 10/.test(task.prompt || '')));
+});
+
+test('deca prefix is not used in the trainer', () => {
+  assert.ok(!PREFIXES.some(prefix => prefix.id === 'deca' || prefix.name === 'дека'));
+  assert.ok(!UNITS.some(unit => unit.prefixId === 'deca'));
+  const tasks = pickTaskSet({mode:'89',blockId:'prefix-drill',count:20,rng:()=>0.37});
+  assert.ok(tasks.every(task => task.answer !== 'дека' && !(task.choices || []).includes('дека')));
 });
 
 test('8-9 mixed run always includes mantissa normalization', () => {
