@@ -70,6 +70,19 @@ test('prefix-power coefficient is not mislabeled as a normalized mantissa', () =
   assert.match(app, /prefixMantissa:'До нормализации'/);
 });
 
+test('mantissa-shift shows a worked guide before the first task', () => {
+  const html = readFileSync(new URL('../physics/units-prefixes-scientific-notation/index.html', import.meta.url), 'utf8');
+  assert.match(html, /id="mantissa-intro-screen"/);
+  assert.match(html, /0,7 мм/);
+  assert.match(html, /0,7 · 10<sup>−3<\/sup> м/);
+  assert.match(html, /7 · 10<sup>−4<\/sup> м/);
+  assert.match(html, /id="mantissa-intro-start"/);
+  assert.match(html, /src="mantissa-intro\.js"/);
+  const introScript = readFileSync(new URL('../physics/units-prefixes-scientific-notation/mantissa-intro.js', import.meta.url), 'utf8');
+  assert.match(introScript, /currentBlock\s*===\s*'mantissa-shift'/);
+  assert.match(introScript, /stopImmediatePropagation\(\)/);
+});
+
 test('library units card reuses a complete visual card theme', () => {
   const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
   assert.match(html, /class="trainer-card division-card physics-units-card"[^>]*data-subject="physics"[^>]*data-grades="7 8 9"/);
