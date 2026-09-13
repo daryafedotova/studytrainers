@@ -7,6 +7,7 @@
   <title>Единицы, приставки и стандартный вид · Физика 7–9</title>
   <link rel="stylesheet" href="styles.css">
   <script type="module" src="app.js"></script>
+  <script type="module" src="mantissa-intro.js"></script>
 </head>
 <body>
   <main class="page">
@@ -81,6 +82,49 @@
           <div class="setup-actions">
             <button class="btn secondary" id="back-blocks-btn" type="button">← К блокам</button>
             <button class="btn primary" id="fixed-start-btn" type="button" hidden>Начать →</button>
+          </div>
+        </article>
+      </section>
+
+      <section class="screen" id="mantissa-intro-screen">
+        <article class="panel setup-panel">
+          <p class="eyebrow">Перед тренировкой</p>
+          <h1>Как изменять мантиссу</h1>
+          <p class="lead">В этом блоке нужно сначала заменить приставку степенью десяти, а затем привести запись к стандартному виду. Мантиссой называем только итоговое число <span class="formula">a</span>, для которого <span class="formula">1 ≤ |a| &lt; 10</span>.</p>
+
+          <div class="theory-card">
+            <strong>Алгоритм</strong>
+            <ol class="rule-list">
+              <li><b>Замени приставку степенью десяти.</b> Например, милли = <span class="formula">10<sup>−3</sup></span>.</li>
+              <li><b>Запиши промежуточное выражение.</b> Первое число здесь ещё может не быть мантиссой.</li>
+              <li><b>Проверь коэффициент.</b> Если его модуль меньше 1 — переноси запятую вправо и уменьшай показатель степени. Если коэффициент 10 или больше — переноси запятую влево и увеличивай показатель.</li>
+              <li><b>Остановись, когда получишь</b> <span class="formula">1 ≤ |a| &lt; 10</span>. Это и будет мантисса стандартного вида.</li>
+            </ol>
+          </div>
+
+          <div class="solution-box">
+            <strong>Разберём пример: 0,7 мм</strong>
+            <ol>
+              <li>Приставка «милли» означает <span class="formula">10<sup>−3</sup></span>, поэтому <span class="formula">0,7 мм = 0,7 · 10<sup>−3</sup> м</span>.</li>
+              <li>Число 0,7 меньше 1, поэтому оно ещё не является допустимой мантиссой.</li>
+              <li>Переносим запятую на один разряд вправо: 0,7 → 7. Чтобы значение не изменилось, показатель уменьшаем на 1: −3 → −4.</li>
+              <li>Получаем стандартный вид: <span class="formula">7 · 10<sup>−4</sup> м</span>.</li>
+            </ol>
+          </div>
+
+          <div class="route-note">
+            <strong>Что вводить в поля для этого примера:</strong><br>
+            «До нормализации» — 0,7; «Степень приставки» — −3; «Мантисса» — 7; «Итоговая степень» — −4; единица — м.
+          </div>
+
+          <div class="theory-card">
+            <strong>Если число слишком большое</strong>
+            <p>Например, <span class="formula">250 МПа = 250 · 10<sup>6</sup> Па = 2,5 · 10<sup>8</sup> Па</span>. Здесь запятую переносим влево на два разряда, поэтому показатель увеличивается на 2.</p>
+          </div>
+
+          <div class="setup-actions">
+            <button class="btn secondary" id="mantissa-intro-back" type="button">← Назад</button>
+            <button class="btn primary" id="mantissa-intro-start" type="button">Начать тренировку →</button>
           </div>
         </article>
       </section>
