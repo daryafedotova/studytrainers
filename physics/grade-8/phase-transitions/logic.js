@@ -23,7 +23,7 @@ const sameNumber=(a,b)=>Number.isFinite(num(a)) && Math.abs(num(a)-num(b))<1e-9;
 export function validateLevel1Answer(task,answer){
   const expected=task.answer;
   const fields=task.kind==='slope'
-    ? ['action','phaseState','tempChange','energy']
+    ? ['action',...(task.askPhaseState===false?[]:['phaseState']),'tempChange','energy']
     : ['process','transition','state','tempChange','energy'];
   const details=Object.fromEntries(fields.map(key=>[key,answer?.[key]===expected[key]]));
   if(task.kind==='phase') details.temperature=sameNumber(answer?.temperature,expected.temperature);
