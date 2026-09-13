@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Тренажёр по единицам СИ, приставкам и стандартному виду числа для 7–9 классов">
+  <title>Единицы, приставки и стандартный вид · Физика 7–9</title>
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <main class="page">
+    <section class="shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">10ⁿ</span>
+          <div>
+            <strong>ЕДИНИЦЫ И СТЕПЕНИ</strong>
+            <small>физика · 7–9 классы</small>
+          </div>
+        </div>
+        <div class="top-status">
+          <a class="top-btn" href="../../#physics">← В библиотеку</a>
+          <button class="top-btn" id="home-btn" type="button" hidden>К разделам</button>
+          <span class="stage-pill" id="stage-pill">Старт</span>
+          <span class="progress-pill" id="progress-pill" hidden>0 / 0</span>
+          <button class="top-btn" id="rule-btn" type="button" hidden>? Правило</button>
+        </div>
+      </header>
+
+      <section class="screen active" id="mode-screen">
+        <div class="hero-panel panel">
+          <p class="eyebrow">Выбери свой режим</p>
+          <h1>Единицы, приставки и стандартный вид</h1>
+          <p class="lead">Два возрастных маршрута: в 7 классе — практические переводы единиц без отрицательных степеней; в 8–9 классах — степени десяти, стандартный вид и связь с приставками.</p>
+          <div class="mode-grid">
+            <button class="mode-card grade7" type="button" data-mode="7" aria-label="7 класс — Единицы и приставки">
+              <span class="mode-kicker">7 класс</span>
+              <strong>Единицы и приставки</strong>
+              <span>Переводи в СИ, используй приставки, тренируй площадь и объём.</span>
+            </button>
+            <button class="mode-card grade89" type="button" data-mode="89" aria-label="8–9 класс — Стандартный вид и единицы">
+              <span class="mode-kicker">8–9 класс</span>
+              <strong>Стандартный вид и единицы</strong>
+              <span>Работай со степенями 10, мантиссой и преобразованием физических величин.</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="screen" id="blocks-screen">
+        <div class="screen-heading">
+          <div>
+            <p class="eyebrow" id="mode-eyebrow">Режим</p>
+            <h1 id="blocks-title">Выбери навык</h1>
+            <p class="lead">Все блоки доступны сразу. Нумерация показывает рекомендуемый маршрут.</p>
+          </div>
+          <button class="btn secondary" id="change-mode-btn" type="button">Сменить класс</button>
+        </div>
+        <div class="route-note" id="route-note"></div>
+        <div class="block-grid" id="block-grid"></div>
+      </section>
+
+      <section class="screen" id="length-screen">
+        <article class="panel setup-panel">
+          <p class="eyebrow">Настройка тренировки</p>
+          <h1 id="setup-title">Блок</h1>
+          <p id="setup-description" class="lead"></p>
+          <div id="substage-area" hidden>
+            <h2>Выбери подэтап</h2>
+            <div class="substage-grid" id="substage-grid"></div>
+          </div>
+          <div id="length-area">
+            <h2>Сколько заданий?</h2>
+            <div class="length-grid">
+              <button class="length-card" type="button" data-count="10"><b>10</b><span>Быстро</span></button>
+              <button class="length-card recommended" type="button" data-count="15"><b>15</b><span>Обычная тренировка</span><small>рекомендуем</small></button>
+              <button class="length-card" type="button" data-count="20"><b>20</b><span>Усиленная тренировка</span></button>
+            </div>
+          </div>
+          <div class="setup-actions">
+            <button class="btn secondary" id="back-blocks-btn" type="button">← К блокам</button>
+            <button class="btn primary" id="fixed-start-btn" type="button" hidden>Начать →</button>
+          </div>
+        </article>
+      </section>
+
+      <section class="screen" id="task-screen">
+        <article class="panel task-panel">
+          <div class="task-head">
+            <div>
+              <p class="eyebrow" id="task-block-name">Навык</p>
+              <span class="task-number" id="task-number">Задание 1 из 15</span>
+            </div>
+            <button class="btn hint-btn" id="hint-btn" type="button">Подсказка</button>
+          </div>
+          <div class="theory-card" id="theory-card" hidden></div>
+          <div class="task-prompt" id="task-prompt"></div>
+          <div class="answer-zone" id="answer-zone"></div>
+          <div class="formula-preview" id="formula-preview" hidden></div>
+          <div class="feedback info" id="feedback" role="status" aria-live="polite">Введи ответ и нажми «Проверить».</div>
+          <div class="hint-box" id="hint-box" hidden></div>
+          <div class="solution-box" id="solution-box" hidden></div>
+          <div class="task-actions">
+            <button class="btn check" id="check-btn" type="button">Проверить</button>
+            <button class="btn primary" id="next-btn" type="button" disabled>Следующее →</button>
+          </div>
+        </article>
+      </section>
+
+      <section class="screen" id="result-screen">
+        <article class="panel result-panel">
+          <p class="eyebrow">Результат</p>
+          <h1 id="result-title">Тренировка завершена</h1>
+          <div class="result-stats">
+            <p id="solved-row">Решено: <strong id="solved-result"></strong></p>
+            <p id="clean-row">С первой попытки: <strong id="clean-result"></strong></p>
+            <p class="mastery" id="mastery-result"></p>
+          </div>
+          <p id="best-result-note" class="best-note"></p>
+          <div class="result-actions">
+            <button class="btn secondary" id="result-blocks-btn" type="button">К разделам</button>
+            <button class="btn primary" id="retry-btn" type="button">Ещё раз</button>
+          </div>
+        </article>
+      </section>
+
+      <dialog id="rule-dialog">
+        <form method="dialog" class="dialog-card">
+          <div class="dialog-head">
+            <div>
+              <p class="eyebrow">Короткая справка</p>
+              <h2 id="rule-title">Правило</h2>
+            </div>
+            <button class="icon-btn" value="close" aria-label="Закрыть">×</button>
+          </div>
+          <div id="rule-content"></div>
+          <button class="btn primary dialog-close" value="close">Понятно</button>
+        </form>
+      </dialog>
+    </section>
+  </main>
+</body>
+</html>
