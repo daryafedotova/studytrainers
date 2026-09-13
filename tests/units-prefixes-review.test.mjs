@@ -42,6 +42,11 @@ test('mantissa warmup does not keep every correct answer in the middle card', ()
   assert.ok(new Set(positions).size >= 2, `expected varied answer positions, got ${positions.join(',')}`);
 });
 
+test('scientific notation in the task prompt cannot split exponent onto a separate line', () => {
+  const css = readFileSync(new URL('../physics/units-prefixes-scientific-notation/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /\.task-prompt\s+\.formula\s*\{[^}]*white-space\s*:\s*nowrap/i);
+});
+
 test('library units card reuses a complete visual card theme', () => {
   const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
   assert.match(html, /class="trainer-card division-card physics-units-card"[^>]*data-subject="physics"[^>]*data-grades="7 8 9"/);
