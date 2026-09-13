@@ -54,12 +54,24 @@ function reversePrefixTask(task, index) {
   };
 }
 
+function shuffleMantissaChoices(task, rng = Math.random) {
+  if (task?.blockId !== 'mantissa-warmup' || task.answerType !== 'choice' || !Array.isArray(task.choices)) return task;
+  const choices = [...task.choices];
+  for (let i = choices.length - 1; i > 0; i -= 1) {
+    const raw = Number(rng());
+    const normalized = Number.isFinite(raw) ? Math.min(Math.max(raw, 0), 0.999999999999) : 0;
+    const j = Math.floor(normalized * (i + 1));
+    [choices[i], choices[j]] = [choices[j], choices[i]];
+  }
+  return {...task, choices};
+}
+
 function normalizeTask(task) {
   return fixExponentPresentation(fixMassPrefixEquivalence(task));
 }
 
 export function createTask(args) {
-  return normalizeTask(createCoreTask(args));
+  return shuffleMantissaChoices(normalizeTask(createCoreTask(args)), args.rng);
 }
 
 export function pickTaskSet(args) {
@@ -87,7 +99,7 @@ export function pickTaskSet(args) {
     }
   }
 
-  return tasks;
+  return tasks.map(task => shuffleMantissaChoices(task, args.rng));
 }
 
 export { VALUE_POOLS, plainNumber, superscript };
