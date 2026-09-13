@@ -7,6 +7,7 @@
   <title>Единицы, приставки и стандартный вид · Физика 7–9</title>
   <link rel="stylesheet" href="styles.css">
   <script type="module" src="app.js"></script>
+  <script type="module" src="prefix-power-intro.js"></script>
   <script type="module" src="mantissa-intro.js"></script>
 </head>
 <body>
@@ -82,6 +83,48 @@
           <div class="setup-actions">
             <button class="btn secondary" id="back-blocks-btn" type="button">← К блокам</button>
             <button class="btn primary" id="fixed-start-btn" type="button" hidden>Начать →</button>
+          </div>
+        </article>
+      </section>
+
+      <section class="screen" id="prefix-power-intro-screen">
+        <article class="panel setup-panel">
+          <p class="eyebrow">Перед тренировкой</p>
+          <h1>Как заменить приставку степенью десяти</h1>
+          <p class="lead">В этом разделе мы <b>не приводим число к стандартному виду</b>. Нужно только заменить приставку соответствующей степенью десяти и сохранить числовой коэффициент перед единицей.</p>
+
+          <div class="theory-card">
+            <strong>Алгоритм</strong>
+            <ol class="rule-list">
+              <li>Определи приставку в обозначении единицы.</li>
+              <li>Вспомни, какой степени десяти она соответствует.</li>
+              <li>Число перед единицей оставь без изменения — это <b>коэффициент</b>.</li>
+              <li>Запиши единицу без приставки.</li>
+            </ol>
+          </div>
+
+          <div class="solution-box">
+            <strong>Пример: 250 гПа</strong>
+            <ol>
+              <li>Приставка «гекто» означает <span class="formula">10<sup>2</sup></span>.</li>
+              <li>Поэтому <span class="formula">250 гПа = 250 · 10<sup>2</sup> Па</span>.</li>
+              <li>Число 250 здесь не обязано быть мантиссой. В этом задании это просто коэффициент перед степенью десяти.</li>
+            </ol>
+          </div>
+
+          <div class="route-note">
+            <strong>Что вводить в поля:</strong><br>
+            Коэффициент 250; степень приставки 2; единица Па.
+          </div>
+
+          <div class="theory-card">
+            <strong>Не путай со стандартным видом</strong>
+            <p>Если отдельно потребуется привести запись к стандартному виду, тогда <span class="formula">250 · 10<sup>2</sup> = 2,5 · 10<sup>4</sup></span>. Но в этом разделе выполнять этот второй шаг не нужно.</p>
+          </div>
+
+          <div class="setup-actions">
+            <button class="btn secondary" id="prefix-power-intro-back" type="button">← Назад</button>
+            <button class="btn primary" id="prefix-power-intro-start" type="button">Начать тренировку →</button>
           </div>
         </article>
       </section>
