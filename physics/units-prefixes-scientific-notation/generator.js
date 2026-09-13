@@ -44,11 +44,8 @@ function fixPrefixPowerTerminology(task) {
   const { mantissa, exponent, unitId } = task.answer;
   return {
     ...task,
-    answer:{prefixMantissa:mantissa,prefixExponent:exponent,unitId},
-    solutionSteps:[
-      ...(task.solutionSteps || []),
-      'Это промежуточная запись после замены приставки степенью десяти; первое число здесь ещё не обязано быть мантиссой стандартного вида.'
-    ],
+    answer:{coefficient:mantissa,exponent,unitId},
+    solutionSteps:[...(task.solutionSteps || []),'Это промежуточная запись после замены приставки степенью десяти; число перед степенью здесь является коэффициентом, а не мантиссой стандартного вида.'],
   };
 }
 
@@ -61,7 +58,7 @@ function reversePrefixTask(task, index) {
     signature:`${task.signature}|reverse-${index}`,
     answerType:'choice',
     prompt:`Как называется приставка, соответствующая ${powerLabel(prefix.exponent)}?`,
-    choices:['гига','мега','кило','гекто','деци','санти','милли','микро','нано'],
+    choices:['гига','мега','кило','гекто','санти','милли','микро','нано'],
     answer:prefix.name,
     hintKey:'prefix-name',
     solutionSteps:[`${powerLabel(prefix.exponent)} соответствует приставке «${prefix.name}».`],
