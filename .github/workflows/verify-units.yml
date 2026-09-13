@@ -15,11 +15,12 @@ jobs:
         with:
           node-version: 22
       - name: Run tests
-        run: node --test tests/phase-transitions.test.mjs tests/units-prefixes-scientific-notation.test.mjs
+        run: node --test tests/*.test.mjs
       - name: Check syntax
         run: |
           node --check physics/units-prefixes-scientific-notation/app.js
           node --check physics/units-prefixes-scientific-notation/data.js
           node --check physics/units-prefixes-scientific-notation/logic.js
+          node --check physics/units-prefixes-scientific-notation/generator-core.js
           node --check physics/units-prefixes-scientific-notation/generator.js
           node --check physics/units-prefixes-scientific-notation/progress.js
