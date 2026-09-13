@@ -79,7 +79,7 @@ test('mantissa-shift shows a worked guide before the first task', () => {
   assert.match(html, /id="mantissa-intro-start"/);
   assert.match(html, /src="mantissa-intro\.js"/);
   const introScript = readFileSync(new URL('../physics/units-prefixes-scientific-notation/mantissa-intro.js', import.meta.url), 'utf8');
-  assert.match(introScript, /currentBlock\s*===\s*'mantissa-shift'/);
+  assert.match(introScript, /currentBlock\s*!==\s*'mantissa-shift'/);
   assert.match(introScript, /stopImmediatePropagation\(\)/);
 });
 
