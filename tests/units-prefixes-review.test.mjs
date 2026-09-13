@@ -30,6 +30,18 @@ test('8-9 mixed run always includes mantissa normalization', () => {
   assert.ok(tasks.some(task => task.answerType === 'multi-part' && /мантисс|· 10/.test((task.solutionSteps || []).join(' '))));
 });
 
+test('mantissa warmup does not keep every correct answer in the middle card', () => {
+  let state = 123456789;
+  const rng = () => {
+    state = (1664525 * state + 1013904223) >>> 0;
+    return state / 2 ** 32;
+  };
+  const tasks = pickTaskSet({mode:'89',blockId:'mantissa-warmup',count:5,rng});
+  const positions = tasks.map(task => task.choices.indexOf(task.answer));
+  assert.ok(positions.every(position => position >= 0), 'every answer must remain present in choices');
+  assert.ok(new Set(positions).size >= 2, `expected varied answer positions, got ${positions.join(',')}`);
+});
+
 test('library units card reuses a complete visual card theme', () => {
   const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
   assert.match(html, /class="trainer-card division-card physics-units-card"[^>]*data-subject="physics"[^>]*data-grades="7 8 9"/);
