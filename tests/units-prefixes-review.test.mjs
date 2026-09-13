@@ -52,6 +52,16 @@ test('scientific exponent in the task prompt is large and clearly raised', () =>
   assert.match(css, /\.task-prompt\s+\.formula\s+sup\s*\{[^}]*font-size\s*:\s*\.8em[^}]*position\s*:\s*relative[^}]*top\s*:\s*-\.45em/i);
 });
 
+test('prefix-power coefficient is not mislabeled as a normalized mantissa', () => {
+  const samples = Array.from({length:100},(_,i)=>createTask({mode:'89',blockId:'prefix-power',rng:()=>i/100}));
+  const task = samples.find(item => Object.values(item.answer || {}).includes(250));
+  assert.ok(task, 'expected a prefix-power task using coefficient 250');
+  assert.equal(task.answer.prefixMantissa, 250);
+  assert.ok(!Object.hasOwn(task.answer, 'mantissa'), 'intermediate coefficient must not be called mantissa');
+  const app = readFileSync(new URL('../physics/units-prefixes-scientific-notation/app.js', import.meta.url), 'utf8');
+  assert.match(app, /prefixMantissa:'Коэффициент до нормализации'/);
+});
+
 test('library units card reuses a complete visual card theme', () => {
   const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
   assert.match(html, /class="trainer-card division-card physics-units-card"[^>]*data-subject="physics"[^>]*data-grades="7 8 9"/);
