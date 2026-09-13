@@ -59,7 +59,7 @@ test('prefix-power coefficient is not mislabeled as a normalized mantissa', () =
   assert.equal(task.answer.prefixMantissa, 250);
   assert.ok(!Object.hasOwn(task.answer, 'mantissa'), 'intermediate coefficient must not be called mantissa');
   const app = readFileSync(new URL('../physics/units-prefixes-scientific-notation/app.js', import.meta.url), 'utf8');
-  assert.match(app, /prefixMantissa:'Коэффициент до нормализации'/);
+  assert.match(app, /prefixMantissa:'До нормализации'/);
 });
 
 test('library units card reuses a complete visual card theme', () => {
