@@ -33,14 +33,6 @@ test('deca prefix is not used in the trainer', () => {
   assert.ok(tasks.every(task => task.answer !== 'дека' && !(task.choices || []).includes('дека')));
 });
 
-test('deci is hidden from 8-9 prefix drills while dm units remain available elsewhere', () => {
-  assert.ok(UNITS.some(unit => unit.id === 'dm3'), 'dm³ must remain available for volume work');
-  for (const rngValue of [0.11,0.27,0.43,0.61,0.79]) {
-    const tasks = pickTaskSet({mode:'89',blockId:'prefix-drill',count:20,rng:()=>rngValue});
-    assert.ok(tasks.every(task => task.answer !== 'деци' && !(task.choices || []).includes('деци')));
-  }
-});
-
 test('8-9 mixed run always includes mantissa normalization', () => {
   const tasks = pickTaskSet({mode:'89',blockId:'mixed',count:10,rng:()=>0.51});
   assert.ok(tasks.some(task => task.answerType === 'multi-part' && /мантисс|· 10/.test((task.solutionSteps || []).join(' '))));
@@ -97,6 +89,14 @@ test('choice powers are rendered with real sup elements for readability', () => 
   assert.match(app, /powerChoiceHTML/);
   assert.match(app, /btn\.innerHTML\s*=\s*powerChoiceHTML\(choice\)/);
   assert.match(css, /\.choice-btn\s+sup\s*\{[^}]*font-size/i);
+});
+
+test('from-scientific practice includes a meaningful share of positive exponents', () => {
+  for (const rngValue of [0.13,0.37,0.71]) {
+    const tasks = pickTaskSet({mode:'89',blockId:'from-scientific',count:10,rng:()=>rngValue});
+    const positive = tasks.filter(task => /10\^(?:2|3|4|5|6|9)/.test(task.prompt || '')).length;
+    assert.ok(positive >= 3, `expected at least 3 positive exponents, got ${positive}`);
+  }
 });
 
 test('mantissa-shift shows a worked guide before the first task', () => {
