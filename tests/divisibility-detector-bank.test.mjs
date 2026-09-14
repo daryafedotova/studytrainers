@@ -29,3 +29,17 @@ test('learning tasks are not scored', () => {
   assert.ok(tasksFor('5','learn').every(task => task.learningOnly === true));
   assert.ok(tasksFor('6','learn').every(task => task.learningOnly === true));
 });
+
+import { weakSkillTasks } from '../math/grade-5-6/divisibility-detector/bank.js';
+
+test('weak-skill retry favors weakest rule but keeps contrast tasks', () => {
+  const summary = [
+    {skill:'3',total:4,clean:4,percent:100},
+    {skill:'9',total:4,clean:1,percent:25},
+    {skill:'5',total:4,clean:3,percent:75}
+  ];
+  const tasks = weakSkillTasks('5','detector',summary);
+  assert.ok(tasks.length >= 4);
+  assert.ok(tasks.filter(t => t.skills.includes('9')).length >= 2);
+  assert.ok(tasks.some(t => !t.skills.includes('9')));
+});

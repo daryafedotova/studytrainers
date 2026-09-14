@@ -111,3 +111,28 @@ export function tasksFor(grade, blockId) {
 export function blockFor(grade, blockId) {
   return ROUTES[String(grade)]?.find(block => block.id === blockId) ?? null;
 }
+
+export function weakSkillTasks(grade, blockId, skillSummary = []) {
+  const source = tasksFor(grade,blockId);
+  if (!source.length) return [];
+  const ranked = skillSummary
+    .filter(item => item && item.total > 0)
+    .slice()
+    .sort((a,b) => a.percent - b.percent || String(a.skill).localeCompare(String(b.skill),'ru',{numeric:true}));
+  const weakSkills = new Set(ranked.slice(0,2).map(item => String(item.skill)));
+  if (!weakSkills.size) return source.slice(0,Math.min(6,source.length));
+
+  const priority = source.filter(task => (task.skills ?? []).some(skill => weakSkills.has(String(skill))));
+  const contrast = source.filter(task => !(task.skills ?? []).some(skill => weakSkills.has(String(skill))));
+  const result = [];
+  for (const task of priority) {
+    if (!result.some(item => item.id === task.id)) result.push(task);
+    if (result.length >= 6) break;
+  }
+  if (contrast.length && !result.some(item => item.id === contrast[0].id)) result.push(contrast[0]);
+  for (const task of source) {
+    if (result.length >= 4) break;
+    if (!result.some(item => item.id === task.id)) result.push(task);
+  }
+  return result;
+}

@@ -73,3 +73,10 @@ test('first and second feedback differ', () => {
   assert.match(feedbackFor(task,result,1).text,/сумм/i);
   assert.match(feedbackFor(task,result,2).text,/7\s*\+\s*3\s*\+\s*5/);
 });
+
+test('after reducing 126/180 by 9, only supported common divisor 2 remains', async () => {
+  const { reduceFractionBy, availableReductionDivisors } = await import('../math/grade-5-6/divisibility-detector/logic.js');
+  const next = reduceFractionBy(126,180,9);
+  assert.deepEqual(next,{numerator:14,denominator:20});
+  assert.deepEqual(availableReductionDivisors(next.numerator,next.denominator),[2]);
+});

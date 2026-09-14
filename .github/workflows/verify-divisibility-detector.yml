@@ -1,0 +1,26 @@
+name: Verify divisibility detector
+
+on:
+  push:
+    branches:
+      - main
+      - feature/divisibility-detector
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run full test suite
+        run: node --test tests/*.test.mjs
+      - name: Check detector syntax
+        run: |
+          node --check math/grade-5-6/divisibility-detector/logic.js
+          node --check math/grade-5-6/divisibility-detector/bank.js
+          node --check math/grade-5-6/divisibility-detector/progress.js
+          node --check math/grade-5-6/divisibility-detector/validation.js
+          node --check math/grade-5-6/divisibility-detector/app.js

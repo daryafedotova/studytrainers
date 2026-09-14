@@ -43,3 +43,17 @@ test('supports GCD scratchpad arithmetic', () => {
   assert.deepEqual(commonPrimeDivisors(14,21), [7]);
   assert.deepEqual(commonPrimeDivisors(14,25), []);
 });
+
+test('84 and 126 support multiple correct prime-factor orders', () => {
+  assert.deepEqual(commonPrimeDivisors(84,126), [2,3,7]);
+  assert.deepEqual(dividePairBy(84,126,2), {left:42,right:63});
+  assert.deepEqual(commonPrimeDivisors(42,63), [3,7]);
+
+  assert.deepEqual(dividePairBy(84,126,3), {left:28,right:42});
+  assert.deepEqual(commonPrimeDivisors(28,42), [2,7]);
+});
+
+test('14 and 25 terminate immediately with gcd 1', () => {
+  assert.deepEqual(commonPrimeDivisors(14,25), []);
+  assert.equal(gcd(14,25),1);
+});

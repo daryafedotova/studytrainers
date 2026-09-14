@@ -17,3 +17,34 @@ test('stylesheet includes large touch targets', () => {
   assert.match(css,/--touch-target:\s*48px/);
   assert.match(css,/--detector-size:\s*64px/);
 });
+
+const appPath = new URL('../math/grade-5-6/divisibility-detector/app.js', import.meta.url);
+
+test('app implements primary practice renderers', () => {
+  const source = fs.readFileSync(appPath,'utf8');
+  for (const name of ['renderLearningTask','renderYesNoTask','renderDetectorTask','renderPairTask']) {
+    assert.match(source,new RegExp(`function\\s+${name}\\b|const\\s+${name}\\s*=`));
+  }
+  assert.match(source,/Почему\?/);
+  assert.match(source,/Проверить/);
+});
+
+test('app contains grade-5 fraction renderer', () => {
+  const source = fs.readFileSync(appPath,'utf8');
+  assert.match(source,/function\s+renderFractionTask\b|const\s+renderFractionTask\s*=/);
+  assert.match(source,/Можно сократить ещё\?/);
+});
+
+test('app contains gcd scratchpad renderers', () => {
+  const source = fs.readFileSync(appPath,'utf8');
+  assert.match(source,/function\s+renderGcdTask\b|const\s+renderGcdTask\s*=/);
+  assert.match(source,/function\s+renderGcdFractionTask\b|const\s+renderGcdFractionTask\s*=/);
+  assert.match(source,/Общих больше нет/);
+});
+
+test('app contains results screen and clean-solution wording', () => {
+  const source = fs.readFileSync(appPath,'utf8');
+  assert.match(source,/function\s+renderResults\b|const\s+renderResults\s*=/);
+  assert.match(source,/Чисто решено/);
+  assert.match(source,/Потренировать слабые места/);
+});
