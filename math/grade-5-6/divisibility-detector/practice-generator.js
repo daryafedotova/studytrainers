@@ -78,20 +78,24 @@ function yesNoTask(rng,skillFilter = []) {
   };
 }
 
-function detectorFocusMatch(number,skillFilter = []) {
-  if (!skillFilter.length) return true;
-  const set = divisibilitySet(number);
-  const focus = new Set(skillFilter.map(String));
-  if (focus.has('3/9')) return set.includes(3) || digitSum(number) % 3 !== 0;
-  if (focus.has('5/10')) return [0,5].includes(number % 10) || !set.includes(5);
-  return SUPPORTED.some(divisor => focus.has(String(divisor)) && (set.includes(divisor) || number % divisor !== 0));
-}
-
 function detectorNumber(rng,skillFilter = []) {
-  for (let attempt = 0; attempt < 400; attempt += 1) {
-    const number = randomInt(rng,102,996);
-    if (detectorFocusMatch(number,skillFilter)) return number;
+  const focus = new Set(skillFilter.map(String));
+
+  if (focus.has('3/9')) {
+    return numberForDivisor(3,true,rng);
   }
+
+  if (focus.has('5/10')) {
+    const base = randomInt(rng,11,99) * 10;
+    return rng() < 0.5 ? base : base + 5;
+  }
+
+  const direct = SUPPORTED.filter(divisor => focus.has(String(divisor)));
+  if (direct.length) {
+    const divisor = pick(rng,direct);
+    return numberForDivisor(divisor,rng() < 0.55,rng);
+  }
+
   return randomInt(rng,102,996);
 }
 
@@ -124,10 +128,14 @@ function pairTask(rng,skillFilter = []) {
 
 function fractionPair(rng) {
   const factor = pick(rng,[2,3,5,6,9,10]);
-  let left = randomInt(rng,3,18);
-  let right = randomInt(rng,4,20);
-  if (left === right) right += 1;
-  return {numerator:left * factor,denominator:right * factor};
+  for (let attempt = 0; attempt < 200; attempt += 1) {
+    const left = randomInt(rng,3,18);
+    const right = randomInt(rng,4,20);
+    if (left !== right && gcd(left,right) === 1) {
+      return {numerator:left * factor,denominator:right * factor};
+    }
+  }
+  return {numerator:5 * factor,denominator:7 * factor};
 }
 
 function fractionTask(rng,errorMode = false) {
