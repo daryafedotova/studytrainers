@@ -113,7 +113,7 @@ function detectorTask(rng,skillFilter = [],errorMode = false) {
   return {id:`gen-det-error-${number}-${toggle}`,type:'detector-error',skills,prompt:'Ученик отметил признаки. Найди ошибку.',number,shownDivisors};
 }
 
-function pairTask(rng,skillFilter = []) {
+function pairTask(rng,skillFilter = [],wantCommon = true) {
   const focus = focusedDivisors(skillFilter);
   for (let attempt = 0; attempt < 300; attempt += 1) {
     const left = randomInt(rng,24,198);
@@ -121,9 +121,13 @@ function pairTask(rng,skillFilter = []) {
     if (left === right) continue;
     if (skillFilter.length && !focus.some(divisor => left % divisor === 0 || right % divisor === 0)) continue;
     const common = commonDivisibilitySet(left,right);
+    if (wantCommon && !common.length) continue;
+    if (!wantCommon && common.length) continue;
     return {id:`gen-pair-${left}-${right}`,type:'pair',skills:['2','3','5','9','10','3/9','5/10'],prompt:common.length ? 'Что подходит обоим?' : 'Есть ли изученный признак, подходящий обоим?',left,right};
   }
-  return {id:'gen-pair-84-126',type:'pair',skills:['2','3','9'],prompt:'Что подходит обоим?',left:84,right:126};
+  return wantCommon
+    ? {id:'gen-pair-84-126',type:'pair',skills:['2','3','9'],prompt:'Что подходит обоим?',left:84,right:126}
+    : {id:'gen-pair-14-25',type:'pair',skills:['2','5'],prompt:'Есть ли изученный признак, подходящий обоим?',left:14,right:25};
 }
 
 function fractionPair(rng) {
@@ -195,7 +199,7 @@ function gcdFractionTask(rng) {
 function candidateFor(blockId,rng,skillFilter,index,count) {
   if (blockId === 'yes-no') return yesNoTask(rng,skillFilter);
   if (blockId === 'detector') return detectorTask(rng,skillFilter,index === count - 1);
-  if (blockId === 'pair') return pairTask(rng,skillFilter);
+  if (blockId === 'pair') return pairTask(rng,skillFilter,(index + 1) % 5 !== 0);
   if (blockId === 'fractions') return fractionTask(rng,index === count - 1);
   if (blockId === 'gcd') return gcdTask(rng,index === count - 1);
   if (blockId === 'gcd-fractions') return gcdFractionTask(rng);
