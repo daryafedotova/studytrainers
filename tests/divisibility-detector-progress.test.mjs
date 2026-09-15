@@ -24,6 +24,15 @@ test('only correct unsupported first attempts are clean', () => {
   assert.equal(isClean(d), false);
 });
 
+test('opening the rule after a correct answer does not revoke a clean solution', () => {
+  let record = createTaskRecord('after-solve',['9']);
+  record = registerAttempt(record,true);
+  assert.equal(isClean(record),true);
+  record = markRuleUsed(record);
+  assert.equal(isClean(record),true);
+  assert.equal(record.ruleUsed,false);
+});
+
 test('mastery begins at 80 percent clean', () => {
   const records = Array.from({length:10},(_,i) => ({
     taskId:String(i), skills:['3'], attempts:1, solved:true,
