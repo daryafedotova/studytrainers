@@ -105,3 +105,14 @@ test('page background includes a subtle mathematical SVG pattern', () => {
   assert.match(css,/(÷|%C3%B7|×|%C3%97)/i);
   assert.match(css,/(opacity|fill-opacity)/i);
 });
+
+test('library link stays available on all primary screens', () => {
+  const source = fs.readFileSync(appPath,'utf8');
+  const css = fs.readFileSync(cssPath,'utf8');
+  assert.match(source,/function\s+libraryLink\b|const\s+libraryLink\s*=/);
+  assert.match(source,/href=["']\.\.\/\.\.\/\.\.\/["']/);
+  assert.match(source,/← В библиотеку/);
+  const placements = source.match(/\$\{libraryLink\(\)\}/g) ?? [];
+  assert.ok(placements.length >= 5, `expected library link on at least 5 primary screens, found ${placements.length}`);
+  assert.match(css,/\.library-link\b/);
+});
