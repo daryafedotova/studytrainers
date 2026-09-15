@@ -106,7 +106,7 @@ h1 { margin-bottom: 12px; font-size: clamp(2.15rem, 6vw, 4.6rem); line-height: .
 .pair-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; margin: 26px 0; }
 .number-panel { border: 1px solid var(--line); border-radius: 22px; padding: 22px 14px; background: #fafbfe; }
 .pair-number { font-size: clamp(2.8rem,8vw,5rem); font-weight: 900; line-height: 1; }
-.detector-row.compact .detector-button { width: 56px; min-width: 56px; height: 56px; }
+.detector-row.compact .detector-button { width: var(--detector-size); min-width: var(--detector-size); height: var(--detector-size); }
 .intersection-card { display: flex; flex-direction: column; gap: 6px; max-width: 520px; margin: 20px auto; }
 .intersection-card span { color: var(--muted); }
 .intersection-card strong { font-size: 1.35rem; }
