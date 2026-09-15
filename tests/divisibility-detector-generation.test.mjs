@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { gcd } from '../math/grade-5-6/divisibility-detector/logic.js';
 
 const generatorPath = new URL('../math/grade-5-6/divisibility-detector/practice-generator.js', import.meta.url);
 const bankPath = new URL('../math/grade-5-6/divisibility-detector/bank.js', import.meta.url);
@@ -11,6 +12,10 @@ function seeded(seed = 1) {
     state = (1664525 * state + 1013904223) >>> 0;
     return state / 0x100000000;
   };
+}
+
+function digitSum(number) {
+  return String(Math.abs(number)).split('').reduce((sum,digit) => sum + Number(digit),0);
 }
 
 async function loadGenerator() {
@@ -66,6 +71,25 @@ test('weak-skill generation creates fresh tasks that target the requested skills
   });
   assert.equal(tasks.length,6);
   assert.ok(tasks.every(task => task.skills.some(skill => ['9','3/9'].includes(String(skill)))));
+});
+
+test('detector weak-skill runs use real 3/9 and 5/10 contrast numbers', async () => {
+  const generator = await loadGenerator();
+  if (!generator) return;
+  const threeNine = generator.generatePracticeTasks('5','detector',{rng:seeded(21),skillFilter:['3/9'],count:6});
+  assert.ok(threeNine.every(task => digitSum(task.number) % 3 === 0));
+  const fiveTen = generator.generatePracticeTasks('5','detector',{rng:seeded(22),skillFilter:['5/10'],count:6});
+  assert.ok(fiveTen.every(task => [0,5].includes(task.number % 10)));
+});
+
+test('generated grade-5 reducible fractions have no hidden common factor', async () => {
+  const generator = await loadGenerator();
+  if (!generator) return;
+  const tasks = generator.generatePracticeTasks('5','fractions',{rng:seeded(31),count:12});
+  const allowedGcds = new Set([2,3,5,6,9,10]);
+  const regular = tasks.filter(task => task.type === 'fraction-step');
+  assert.ok(regular.length >= 8);
+  assert.ok(regular.every(task => allowedGcds.has(gcd(task.numerator,task.denominator))));
 });
 
 test('bank integrates generation without regenerating during the same run', () => {
