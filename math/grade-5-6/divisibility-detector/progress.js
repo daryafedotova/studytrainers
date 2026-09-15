@@ -1,20 +1,47 @@
+function mergeSkills(...groups) {
+  return [...new Set(groups.flat().filter(value => value !== undefined && value !== null).map(String))];
+}
+
 export function createTaskRecord(taskId, skills = []) {
-  return { taskId, skills:[...skills], attempts:0, solved:false, hintUsed:false, ruleUsed:false, clean:false };
+  return {
+    taskId,
+    skills:mergeSkills(skills),
+    attempts:0,
+    solved:false,
+    hintUsed:false,
+    ruleUsed:false,
+    clean:false,
+    skillErrors:[],
+    assistedSkills:[],
+  };
 }
 
-export function markRuleUsed(record) {
-  return { ...record, ruleUsed:true, clean:false };
+export function markRuleUsed(record, skills = record?.skills ?? []) {
+  return {
+    ...record,
+    ruleUsed:true,
+    clean:false,
+    assistedSkills:mergeSkills(record?.assistedSkills ?? [], skills),
+  };
 }
 
-export function markHintUsed(record) {
-  return { ...record, hintUsed:true, clean:false };
+export function markHintUsed(record, skills = record?.skills ?? []) {
+  return {
+    ...record,
+    hintUsed:true,
+    clean:false,
+    assistedSkills:mergeSkills(record?.assistedSkills ?? [], skills),
+  };
 }
 
-export function registerAttempt(record, ok) {
+export function registerAttempt(record, ok, skillErrors = []) {
   const attempts = record.attempts + 1;
   const solved = record.solved || Boolean(ok);
+  const normalizedErrors = mergeSkills(skillErrors);
+  const errors = mergeSkills(record.skillErrors ?? [], normalizedErrors);
+  const skills = mergeSkills(record.skills ?? [], normalizedErrors);
   const clean = Boolean(ok) && attempts === 1 && !record.hintUsed && !record.ruleUsed;
-  return { ...record, attempts, solved, clean:record.clean || clean };
+  return { ...record, skills, attempts, solved, clean:record.clean || clean, skillErrors:errors };
 }
 
 export function isClean(record) {
@@ -29,14 +56,23 @@ export function summarize(records) {
   return { total, solved, clean, percent, mastered:percent >= 80 };
 }
 
+function skillCleanForRecord(record, skill) {
+  const hasPreciseDiagnostics = Array.isArray(record.skillErrors) || Array.isArray(record.assistedSkills);
+  if (!hasPreciseDiagnostics) return Boolean(record.clean);
+  const errors = new Set((record.skillErrors ?? []).map(String));
+  const assisted = new Set((record.assistedSkills ?? []).map(String));
+  return !errors.has(String(skill)) && !assisted.has(String(skill));
+}
+
 export function summarizeSkills(records) {
   const buckets = new Map();
   for (const record of records) {
     for (const skill of record.skills ?? []) {
-      if (!buckets.has(skill)) buckets.set(skill,{skill,total:0,clean:0});
-      const item = buckets.get(skill);
+      const key = String(skill);
+      if (!buckets.has(key)) buckets.set(key,{skill:key,total:0,clean:0});
+      const item = buckets.get(key);
       item.total += 1;
-      if (record.clean) item.clean += 1;
+      if (skillCleanForRecord(record,key)) item.clean += 1;
     }
   }
   return [...buckets.values()]
@@ -56,4 +92,8 @@ export function loadBlockBest(key, storage = globalThis.localStorage) {
   if (!storage) return 0;
   const value = Number(storage.getItem(key));
   return Number.isFinite(value) ? value : 0;
+}
+
+export function hasBlockBest(key, storage = globalThis.localStorage) {
+  return Boolean(storage && storage.getItem(key) !== null);
 }
