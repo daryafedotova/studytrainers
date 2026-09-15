@@ -29,6 +29,14 @@ test('app implements primary practice renderers', () => {
   assert.match(source,/Проверить/);
 });
 
+test('detector exposes explicit none-applicable answer and mutually exclusive selection', () => {
+  const source = fs.readFileSync(appPath,'utf8');
+  assert.match(source,/data-detector-none/);
+  assert.match(source,/Ни один признак не подходит/);
+  assert.match(source,/noneApplicable:false/);
+  assert.match(source,/divisors:nextNone\s*\?\s*\[\]/);
+});
+
 test('pair tasks use one shared divisor selector plus explicit no-common answer', () => {
   const source = fs.readFileSync(appPath,'utf8');
   assert.match(source,/data-pair-divisor/);
