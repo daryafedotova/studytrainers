@@ -106,8 +106,28 @@ export const TASK_BANK = {
   '6': {learn:learningTasks,'yes-no':yesNoTasks,detector:detectorTasks,pair:pairTasks,gcd:gcdTasks,'gcd-fractions':gcdFractionTasks},
 };
 
+let practiceRunVersion = 0;
+const practiceRunCache = new Map();
+
+if (globalThis.document?.addEventListener) {
+  globalThis.document.addEventListener('click', event => {
+    if (event.target?.closest?.('[data-block]')) {
+      practiceRunVersion += 1;
+      practiceRunCache.clear();
+    }
+  },true);
+}
+
 function recentStorageKey(grade,blockId) {
   return `divisibility-detector:recent:${grade}:${blockId}`;
+}
+
+function hasBrowserStorage() {
+  try {
+    return Boolean(globalThis.document && globalThis.localStorage);
+  } catch {
+    return false;
+  }
 }
 
 function loadRecentSignatures(grade,blockId) {
@@ -138,9 +158,15 @@ function generatedPractice(grade,blockId,{skillFilter = [],count} = {}) {
 
 export function tasksFor(grade, blockId) {
   const fixed = [...(TASK_BANK[String(grade)]?.[blockId] ?? [])];
-  if (blockId === 'learn' || !globalThis.localStorage) return fixed;
+  if (blockId === 'learn' || !hasBrowserStorage()) return fixed;
+
+  const cacheKey = `${practiceRunVersion}:${grade}:${blockId}`;
+  if (practiceRunCache.has(cacheKey)) return [...practiceRunCache.get(cacheKey)];
+
   const generated = generatedPractice(grade,blockId);
-  return generated.length ? generated : fixed;
+  const selected = generated.length ? generated : fixed;
+  practiceRunCache.set(cacheKey,selected);
+  return [...selected];
 }
 
 export function blockFor(grade, blockId) {
@@ -154,7 +180,7 @@ export function weakSkillTasks(grade, blockId, skillSummary = []) {
     .sort((a,b) => a.percent - b.percent || String(a.skill).localeCompare(String(b.skill),'ru',{numeric:true}));
   const weakList = ranked.slice(0,2).map(item => String(item.skill));
 
-  if (blockId !== 'learn' && globalThis.localStorage) {
+  if (blockId !== 'learn' && hasBrowserStorage()) {
     const generated = generatedPractice(grade,blockId,{skillFilter:weakList,count:6});
     if (generated.length) return generated;
   }
