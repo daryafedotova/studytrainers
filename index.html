@@ -22,16 +22,13 @@
           <p class="empty-kicker">Библиотека</p>
           <h2 id="library-title">Выберите предмет и класс</h2>
         </div>
-        <span class="counter" id="material-counter">4 материала</span>
+        <span class="counter" id="material-counter">7 материалов</span>
       </div>
 
       <div class="subject-switch" role="group" aria-label="Предмет">
         <button class="subject-tab is-active" type="button" data-subject="math" aria-pressed="true">
           <span class="subject-tab-icon" aria-hidden="true">∑</span>
-          <span>
-            <strong>Математика</strong>
-            <small>5–9 классы</small>
-          </span>
+          <span><strong>Математика</strong><small>5–9 классы</small></span>
         </button>
         <button class="subject-tab" type="button" data-subject="physics" aria-pressed="false">
           <span class="subject-tab-icon atom-tab-icon" aria-hidden="true">
@@ -42,10 +39,7 @@
               <ellipse cx="32" cy="32" rx="22" ry="9" fill="none" stroke="currentColor" stroke-width="3" transform="rotate(-60 32 32)"/>
             </svg>
           </span>
-          <span>
-            <strong>Физика</strong>
-            <small>7–11 классы</small>
-          </span>
+          <span><strong>Физика</strong><small>7–11 классы</small></span>
         </button>
       </div>
 
@@ -58,7 +52,6 @@
           <button type="button" class="filter-chip" data-grade="8">8 класс</button>
           <button type="button" class="filter-chip" data-grade="9">9 класс</button>
         </div>
-
         <div class="grade-panel" data-grade-panel="physics" aria-label="Класс по физике" hidden>
           <button type="button" class="filter-chip is-active" data-grade="all">Все</button>
           <button type="button" class="filter-chip" data-grade="7">7 класс</button>
@@ -67,7 +60,6 @@
           <button type="button" class="filter-chip" data-grade="10">10 класс</button>
           <button type="button" class="filter-chip" data-grade="11">11 класс</button>
         </div>
-
         <div class="domain-panel" id="math-domain-panel" aria-label="Раздел математики" hidden>
           <span class="domain-label">Раздел:</span>
           <button type="button" class="domain-chip is-active" data-domain="all">Все</button>
@@ -76,85 +68,55 @@
         </div>
       </div>
 
-      <div class="results-heading">
-        <div>
-          <p class="results-kicker">Показаны материалы</p>
-          <h3 id="results-title">Математика · все классы</h3>
-        </div>
-      </div>
+      <div class="results-heading"><div><p class="results-kicker">Показаны материалы</p><h3 id="results-title">Математика · все классы</h3></div></div>
 
       <div class="trainer-grid" id="trainer-grid">
         <article class="trainer-card multiplication-card" data-subject="math" data-grades="5 6" data-domain="general">
-          <div class="trainer-topline">
-            <span class="trainer-badge">Математика · 5–6 класс</span>
-            <span class="new-badge">Умножение</span>
-          </div>
+          <div class="trainer-topline"><span class="trainer-badge">Математика · 5–6 класс</span><span class="new-badge">Умножение</span></div>
           <h3>Мастер умножения десятичных дробей</h3>
           <p>Умножение десятичных дробей на 10, 100, 1000 и на 0,1; 0,01; 0,001. Переноси запятую и набери 50 очков.</p>
           <a class="open-btn" href="math/grade-5-6/decimal-multiplication-react/">Открыть тренажёр <span aria-hidden="true">→</span></a>
         </article>
-
         <article class="trainer-card division-card" data-subject="math" data-grades="5 6" data-domain="general">
-          <div class="trainer-topline">
-            <span class="trainer-badge">Математика · 5–6 класс</span>
-            <span class="new-badge">Деление</span>
-          </div>
+          <div class="trainer-topline"><span class="trainer-badge">Математика · 5–6 класс</span><span class="new-badge">Деление</span></div>
           <h3>Мастер деления десятичных дробей</h3>
           <p>Деление десятичных дробей на 10, 100, 1000 и на 0,1; 0,01; 0,001. Переноси запятую и набери 50 очков.</p>
           <a class="open-btn" href="math/grade-5-6/decimal-division/">Открыть тренажёр <span aria-hidden="true">→</span></a>
         </article>
-
+        <article class="trainer-card division-card" data-subject="math" data-grades="5 6" data-domain="general">
+          <div class="trainer-topline"><span class="trainer-badge">Математика · 5–6 класс</span><span class="new-badge">Делимость</span></div>
+          <h3>Детектор делимости</h3>
+          <p>Признаки делимости на 2, 3, 5, 9 и 10, общие делители, сокращение дробей и НОД для 6 класса.</p>
+          <a class="open-btn" href="math/grade-5-6/divisibility-detector/">Открыть тренажёр <span aria-hidden="true">→</span></a>
+        </article>
         <article class="trainer-card percent-card" data-subject="math" data-grades="6" data-domain="general">
-          <div class="trainer-topline">
-            <span class="trainer-badge">Математика · 6 класс</span>
-            <span class="new-badge">Проценты</span>
-          </div>
+          <div class="trainer-topline"><span class="trainer-badge">Математика · 6 класс</span><span class="new-badge">Проценты</span></div>
           <h3>Проценты и дроби</h3>
           <p>Два уровня: перевод десятичных и обыкновенных дробей в проценты, затем перевод процентов в десятичные дроби. Цель — 50 очков.</p>
           <a class="open-btn" href="math/grade-6/percent-fractions/">Открыть тренажёр <span aria-hidden="true">→</span></a>
         </article>
-
         <article class="trainer-card division-card physics-scale-card" data-subject="physics" data-grades="7" data-domain="general">
-          <div class="trainer-topline">
-            <span class="trainer-badge">Физика · 7 класс</span>
-            <span class="new-badge">Измерения</span>
-          </div>
+          <div class="trainer-topline"><span class="trainer-badge">Физика · 7 класс</span><span class="new-badge">Измерения</span></div>
           <h3>Работа со шкалой прибора</h3>
           <p>Определи цену деления, абсолютную погрешность и показание линейки, мензурки, термометра, динамометра, барометра и спидометра.</p>
           <a class="open-btn" href="physics/grade-7/measurement-scale/">Открыть тренажёр <span aria-hidden="true">→</span></a>
         </article>
-
         <article class="trainer-card percent-card" data-subject="physics" data-grades="8" data-domain="general">
-          <div class="trainer-topline">
-            <span class="trainer-badge">Физика · 8 класс</span>
-            <span class="new-badge">Тепловые явления</span>
-          </div>
+          <div class="trainer-topline"><span class="trainer-badge">Физика · 8 класс</span><span class="new-badge">Тепловые явления</span></div>
           <h3>Фазовые переходы на графике</h3>
           <p>Три уровня: распознай нагревание, охлаждение и фазовые переходы, реши задачи по полному графику и построй график по условию.</p>
           <a class="open-btn" href="physics/grade-8/phase-transitions/">Открыть тренажёр <span aria-hidden="true">→</span></a>
         </article>
-
         <article class="trainer-card division-card physics-units-card" data-subject="physics" data-grades="7 8 9" data-domain="general">
-          <div class="trainer-topline">
-            <span class="trainer-badge">Физика · 7–9 класс</span>
-            <span class="new-badge">Единицы СИ</span>
-          </div>
+          <div class="trainer-topline"><span class="trainer-badge">Физика · 7–9 класс</span><span class="new-badge">Единицы СИ</span></div>
           <h3>Единицы, приставки и стандартный вид</h3>
           <p>Два режима: 7 класс — перевод единиц и приставки; 8–9 класс — степени десяти, стандартный вид и преобразование физических величин.</p>
           <a class="open-btn" href="physics/units-prefixes-scientific-notation/">Открыть тренажёр <span aria-hidden="true">→</span></a>
         </article>
       </div>
-
-      <div class="empty-results" id="empty-results" hidden>
-        <div class="empty-results-icon" aria-hidden="true">✦</div>
-        <h3>Здесь пока нет тренажёров</h3>
-        <p id="empty-results-text">Материалы для этого раздела появятся позже.</p>
-      </div>
+      <div class="empty-results" id="empty-results" hidden><div class="empty-results-icon" aria-hidden="true">✦</div><h3>Здесь пока нет тренажёров</h3><p id="empty-results-text">Материалы для этого раздела появятся позже.</p></div>
     </section>
-
-    <footer>
-      <p>Интерактивные материалы для учебных занятий</p>
-    </footer>
+    <footer><p>Интерактивные материалы для учебных занятий</p></footer>
   </main>
 </body>
 </html>
