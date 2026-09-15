@@ -68,9 +68,10 @@ test('weak-skill generation creates fresh tasks that target the requested skills
   assert.ok(tasks.every(task => task.skills.some(skill => ['9','3/9'].includes(String(skill)))));
 });
 
-test('bank uses generation, recent signatures and skill filters', () => {
+test('bank integrates generation without regenerating during the same run', () => {
   const source = fs.readFileSync(bankPath,'utf8');
   assert.match(source,/generatePracticeTasks/);
   assert.match(source,/recentSignatures|recentTask/);
   assert.match(source,/skillFilter/);
+  assert.match(source,/practiceRunCache|practiceRunVersion/);
 });
