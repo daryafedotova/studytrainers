@@ -12,8 +12,7 @@ export const ROUTES = {
     {id:'detector', title:'3. Детектор делимости'},
     {id:'pair', title:'4. Что подходит обоим?'},
     {id:'gcd', title:'5. Найди НОД'},
-    {id:'lcm', title:'6. Подбери НОК'},
-    {id:'gcd-fractions', title:'7. Сократи через НОД'},
+    {id:'gcd-fractions', title:'6. Сократи через НОД'},
   ],
 };
 
@@ -94,15 +93,6 @@ const gcdTasks = [
   {id:'gcd-error-48-72',type:'gcd-error',skills:['gcd-finish'],prompt:'Оцени готовое решение',left:48,right:72,claimedGcd:12,reduced:{numerator:4,denominator:6}},
 ];
 
-const lcmTasks = [
-  {id:'lcm-6-18',type:'lcm-search',skills:['lcm-base','lcm-check','lcm-finish'],prompt:'Подбери НОК(6; 18)',left:6,right:18},
-  {id:'lcm-8-12',type:'lcm-search',skills:['lcm-base','lcm-check','lcm-finish'],prompt:'Подбери НОК(8; 12)',left:8,right:12},
-  {id:'lcm-12-18',type:'lcm-search',skills:['lcm-base','lcm-check','lcm-finish'],prompt:'Подбери НОК(12; 18)',left:12,right:18},
-  {id:'lcm-9-12',type:'lcm-search',skills:['lcm-base','lcm-check','lcm-finish'],prompt:'Подбери НОК(9; 12)',left:9,right:12},
-  {id:'lcm-15-20',type:'lcm-search',skills:['lcm-base','lcm-check','lcm-finish'],prompt:'Подбери НОК(15; 20)',left:15,right:20},
-  {id:'lcm-10-12',type:'lcm-search',skills:['lcm-base','lcm-check','lcm-finish'],prompt:'Подбери НОК(10; 12)',left:10,right:12},
-];
-
 const gcdFractionTasks = [
   {id:'gcd-frac-84-126',type:'fraction-gcd',skills:['gcd-divisor','gcd-arithmetic','gcd-finish','fraction'],prompt:'Сократи дробь через НОД',numerator:84,denominator:126},
   {id:'gcd-frac-48-72',type:'fraction-gcd',skills:['gcd-divisor','gcd-arithmetic','gcd-finish','fraction'],prompt:'Сократи дробь через НОД',numerator:48,denominator:72},
@@ -111,7 +101,7 @@ const gcdFractionTasks = [
 
 export const TASK_BANK = {
   '5': {learn:learningTasks,'yes-no':yesNoTasks,detector:detectorTasks,pair:pairTasks,fractions:grade5FractionTasks},
-  '6': {learn:learningTasks,'yes-no':yesNoTasks,detector:detectorTasks,pair:pairTasks,gcd:gcdTasks,lcm:lcmTasks,'gcd-fractions':gcdFractionTasks},
+  '6': {learn:learningTasks,'yes-no':yesNoTasks,detector:detectorTasks,pair:pairTasks,gcd:gcdTasks,'gcd-fractions':gcdFractionTasks},
 };
 
 export function tasksFor(grade, blockId) {
