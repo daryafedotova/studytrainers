@@ -4,14 +4,14 @@ import { ROUTES, RULES, tasksFor } from '../math/grade-5-6/divisibility-detector
 
 test('grade routes match approved MVP', () => {
   assert.deepEqual(ROUTES['5'].map(x => x.id), ['learn','yes-no','detector','pair','fractions']);
-  assert.deepEqual(ROUTES['6'].map(x => x.id), ['learn','yes-no','detector','pair','gcd','gcd-fractions']);
+  assert.deepEqual(ROUTES['6'].map(x => x.id), ['learn','yes-no','detector','pair','gcd','lcm','gcd-fractions']);
 });
 
 test('rules contain exactly 2, 3, 5, 9, 10', () => {
   assert.deepEqual(Object.keys(RULES).map(Number), [2,3,5,9,10]);
 });
 
-test('bank contains contrast, error, fraction, and gcd examples', () => {
+test('bank contains contrast, error, fraction, gcd, and lcm examples', () => {
   const grade5 = ROUTES['5'].flatMap(block => tasksFor('5',block.id));
   const grade6 = ROUTES['6'].flatMap(block => tasksFor('6',block.id));
   assert.ok(grade5.some(t => t.number === 735));
@@ -22,6 +22,7 @@ test('bank contains contrast, error, fraction, and gcd examples', () => {
   assert.ok(grade6.some(t => t.type === 'gcd' && t.left === 84 && t.right === 126));
   assert.ok(grade6.some(t => t.type === 'gcd' && t.left === 14 && t.right === 25));
   assert.ok(grade6.some(t => t.type === 'gcd-error' && t.left === 48 && t.right === 72));
+  assert.ok(grade6.some(t => t.type === 'lcm-search' && t.left === 12 && t.right === 18));
   assert.ok(grade6.some(t => t.type === 'fraction-gcd' && t.numerator === 84 && t.denominator === 126));
 });
 
