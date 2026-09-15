@@ -42,6 +42,7 @@ learningRevealed:false,
 yes:null,
 reasonId:null,
 divisors:task?.type === 'detector-error' ? [...(task.shownDivisors ?? [])] : [],
+noneApplicable:false,
 pairDivisors:[],
 noneCommon:false,
 record:task && !task.learningOnly ? createTaskRecord(task.id,task.skills ?? []) : null,
@@ -260,13 +261,17 @@ return `<button type="button" class="detector-button${outcomeClass ? ` ${outcome
 function renderDetectorTask(task) {
 const selected = state.taskState.divisors ?? [];
 const expected = divisibilitySet(task.number);
-const successAnalysis = state.taskState.complete && validateTask({type:'detector',number:task.number},{divisors:selected}).ok;
+const successAnalysis = state.taskState.complete && validateTask(
+{type:'detector',number:task.number},
+{divisors:selected,noneApplicable:state.taskState.noneApplicable}
+).ok;
 return `<div class="task-card detector-card">
 <p class="task-kicker">${task.type === 'detector-error' ? 'Найди ошибку' : 'Детектор делимости'}</p>
 <h2>${task.prompt}</h2>
 ${task.type === 'detector-error' ? '<p class="task-note">Измени готовый набор так, чтобы он стал правильным.</p>' : ''}
 <div class="big-number scan-number">${task.number}</div>
 <div class="detector-row" role="group" aria-label="Признаки делимости">${detectorButtons(selected)}</div>
+${state.taskState.complete ? '' : `<div class="choice-row"><button type="button" class="choice-button ${state.taskState.noneApplicable ? 'is-selected' : ''}" aria-pressed="${state.taskState.noneApplicable ? 'true' : 'false'}" data-detector-none>Ни один признак не подходит</button></div>`}
 ${successAnalysis ? analysisMarkup(task.number,expected) : ''}
 ${feedbackMarkup()}
 ${state.taskState.complete ? `<button class="btn btn-primary" type="button" data-next>Дальше</button>` : `<button class="btn btn-primary" type="button" data-check>Проверить</button>`}
@@ -528,19 +533,38 @@ return list.includes(value) ? list.filter(item => item !== value) : [...list,val
 function bindDetectorHandlers(task) {
 app.querySelectorAll('[data-divisor]').forEach(button => button.addEventListener('click', () => {
 const divisor = Number(button.dataset.divisor);
-state.taskState = {...state.taskState,divisors:toggle(state.taskState.divisors ?? [],divisor),feedback:null};
+state.taskState = {
+...state.taskState,
+divisors:toggle(state.taskState.divisors ?? [],divisor),
+noneApplicable:false,
+feedback:null,
+};
 render();
 }));
+app.querySelector('[data-detector-none]')?.addEventListener('click', () => {
+const nextNone = !state.taskState.noneApplicable;
+state.taskState = {
+...state.taskState,
+noneApplicable:nextNone,
+divisors:nextNone ? [] : (state.taskState.divisors ?? []),
+feedback:null,
+};
+render();
+});
 app.querySelector('[data-check]')?.addEventListener('click', () => {
+const response = {
+divisors:state.taskState.divisors ?? [],
+noneApplicable:state.taskState.noneApplicable,
+};
 if (task.learningOnly) {
-const result = validateTask({type:'detector',number:task.number},{divisors:state.taskState.divisors});
+const result = validateTask({type:'detector',number:task.number},response);
 state.taskState = result.ok
 ? {...state.taskState,complete:true,feedback:{kind:'success',text:'Верно. Все подходящие признаки найдены.'}}
 : {...state.taskState,feedback:{kind:'hint',text:'Проверь последнюю цифру и сумму цифр ещё раз.'}};
 render();
 return;
 }
-submitTraining(task,{divisors:state.taskState.divisors});
+submitTraining(task,response);
 });
 }
 function bindPairHandlers(task) {
