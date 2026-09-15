@@ -156,15 +156,16 @@ function generatedPractice(grade,blockId,{skillFilter = [],count} = {}) {
   return tasks;
 }
 
-export function tasksFor(grade, blockId) {
+export function tasksFor(grade, blockId, {count} = {}) {
   const fixed = [...(TASK_BANK[String(grade)]?.[blockId] ?? [])];
-  if (blockId === 'learn' || !hasBrowserStorage()) return fixed;
+  if (blockId === 'learn') return fixed;
+  if (!hasBrowserStorage()) return count ? fixed.slice(0,count) : fixed;
 
-  const cacheKey = `${practiceRunVersion}:${grade}:${blockId}`;
+  const cacheKey = `${practiceRunVersion}:${grade}:${blockId}:${count ?? 'default'}`;
   if (practiceRunCache.has(cacheKey)) return [...practiceRunCache.get(cacheKey)];
 
-  const generated = generatedPractice(grade,blockId);
-  const selected = generated.length ? generated : fixed;
+  const generated = generatedPractice(grade,blockId,{count});
+  const selected = generated.length ? generated : (count ? fixed.slice(0,count) : fixed);
   practiceRunCache.set(cacheKey,selected);
   return [...selected];
 }
