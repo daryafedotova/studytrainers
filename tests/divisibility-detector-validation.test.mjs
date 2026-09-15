@@ -30,8 +30,17 @@ test('detector-error requires correcting supplied wrong set', () => {
 
 test('pair response must be correct for both numbers before intersection is accepted', () => {
   const task = {type:'pair',left:126,right:180};
-  assert.equal(validateTask(task,{left:[2,3,9],right:[2,3,5,9,10]}).ok,true);
-  assert.equal(validateTask(task,{left:[2,3],right:[2,3,5,9,10]}).ok,false);
+  assert.equal(validateTask(task,{left:[2,3,9],right:[2,3,5,9,10],noneCommon:false}).ok,true);
+  assert.equal(validateTask(task,{left:[2,3],right:[2,3,5,9,10],noneCommon:false}).ok,false);
+});
+
+test('pair with empty intersection requires an explicit no-common answer', () => {
+  const task = {type:'pair',left:95,right:78};
+  assert.equal(validateTask(task,{left:[5],right:[2,3],noneCommon:true}).ok,true);
+  assert.equal(validateTask(task,{left:[5],right:[2,3],noneCommon:false}).ok,false);
+
+  const commonTask = {type:'pair',left:126,right:180};
+  assert.equal(validateTask(commonTask,{left:[2,3,9],right:[2,3,5,9,10],noneCommon:true}).ok,false);
 });
 
 test('grade-5 fraction accepts any valid current divisor', () => {
