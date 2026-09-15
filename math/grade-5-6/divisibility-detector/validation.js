@@ -51,20 +51,21 @@ export function validateTask(task, response = {}) {
       return baseResult(ok,{expected,missing,extra}, ok ? [] : diagnosticSkillErrors(task.skills,wrongDivisors));
     }
     case 'pair': {
-      const expectedLeft = divisibilitySet(task.left);
-      const expectedRight = divisibilitySet(task.right);
-      const actualLeft = (response.left ?? []).map(Number);
-      const actualRight = (response.right ?? []).map(Number);
-      const left = sameSet(actualLeft, expectedLeft);
-      const right = sameSet(actualRight, expectedRight);
       const intersection = commonDivisibilitySet(task.left,task.right);
+      const actual = (response.divisors ?? []).map(Number);
       const expectedNoneCommon = intersection.length === 0;
+      const selection = sameSet(actual,intersection);
       const noneCommon = Boolean(response.noneCommon) === expectedNoneCommon;
-      const leftWrong = [...expectedLeft.filter(value => !actualLeft.includes(value)),...actualLeft.filter(value => !expectedLeft.includes(value))];
-      const rightWrong = [...expectedRight.filter(value => !actualRight.includes(value)),...actualRight.filter(value => !expectedRight.includes(value))];
-      const wrongDivisors = [...new Set([...leftWrong,...rightWrong])];
-      const ok = left && right && noneCommon;
-      return baseResult(ok,{left,right,noneCommon,expectedNoneCommon,intersection}, ok ? [] : diagnosticSkillErrors(task.skills,wrongDivisors));
+      const mutuallyExclusive = !(Boolean(response.noneCommon) && actual.length > 0);
+      const missing = intersection.filter(value => !actual.includes(value));
+      const extra = actual.filter(value => !intersection.includes(value));
+      const wrongDivisors = [...new Set([...missing,...extra])];
+      const ok = selection && noneCommon && mutuallyExclusive;
+      return baseResult(
+        ok,
+        {selection,noneCommon,expectedNoneCommon,mutuallyExclusive,intersection,missing,extra},
+        ok ? [] : diagnosticSkillErrors(task.skills,wrongDivisors)
+      );
     }
     case 'fraction-step': {
       const ok = canReduceBy(task.numerator,task.denominator,Number(response.divisor));
@@ -171,15 +172,21 @@ export function feedbackFor(task, result, attemptNumber = 1) {
 
   if (task.type === 'pair') {
     if (!full) {
-      if (result.details?.left && result.details?.right && result.details?.noneCommon === false) {
+      if (result.details?.selection && result.details?.noneCommon === false) {
         return result.details?.expectedNoneCommon
-          ? {kind:'hint',text:'Ты верно проверил оба числа. Теперь отметь вывод: «Ни один признак не подходит обоим».',focus:'pair-conclusion'}
-          : {kind:'hint',text:'Общий признак есть. Сравни отмеченные делители у двух чисел.',focus:'pair-conclusion'};
+          ? {kind:'hint',text:'Общих изученных признаков нет. Выбери «Ни один признак не подходит обоим».',focus:'pair-conclusion'}
+          : {kind:'hint',text:'Общий признак есть. Проверь оба числа и выбери только то, что подходит обоим.',focus:'pair-conclusion'};
       }
-      return {kind:'hint',text:'Делитель должен подходить обоим числам. Проверь каждое число отдельно.',focus:'pair'};
+      if ((result.details?.missing ?? []).length) {
+        return {kind:'hint',text:'Ты отметил не все общие признаки. Проверь оба числа ещё раз.',focus:'pair'};
+      }
+      if ((result.details?.extra ?? []).length) {
+        return {kind:'hint',text:'Один из выбранных признаков подходит не обоим числам.',focus:'pair'};
+      }
+      return {kind:'hint',text:'Выбери только признаки, которые подходят сразу обоим числам.',focus:'pair'};
     }
     const common = commonDivisibilitySet(task.left,task.right);
-    return {kind:'solution',text:`Для ${task.left} и ${task.right} общие изученные признаки: ${common.length ? common.join(', ') : 'нет'}.`,focus:'pair'};
+    return {kind:'solution',text:`Правильный ответ для ${task.left} и ${task.right}: ${common.length ? common.join(', ') : 'общих изученных признаков нет'}.`,focus:'pair'};
   }
 
   if (task.type === 'fraction-step' || task.type === 'fraction-error') {
