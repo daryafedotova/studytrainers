@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { gcd } from '../math/grade-5-6/divisibility-detector/logic.js';
+import { gcd, commonDivisibilitySet } from '../math/grade-5-6/divisibility-detector/logic.js';
 
 const generatorPath = new URL('../math/grade-5-6/divisibility-detector/practice-generator.js', import.meta.url);
 const bankPath = new URL('../math/grade-5-6/divisibility-detector/bank.js', import.meta.url);
@@ -92,10 +92,31 @@ test('generated grade-5 reducible fractions have no hidden common factor', async
   assert.ok(regular.every(task => allowedGcds.has(gcd(task.numerator,task.denominator))));
 });
 
+test('pair practice keeps exactly one no-common example per five tasks', async () => {
+  const generator = await loadGenerator();
+  if (!generator) return;
+  for (const count of [5,10,15,20]) {
+    const tasks = generator.generatePracticeTasks('5','pair',{rng:seeded(100 + count),count});
+    assert.equal(tasks.length,count);
+    const noCommon = tasks.filter(task => commonDivisibilitySet(task.left,task.right).length === 0);
+    assert.equal(noCommon.length,count / 5,`${count} pair tasks should contain ${count / 5} no-common examples`);
+  }
+});
+
+test('practice generator honors selectable run lengths', async () => {
+  const generator = await loadGenerator();
+  if (!generator) return;
+  for (const count of [5,10,15,20]) {
+    const tasks = generator.generatePracticeTasks('6','detector',{rng:seeded(200 + count),count});
+    assert.equal(tasks.length,count);
+  }
+});
+
 test('bank integrates generation without regenerating during the same run', () => {
   const source = fs.readFileSync(bankPath,'utf8');
   assert.match(source,/generatePracticeTasks/);
   assert.match(source,/recentSignatures|recentTask/);
   assert.match(source,/skillFilter/);
   assert.match(source,/practiceRunCache|practiceRunVersion/);
+  assert.match(source,/tasksFor\(grade,\s*blockId,\s*\{\s*count/);
 });
