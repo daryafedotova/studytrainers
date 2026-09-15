@@ -54,6 +54,35 @@ export function gcd(a, b) {
   return left;
 }
 
+export function lcmSearchStep(a, b, multiplier) {
+  const left = toInteger(a, 'a');
+  const right = toInteger(b, 'b');
+  const step = Number(multiplier);
+  if (left === 0 || right === 0) {
+    throw new RangeError('LCM search requires positive integers');
+  }
+  if (!Number.isInteger(step) || step < 1) {
+    throw new RangeError('multiplier must be a positive integer');
+  }
+  const smaller = Math.min(left, right);
+  const larger = Math.max(left, right);
+  const candidate = larger * step;
+  return {
+    smaller,
+    larger,
+    multiplier:step,
+    candidate,
+    isCommon:candidate % smaller === 0,
+  };
+}
+
+export function lcm(a, b) {
+  const left = toInteger(a, 'a');
+  const right = toInteger(b, 'b');
+  if (left === 0 || right === 0) return 0;
+  return (left / gcd(left, right)) * right;
+}
+
 export function isCommonDivisor(a, b, divisor) {
   const left = toInteger(a, 'a');
   const right = toInteger(b, 'b');
