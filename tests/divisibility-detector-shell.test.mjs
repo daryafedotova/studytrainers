@@ -54,3 +54,9 @@ test('route status distinguishes a stored zero-percent result from no attempt', 
   assert.match(source,/hasBlockBest/);
   assert.match(source,/hasBest\s*\?\s*`Лучший результат:/);
 });
+
+test('app passes precise validation errors into attempt and hint tracking', () => {
+  const source = fs.readFileSync(appPath,'utf8');
+  assert.match(source,/registerAttempt\(record,result\.ok,result\.skillErrors/);
+  assert.match(source,/markHintUsed\(record,result\.skillErrors/);
+});
