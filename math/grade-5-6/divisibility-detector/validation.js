@@ -13,6 +13,14 @@ function baseResult(ok, details = {}, skillErrors = []) {
   return { ok, details, skillErrors };
 }
 
+function diagnosticSkillErrors(taskSkills = [], wrongDivisors = []) {
+  const errors = new Set(wrongDivisors.map(value => String(value)));
+  const targets = new Set((taskSkills ?? []).map(String));
+  if (targets.has('3/9') && wrongDivisors.some(value => value === 3 || value === 9)) errors.add('3/9');
+  if (targets.has('5/10') && wrongDivisors.some(value => value === 5 || value === 10)) errors.add('5/10');
+  return [...errors].sort((a,b) => a.localeCompare(b,'ru',{numeric:true}));
+}
+
 export function validateTask(task, response = {}) {
   switch (task?.type) {
     case 'learn':
@@ -29,14 +37,20 @@ export function validateTask(task, response = {}) {
       const ok = sameSet(actual, expected);
       const missing = expected.filter(value => !actual.map(Number).includes(value));
       const extra = actual.map(Number).filter(value => !expected.includes(value));
-      return baseResult(ok,{expected,missing,extra}, ok ? [] : (task.skills ?? expected.map(String)));
+      const wrongDivisors = [...new Set([...missing,...extra])];
+      return baseResult(ok,{expected,missing,extra}, ok ? [] : diagnosticSkillErrors(task.skills,wrongDivisors));
     }
     case 'pair': {
       const expectedLeft = divisibilitySet(task.left);
       const expectedRight = divisibilitySet(task.right);
-      const left = sameSet(response.left ?? [], expectedLeft);
-      const right = sameSet(response.right ?? [], expectedRight);
-      return baseResult(left && right,{left,right,intersection:commonDivisibilitySet(task.left,task.right)}, left && right ? [] : (task.skills ?? []));
+      const actualLeft = (response.left ?? []).map(Number);
+      const actualRight = (response.right ?? []).map(Number);
+      const left = sameSet(actualLeft, expectedLeft);
+      const right = sameSet(actualRight, expectedRight);
+      const leftWrong = [...expectedLeft.filter(value => !actualLeft.includes(value)),...actualLeft.filter(value => !expectedLeft.includes(value))];
+      const rightWrong = [...expectedRight.filter(value => !actualRight.includes(value)),...actualRight.filter(value => !expectedRight.includes(value))];
+      const wrongDivisors = [...new Set([...leftWrong,...rightWrong])];
+      return baseResult(left && right,{left,right,intersection:commonDivisibilitySet(task.left,task.right)}, left && right ? [] : diagnosticSkillErrors(task.skills,wrongDivisors));
     }
     case 'fraction-step': {
       const ok = canReduceBy(task.numerator,task.denominator,Number(response.divisor));
