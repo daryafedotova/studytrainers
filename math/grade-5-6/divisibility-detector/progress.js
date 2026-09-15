@@ -17,6 +17,7 @@ export function createTaskRecord(taskId, skills = []) {
 }
 
 export function markRuleUsed(record, skills = record?.skills ?? []) {
+  if (record?.solved) return record;
   return {
     ...record,
     ruleUsed:true,
