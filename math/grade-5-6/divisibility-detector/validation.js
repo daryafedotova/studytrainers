@@ -43,12 +43,20 @@ export function validateTask(task, response = {}) {
     case 'detector':
     case 'detector-error': {
       const expected = divisibilitySet(task.number);
-      const actual = response.divisors ?? [];
-      const ok = sameSet(actual, expected);
-      const missing = expected.filter(value => !actual.map(Number).includes(value));
-      const extra = actual.map(Number).filter(value => !expected.includes(value));
+      const actual = (response.divisors ?? []).map(Number);
+      const expectedNoneApplicable = expected.length === 0;
+      const selection = sameSet(actual,expected);
+      const noneApplicable = Boolean(response.noneApplicable) === expectedNoneApplicable;
+      const mutuallyExclusive = !(Boolean(response.noneApplicable) && actual.length > 0);
+      const missing = expected.filter(value => !actual.includes(value));
+      const extra = actual.filter(value => !expected.includes(value));
       const wrongDivisors = [...new Set([...missing,...extra])];
-      return baseResult(ok,{expected,missing,extra}, ok ? [] : diagnosticSkillErrors(task.skills,wrongDivisors));
+      const ok = selection && noneApplicable && mutuallyExclusive;
+      return baseResult(
+        ok,
+        {selection,noneApplicable,expectedNoneApplicable,mutuallyExclusive,expected,missing,extra},
+        ok ? [] : diagnosticSkillErrors(task.skills,wrongDivisors)
+      );
     }
     case 'pair': {
       const intersection = commonDivisibilitySet(task.left,task.right);
