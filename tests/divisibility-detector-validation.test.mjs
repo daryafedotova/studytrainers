@@ -28,19 +28,21 @@ test('detector-error requires correcting supplied wrong set', () => {
   assert.equal(validateTask(task,{divisors:[3,5,10]}).ok,false);
 });
 
-test('pair response must be correct for both numbers before intersection is accepted', () => {
-  const task = {type:'pair',left:126,right:180};
-  assert.equal(validateTask(task,{left:[2,3,9],right:[2,3,5,9,10],noneCommon:false}).ok,true);
-  assert.equal(validateTask(task,{left:[2,3],right:[2,3,5,9,10],noneCommon:false}).ok,false);
+test('pair accepts exactly the studied divisors common to both numbers', () => {
+  const task = {type:'pair',left:30,right:66};
+  assert.equal(validateTask(task,{divisors:[2,3],noneCommon:false}).ok,true);
+  assert.equal(validateTask(task,{divisors:[2],noneCommon:false}).ok,false);
+  assert.equal(validateTask(task,{divisors:[2,3,5,10],noneCommon:false}).ok,false);
 });
 
-test('pair with empty intersection requires an explicit no-common answer', () => {
-  const task = {type:'pair',left:95,right:78};
-  assert.equal(validateTask(task,{left:[5],right:[2,3],noneCommon:true}).ok,true);
-  assert.equal(validateTask(task,{left:[5],right:[2,3],noneCommon:false}).ok,false);
+test('pair with empty intersection requires only the explicit no-common answer', () => {
+  const task = {type:'pair',left:165,right:47};
+  assert.equal(validateTask(task,{divisors:[],noneCommon:true}).ok,true);
+  assert.equal(validateTask(task,{divisors:[],noneCommon:false}).ok,false);
+  assert.equal(validateTask(task,{divisors:[3,5],noneCommon:true}).ok,false);
 
-  const commonTask = {type:'pair',left:126,right:180};
-  assert.equal(validateTask(commonTask,{left:[2,3,9],right:[2,3,5,9,10],noneCommon:true}).ok,false);
+  const commonTask = {type:'pair',left:30,right:66};
+  assert.equal(validateTask(commonTask,{divisors:[],noneCommon:true}).ok,false);
 });
 
 test('grade-5 fraction accepts any valid current divisor', () => {
