@@ -29,11 +29,13 @@ test('app implements primary practice renderers', () => {
   assert.match(source,/Проверить/);
 });
 
-test('pair tasks expose an explicit no-common answer', () => {
+test('pair tasks use one shared divisor selector plus explicit no-common answer', () => {
   const source = fs.readFileSync(appPath,'utf8');
+  assert.match(source,/data-pair-divisor/);
   assert.match(source,/data-pair-none/);
   assert.match(source,/Ни один признак не подходит обоим/);
-  assert.match(source,/noneCommon/);
+  assert.doesNotMatch(source,/data-left-divisor/);
+  assert.doesNotMatch(source,/data-right-divisor/);
 });
 
 test('app contains grade-5 fraction renderer', () => {
