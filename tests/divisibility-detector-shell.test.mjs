@@ -60,3 +60,15 @@ test('app passes precise validation errors into attempt and hint tracking', () =
   assert.match(source,/registerAttempt\(record,result\.ok,result\.skillErrors/);
   assert.match(source,/markHintUsed\(record,result\.skillErrors/);
 });
+
+test('detector reveals correct, wrong, and missed outcomes only after checking', () => {
+  const appSource = fs.readFileSync(appPath,'utf8');
+  const css = fs.readFileSync(cssPath,'utf8');
+  assert.match(appSource,/is-correct/);
+  assert.match(appSource,/is-wrong/);
+  assert.match(appSource,/is-missed/);
+  assert.match(appSource,/state\.taskState\.complete/);
+  assert.match(css,/\.detector-button\.is-correct/);
+  assert.match(css,/\.detector-button\.is-wrong/);
+  assert.match(css,/\.detector-button\.is-missed/);
+});
