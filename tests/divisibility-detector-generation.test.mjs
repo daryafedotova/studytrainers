@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const generatorPath = new URL('../math/grade-5-6/divisibility-detector/practice-generator.js', import.meta.url);
-const appPath = new URL('../math/grade-5-6/divisibility-detector/app.js', import.meta.url);
+const bankPath = new URL('../math/grade-5-6/divisibility-detector/bank.js', import.meta.url);
 
 function seeded(seed = 1) {
   let state = seed >>> 0;
@@ -68,8 +68,8 @@ test('weak-skill generation creates fresh tasks that target the requested skills
   assert.ok(tasks.every(task => task.skills.some(skill => ['9','3/9'].includes(String(skill)))));
 });
 
-test('app uses fresh generation for normal starts and weak-skill retries', () => {
-  const source = fs.readFileSync(appPath,'utf8');
+test('bank uses generation, recent signatures and skill filters', () => {
+  const source = fs.readFileSync(bankPath,'utf8');
   assert.match(source,/generatePracticeTasks/);
   assert.match(source,/recentSignatures|recentTask/);
   assert.match(source,/skillFilter/);
