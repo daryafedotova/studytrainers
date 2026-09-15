@@ -48,3 +48,9 @@ test('app contains results screen and clean-solution wording', () => {
   assert.match(source,/Чисто решено/);
   assert.match(source,/Потренировать слабые места/);
 });
+
+test('route status distinguishes a stored zero-percent result from no attempt', () => {
+  const source = fs.readFileSync(appPath,'utf8');
+  assert.match(source,/hasBlockBest/);
+  assert.match(source,/hasBest\s*\?\s*`Лучший результат:/);
+});
