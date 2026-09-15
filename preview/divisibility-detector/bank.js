@@ -1,3 +1,5 @@
+import { generatePracticeTasks, mergeRecentSignatures } from './practice-generator.js';
+
 export const ROUTES = {
   '5': [
     {id:'learn', title:'1. Запомни признаки', learningOnly:true},
@@ -104,8 +106,67 @@ export const TASK_BANK = {
   '6': {learn:learningTasks,'yes-no':yesNoTasks,detector:detectorTasks,pair:pairTasks,gcd:gcdTasks,'gcd-fractions':gcdFractionTasks},
 };
 
+let practiceRunVersion = 0;
+const practiceRunCache = new Map();
+
+if (globalThis.document?.addEventListener) {
+  globalThis.document.addEventListener('click', event => {
+    if (event.target?.closest?.('[data-block]')) {
+      practiceRunVersion += 1;
+      practiceRunCache.clear();
+    }
+  },true);
+}
+
+function recentStorageKey(grade,blockId) {
+  return `divisibility-detector:recent:${grade}:${blockId}`;
+}
+
+function hasBrowserStorage() {
+  try {
+    return Boolean(globalThis.document && globalThis.localStorage);
+  } catch {
+    return false;
+  }
+}
+
+function loadRecentSignatures(grade,blockId) {
+  try {
+    const raw = globalThis.localStorage?.getItem(recentStorageKey(grade,blockId));
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed.filter(value => typeof value === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveRecentSignatures(grade,blockId,signatures) {
+  try {
+    globalThis.localStorage?.setItem(recentStorageKey(grade,blockId),JSON.stringify(signatures));
+  } catch {
+    // Practice still works when storage is unavailable.
+  }
+}
+
+function generatedPractice(grade,blockId,{skillFilter = [],count} = {}) {
+  const recentSignatures = loadRecentSignatures(grade,blockId);
+  const tasks = generatePracticeTasks(grade,blockId,{recentSignatures,skillFilter,count});
+  if (!tasks?.length) return [];
+  saveRecentSignatures(grade,blockId,mergeRecentSignatures(recentSignatures,tasks));
+  return tasks;
+}
+
 export function tasksFor(grade, blockId) {
-  return [...(TASK_BANK[String(grade)]?.[blockId] ?? [])];
+  const fixed = [...(TASK_BANK[String(grade)]?.[blockId] ?? [])];
+  if (blockId === 'learn' || !hasBrowserStorage()) return fixed;
+
+  const cacheKey = `${practiceRunVersion}:${grade}:${blockId}`;
+  if (practiceRunCache.has(cacheKey)) return [...practiceRunCache.get(cacheKey)];
+
+  const generated = generatedPractice(grade,blockId);
+  const selected = generated.length ? generated : fixed;
+  practiceRunCache.set(cacheKey,selected);
+  return [...selected];
 }
 
 export function blockFor(grade, blockId) {
@@ -113,13 +174,20 @@ export function blockFor(grade, blockId) {
 }
 
 export function weakSkillTasks(grade, blockId, skillSummary = []) {
-  const source = tasksFor(grade,blockId);
-  if (!source.length) return [];
   const ranked = skillSummary
     .filter(item => item && item.total > 0)
     .slice()
     .sort((a,b) => a.percent - b.percent || String(a.skill).localeCompare(String(b.skill),'ru',{numeric:true}));
-  const weakSkills = new Set(ranked.slice(0,2).map(item => String(item.skill)));
+  const weakList = ranked.slice(0,2).map(item => String(item.skill));
+
+  if (blockId !== 'learn' && hasBrowserStorage()) {
+    const generated = generatedPractice(grade,blockId,{skillFilter:weakList,count:6});
+    if (generated.length) return generated;
+  }
+
+  const source = [...(TASK_BANK[String(grade)]?.[blockId] ?? [])];
+  if (!source.length) return [];
+  const weakSkills = new Set(weakList);
   if (!weakSkills.size) return source.slice(0,Math.min(6,source.length));
 
   const priority = source.filter(task => (task.skills ?? []).some(skill => weakSkills.has(String(skill))));
