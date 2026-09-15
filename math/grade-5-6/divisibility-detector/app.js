@@ -17,6 +17,7 @@ blockId:null,
 taskIndex:0,
 records:[],
 taskQueue:null,
+practiceCount:10,
 taskState:{},
 };
 function setState(patch) {
@@ -135,11 +136,49 @@ return `<button class="route-card" type="button" data-block="${block.id}">
 </div>
 </section>`;
 app.querySelector('[data-home]').addEventListener('click', () => setState({screen:'home',grade:null,blockId:null,taskQueue:null}));
-app.querySelectorAll('[data-block]').forEach(button => button.addEventListener('click', () => startBlock(button.dataset.block)));
+app.querySelectorAll('[data-block]').forEach(button => button.addEventListener('click', () => {
+const blockId = button.dataset.block;
+const block = blockFor(state.grade,blockId);
+if (block?.learningOnly) {
+startBlock(blockId);
+return;
+}
+setState({screen:'practice-setup',blockId,practiceCount:10,taskIndex:0,records:[],taskQueue:null,taskState:{}});
+}));
+}
+function renderPracticeSetup() {
+const block = blockFor(state.grade,state.blockId);
+const options = [5,10,15,20];
+app.innerHTML = `
+<section class='screen'>
+<div class='panel practice-setup'>
+<span class='badge'>${state.grade} класс</span>
+<p class='task-kicker'>${block?.title ?? 'Тренировка'}</p>
+<h1>Сколько заданий?</h1>
+<p class='subtitle'>Выбери длину тренировки. По умолчанию — 10 заданий.</p>
+<div class='practice-count-grid' role='group' aria-label='Количество заданий'>
+${options.map(count => `<button type='button' class='practice-count-button ${state.practiceCount === count ? 'is-selected' : ''}' aria-pressed='${state.practiceCount === count}' data-practice-count='${count}'><strong>${count}</strong><span>заданий</span></button>`).join('')}
+</div>
+<div class='practice-setup-actions'>
+<button class='btn' type='button' data-setup-routes>← К разделам</button>
+<button class='btn btn-primary' type='button' data-start-practice>Начать тренировку</button>
+</div>
+</div>
+</section>`;
+app.querySelectorAll('[data-practice-count]').forEach(button => button.addEventListener('click', () => {
+state.practiceCount = Number(button.dataset.practiceCount);
+render();
+}));
+app.querySelector('[data-setup-routes]').addEventListener('click', () => setState({screen:'routes',blockId:null,taskQueue:null,taskState:{}}));
+app.querySelector('[data-start-practice]').addEventListener('click', () => startBlock(state.blockId));
 }
 function startBlock(blockId) {
-const task = tasksFor(state.grade,blockId)[0] ?? null;
-setState({screen:'task',blockId,taskIndex:0,records:[],taskQueue:null,taskState:freshTaskState(task)});
+const block = blockFor(state.grade,blockId);
+const queue = block?.learningOnly
+? tasksFor(state.grade,blockId)
+: tasksFor(state.grade,blockId,{count:state.practiceCount});
+const task = queue[0] ?? null;
+setState({screen:'task',blockId,taskIndex:0,records:[],taskQueue:queue,taskState:freshTaskState(task)});
 }
 function taskTopbar(block, tasks) {
 return `<div class="topbar">
@@ -814,6 +853,7 @@ setState({screen:'task',taskIndex:0,records:[],taskQueue:queue,taskState:freshTa
 function render() {
 if (state.screen === 'home') return renderHome();
 if (state.screen === 'routes') return renderRoutes();
+if (state.screen === 'practice-setup') return renderPracticeSetup();
 if (state.screen === 'task') return renderTaskShell();
 if (state.screen === 'results') return renderResults();
 return renderHome();
