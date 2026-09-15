@@ -17,15 +17,26 @@ test('yes/no requires both conclusion and reason', () => {
 
 test('detector requires exact complete set', () => {
   const task = {type:'detector',number:735};
-  assert.equal(validateTask(task,{divisors:[3,5]}).ok,true);
-  assert.equal(validateTask(task,{divisors:[5]}).ok,false);
-  assert.equal(validateTask(task,{divisors:[3,5,10]}).ok,false);
+  assert.equal(validateTask(task,{divisors:[3,5],noneApplicable:false}).ok,true);
+  assert.equal(validateTask(task,{divisors:[5],noneApplicable:false}).ok,false);
+  assert.equal(validateTask(task,{divisors:[3,5,10],noneApplicable:false}).ok,false);
+});
+
+test('detector with no studied divisors requires explicit none-applicable answer', () => {
+  const task = {type:'detector',number:47};
+  assert.equal(validateTask(task,{divisors:[],noneApplicable:true}).ok,true);
+  assert.equal(validateTask(task,{divisors:[],noneApplicable:false}).ok,false);
+  assert.equal(validateTask(task,{divisors:[2],noneApplicable:true}).ok,false);
+
+  const divisibleTask = {type:'detector',number:30};
+  assert.equal(validateTask(divisibleTask,{divisors:[2,3,5,10],noneApplicable:false}).ok,true);
+  assert.equal(validateTask(divisibleTask,{divisors:[],noneApplicable:true}).ok,false);
 });
 
 test('detector-error requires correcting supplied wrong set', () => {
   const task = {type:'detector-error',number:435,shownDivisors:[3,5,10]};
-  assert.equal(validateTask(task,{divisors:[3,5]}).ok,true);
-  assert.equal(validateTask(task,{divisors:[3,5,10]}).ok,false);
+  assert.equal(validateTask(task,{divisors:[3,5],noneApplicable:false}).ok,true);
+  assert.equal(validateTask(task,{divisors:[3,5,10],noneApplicable:false}).ok,false);
 });
 
 test('pair accepts exactly the studied divisors common to both numbers', () => {
@@ -80,7 +91,7 @@ test('gcd error distinguishes partial reduction from true gcd', () => {
 
 test('first and second feedback differ', () => {
   const task = {type:'detector',number:735};
-  const result = validateTask(task,{divisors:[5]});
+  const result = validateTask(task,{divisors:[5],noneApplicable:false});
   assert.match(feedbackFor(task,result,1).text,/сумм/i);
   assert.match(feedbackFor(task,result,2).text,/7\s*\+\s*3\s*\+\s*5/);
 });
