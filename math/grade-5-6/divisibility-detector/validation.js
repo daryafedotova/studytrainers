@@ -14,10 +14,20 @@ function baseResult(ok, details = {}, skillErrors = []) {
 }
 
 function diagnosticSkillErrors(taskSkills = [], wrongDivisors = []) {
-  const errors = new Set(wrongDivisors.map(value => String(value)));
   const targets = new Set((taskSkills ?? []).map(String));
-  if (targets.has('3/9') && wrongDivisors.some(value => value === 3 || value === 9)) errors.add('3/9');
-  if (targets.has('5/10') && wrongDivisors.some(value => value === 5 || value === 10)) errors.add('5/10');
+  const wrong = new Set(wrongDivisors.map(Number));
+  const errors = new Set();
+  const contrast39 = targets.has('3/9') && (wrong.has(3) || wrong.has(9));
+  const contrast510 = targets.has('5/10') && (wrong.has(5) || wrong.has(10));
+
+  for (const value of wrong) {
+    if (contrast39 && (value === 3 || value === 9)) continue;
+    if (contrast510 && (value === 5 || value === 10)) continue;
+    if (targets.has(String(value))) errors.add(String(value));
+  }
+  if (contrast39) errors.add('3/9');
+  if (contrast510) errors.add('5/10');
+
   return [...errors].sort((a,b) => a.localeCompare(b,'ru',{numeric:true}));
 }
 
