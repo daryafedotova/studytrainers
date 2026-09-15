@@ -57,10 +57,14 @@ export function validateTask(task, response = {}) {
       const actualRight = (response.right ?? []).map(Number);
       const left = sameSet(actualLeft, expectedLeft);
       const right = sameSet(actualRight, expectedRight);
+      const intersection = commonDivisibilitySet(task.left,task.right);
+      const expectedNoneCommon = intersection.length === 0;
+      const noneCommon = Boolean(response.noneCommon) === expectedNoneCommon;
       const leftWrong = [...expectedLeft.filter(value => !actualLeft.includes(value)),...actualLeft.filter(value => !expectedLeft.includes(value))];
       const rightWrong = [...expectedRight.filter(value => !actualRight.includes(value)),...actualRight.filter(value => !expectedRight.includes(value))];
       const wrongDivisors = [...new Set([...leftWrong,...rightWrong])];
-      return baseResult(left && right,{left,right,intersection:commonDivisibilitySet(task.left,task.right)}, left && right ? [] : diagnosticSkillErrors(task.skills,wrongDivisors));
+      const ok = left && right && noneCommon;
+      return baseResult(ok,{left,right,noneCommon,expectedNoneCommon,intersection}, ok ? [] : diagnosticSkillErrors(task.skills,wrongDivisors));
     }
     case 'fraction-step': {
       const ok = canReduceBy(task.numerator,task.denominator,Number(response.divisor));
@@ -166,7 +170,14 @@ export function feedbackFor(task, result, attemptNumber = 1) {
   }
 
   if (task.type === 'pair') {
-    if (!full) return {kind:'hint',text:'Делитель должен подходить обоим числам. Проверь каждое число отдельно.',focus:'pair'};
+    if (!full) {
+      if (result.details?.left && result.details?.right && result.details?.noneCommon === false) {
+        return result.details?.expectedNoneCommon
+          ? {kind:'hint',text:'Ты верно проверил оба числа. Теперь отметь вывод: «Ни один признак не подходит обоим».',focus:'pair-conclusion'}
+          : {kind:'hint',text:'Общий признак есть. Сравни отмеченные делители у двух чисел.',focus:'pair-conclusion'};
+      }
+      return {kind:'hint',text:'Делитель должен подходить обоим числам. Проверь каждое число отдельно.',focus:'pair'};
+    }
     const common = commonDivisibilitySet(task.left,task.right);
     return {kind:'solution',text:`Для ${task.left} и ${task.right} общие изученные признаки: ${common.length ? common.join(', ') : 'нет'}.`,focus:'pair'};
   }
