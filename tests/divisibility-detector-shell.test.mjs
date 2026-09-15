@@ -113,5 +113,5 @@ test('persistent library backlink stays outside the rerendered app mount', () =>
   const linkIndex = html.indexOf('class="library-link"');
   const appIndex = html.indexOf('id="app"');
   assert.ok(linkIndex >= 0 && appIndex >= 0 && linkIndex < appIndex, 'library link should sit outside and before #app');
-  assert.match(css,/\.library-link\b/);
+  assert.match(`${html}\n${css}`,/\.library-link\b/);
 });
