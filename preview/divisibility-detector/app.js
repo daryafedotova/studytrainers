@@ -42,8 +42,7 @@ learningRevealed:false,
 yes:null,
 reasonId:null,
 divisors:task?.type === 'detector-error' ? [...(task.shownDivisors ?? [])] : [],
-leftDivisors:[],
-rightDivisors:[],
+pairDivisors:[],
 noneCommon:false,
 record:task && !task.learningOnly ? createTaskRecord(task.id,task.skills ?? []) : null,
 };
@@ -248,6 +247,16 @@ const outcomeClass = revealOutcomes
 return `<button type="button" class="detector-button${outcomeClass ? ` ${outcomeClass}` : ''}" aria-pressed="${picked}" data-${prefix}="${divisor}">${divisor}</button>`;
 }).join('');
 }
+function pairButtons(selected, expected, revealOutcomes = false) {
+return [2,3,5,9,10].map(divisor => {
+const picked = selected.includes(divisor);
+const shouldPick = expected.includes(divisor);
+const outcomeClass = revealOutcomes
+? (picked && shouldPick ? 'is-correct' : picked ? 'is-wrong' : shouldPick ? 'is-missed' : '')
+: '';
+return `<button type="button" class="detector-button${outcomeClass ? ` ${outcomeClass}` : ''}" aria-pressed="${picked}" data-pair-divisor="${divisor}">${divisor}</button>`;
+}).join('');
+}
 function renderDetectorTask(task) {
 const selected = state.taskState.divisors ?? [];
 const expected = divisibilitySet(task.number);
@@ -265,21 +274,20 @@ ${state.taskState.complete ? `<button class="btn btn-primary" type="button" data
 }
 function renderPairTask(task) {
 const intersection = commonDivisibilitySet(task.left,task.right);
+const selected = state.taskState.pairDivisors ?? [];
+const revealOutcomes = state.taskState.complete;
+const revealedSolution = revealOutcomes && state.taskState.feedback?.kind === 'solution';
 return `<div class="task-card">
 <p class="task-kicker">Два числа — одна проверка</p>
 <h2>${task.prompt}</h2>
 <div class="pair-grid">
-<section class="number-panel">
-<div class="pair-number">${task.left}</div>
-<div class="detector-row compact">${detectorButtons(state.taskState.leftDivisors,'left-divisor')}</div>
-</section>
-<section class="number-panel">
-<div class="pair-number">${task.right}</div>
-<div class="detector-row compact">${detectorButtons(state.taskState.rightDivisors,'right-divisor')}</div>
-</section>
+<section class="number-panel"><div class="pair-number">${task.left}</div></section>
+<section class="number-panel"><div class="pair-number">${task.right}</div></section>
 </div>
+<p class="question">На какие из изученных чисел делятся оба?</p>
+<div class="detector-row pair-common-row" role="group" aria-label="Общие признаки делимости">${pairButtons(selected,intersection,revealOutcomes)}</div>
 ${state.taskState.complete ? '' : `<div class="choice-row"><button type="button" class="choice-button ${state.taskState.noneCommon ? 'is-selected' : ''}" aria-pressed="${state.taskState.noneCommon ? 'true' : 'false'}" data-pair-none>Ни один признак не подходит обоим</button></div>`}
-${state.taskState.complete ? `<div class="intersection-card"><span>Оба числа делятся на</span><strong>${intersection.length ? intersection.join(', ') : 'ни на одно из изученных чисел'}</strong></div>` : ''}
+${state.taskState.complete ? `<div class="intersection-card"><span>${revealedSolution ? 'Правильный ответ' : 'Оба числа делятся на'}</span><strong>${intersection.length ? intersection.join(', ') : 'ни на одно из изученных чисел'}</strong></div>` : ''}
 ${feedbackMarkup()}
 ${state.taskState.complete ? `<button class="btn btn-primary" type="button" data-next>Дальше</button>` : `<button class="btn btn-primary" type="button" data-check>Проверить</button>`}
 </div>`;
@@ -536,21 +544,27 @@ submitTraining(task,{divisors:state.taskState.divisors});
 });
 }
 function bindPairHandlers(task) {
-app.querySelectorAll('[data-left-divisor]').forEach(button => button.addEventListener('click', () => {
-const value = Number(button.dataset.leftDivisor);
-state.taskState = {...state.taskState,leftDivisors:toggle(state.taskState.leftDivisors,value),feedback:null};
-render();
-}));
-app.querySelectorAll('[data-right-divisor]').forEach(button => button.addEventListener('click', () => {
-const value = Number(button.dataset.rightDivisor);
-state.taskState = {...state.taskState,rightDivisors:toggle(state.taskState.rightDivisors,value),feedback:null};
+app.querySelectorAll('[data-pair-divisor]').forEach(button => button.addEventListener('click', () => {
+const value = Number(button.dataset.pairDivisor);
+state.taskState = {
+...state.taskState,
+pairDivisors:toggle(state.taskState.pairDivisors ?? [],value),
+noneCommon:false,
+feedback:null,
+};
 render();
 }));
 app.querySelector('[data-pair-none]')?.addEventListener('click', () => {
-state.taskState = {...state.taskState,noneCommon:!state.taskState.noneCommon,feedback:null};
+const nextNone = !state.taskState.noneCommon;
+state.taskState = {
+...state.taskState,
+noneCommon:nextNone,
+pairDivisors:nextNone ? [] : (state.taskState.pairDivisors ?? []),
+feedback:null,
+};
 render();
 });
-app.querySelector('[data-check]')?.addEventListener('click', () => submitTraining(task,{left:state.taskState.leftDivisors,right:state.taskState.rightDivisors,noneCommon:state.taskState.noneCommon}));
+app.querySelector('[data-check]')?.addEventListener('click', () => submitTraining(task,{divisors:state.taskState.pairDivisors ?? [],noneCommon:state.taskState.noneCommon}));
 }
 function bindFractionHandlers(task) {
 if (task.type === 'fraction-error') {
