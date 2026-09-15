@@ -33,9 +33,8 @@ test('practice setup offers 5, 10, 15, 20 tasks and defaults to 10', () => {
   const source = fs.readFileSync(appPath,'utf8');
   assert.match(source,/function\s+renderPracticeSetup\b|const\s+renderPracticeSetup\s*=/);
   assert.match(source,/practiceCount:\s*10/);
-  for (const count of [5,10,15,20]) {
-    assert.match(source,new RegExp(`data-practice-count=["']?${count}`));
-  }
+  assert.match(source,/const\s+options\s*=\s*\[5,10,15,20\]/);
+  assert.match(source,/data-practice-count=['"]\$\{count\}['"]/);
   assert.match(source,/tasksFor\([^)]*count:\s*state\.practiceCount/);
 });
 
