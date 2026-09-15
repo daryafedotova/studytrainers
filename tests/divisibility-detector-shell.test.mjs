@@ -106,13 +106,12 @@ test('page background includes a subtle mathematical SVG pattern', () => {
   assert.match(css,/(opacity|fill-opacity)/i);
 });
 
-test('library link stays available on all primary screens', () => {
-  const source = fs.readFileSync(appPath,'utf8');
+test('persistent library backlink stays outside the rerendered app mount', () => {
+  const html = fs.readFileSync(htmlPath,'utf8');
   const css = fs.readFileSync(cssPath,'utf8');
-  assert.match(source,/function\s+libraryLink\b|const\s+libraryLink\s*=/);
-  assert.match(source,/href=["']\.\.\/\.\.\/\.\.\/["']/);
-  assert.match(source,/← В библиотеку/);
-  const placements = source.match(/\$\{libraryLink\(\)\}/g) ?? [];
-  assert.ok(placements.length >= 5, `expected library link on at least 5 primary screens, found ${placements.length}`);
+  assert.match(html,/<a[^>]+class=["']library-link["'][^>]+href=["']\.\.\/\.\.\/\.\.\/["'][^>]*>\s*← В библиотеку\s*<\/a>/i);
+  const linkIndex = html.indexOf('class="library-link"');
+  const appIndex = html.indexOf('id="app"');
+  assert.ok(linkIndex >= 0 && appIndex >= 0 && linkIndex < appIndex, 'library link should sit outside and before #app');
   assert.match(css,/\.library-link\b/);
 });
