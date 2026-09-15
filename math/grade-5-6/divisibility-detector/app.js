@@ -7,7 +7,7 @@ dividePairBy, commonPrimeDivisors
 import { validateTask, feedbackFor } from './validation.js';
 import {
 createTaskRecord, markRuleUsed, markHintUsed, registerAttempt,
-loadBlockBest, saveBlockBest, summarize, summarizeSkills
+loadBlockBest, hasBlockBest, saveBlockBest, summarize, summarizeSkills
 } from './progress.js';
 const app = document.querySelector('#app');
 const state = {
@@ -120,12 +120,14 @@ app.innerHTML = `
 </div>
 <div class="route-grid">
 ${routes.map(block => {
-const best = block.learningOnly ? null : loadBlockBest(storageKey(state.grade,block.id));
-const learned = block.learningOnly && globalThis.localStorage?.getItem(`${storageKey(state.grade,block.id)}:completed`) === '1';
+const key = storageKey(state.grade,block.id);
+const hasBest = !block.learningOnly && hasBlockBest(key);
+const best = block.learningOnly ? null : loadBlockBest(key);
+const learned = block.learningOnly && globalThis.localStorage?.getItem(`${key}:completed`) === '1';
 return `<button class="route-card" type="button" data-block="${block.id}">
 <h3>${block.title}</h3>
 <p>${routeDescription(state.grade,block.id)}</p>
-<div class="route-status">${block.learningOnly ? (learned ? 'Пройдено ✓' : 'Обучающий блок') : best ? `Лучший результат: ${best}%` : 'Можно начать сразу'}</div>
+<div class="route-status">${block.learningOnly ? (learned ? 'Пройдено ✓' : 'Обучающий блок') : hasBest ? `Лучший результат: ${best}%` : 'Можно начать сразу'}</div>
 </button>`;
 }).join('')}
 </div>
@@ -567,16 +569,16 @@ if (gcd(current.numerator,current.denominator) === 1) {
 let record = registerAttempt(state.taskState.record,true);
 state.taskState = {...state.taskState,record,complete:true,feedback:{kind:'success',text:'Верно. Дробь уже несократима.'}};
 } else {
-let record = registerAttempt(state.taskState.record,false);
-record = markHintUsed(record);
+let record = registerAttempt(state.taskState.record,false,['fraction']);
+record = markHintUsed(record,['fraction']);
 state.taskState = {...state.taskState,record,feedback:{kind:'hint',text:'У числителя и знаменателя ещё есть общий делитель.'}};
 }
 render();
 });
 }
 function noteGcdError(dynamicTask,result,fieldStatus = null) {
-let record = registerAttempt(state.taskState.record,false);
-record = markHintUsed(record);
+let record = registerAttempt(state.taskState.record,false,result.skillErrors);
+record = markHintUsed(record,result.skillErrors);
 const feedback = feedbackFor(dynamicTask,result,record.attempts);
 state.taskState = {
 ...state.taskState,
@@ -661,8 +663,8 @@ app.querySelector('[data-reduced-check]')?.addEventListener('click', () => {
 const dynamic = {...task,phase:'reduced-fraction'};
 const result = validateTask(dynamic,state.taskState.reducedDraft);
 if (!result.ok) {
-let record = registerAttempt(state.taskState.record,false);
-record = markHintUsed(record);
+let record = registerAttempt(state.taskState.record,false,result.skillErrors);
+record = markHintUsed(record,result.skillErrors);
 state.taskState = {...state.taskState,record,reducedStatus:{left:result.details.left,right:result.details.right},feedback:{kind:'hint',text:'НОД найден верно. Проверь только неверное деление при сокращении.'}};
 render();
 return;
@@ -676,13 +678,13 @@ function submitTraining(task,response) {
 if (state.taskState.complete) return;
 const result = validateTask(task,response);
 let record = state.taskState.record ?? createTaskRecord(task.id,task.skills ?? []);
-record = registerAttempt(record,result.ok);
+record = registerAttempt(record,result.ok,result.skillErrors);
 if (result.ok) {
 state.taskState = {...state.taskState,record,complete:true,feedback:{kind:'success',text:'Верно! Решение принято.'}};
 render();
 return;
 }
-record = markHintUsed(record);
+record = markHintUsed(record,result.skillErrors);
 const attempt = record.attempts;
 const feedback = feedbackFor(task,result,attempt);
 state.taskState = {...state.taskState,record,feedback,complete:attempt >= 2};
