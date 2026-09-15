@@ -44,6 +44,7 @@ reasonId:null,
 divisors:task?.type === 'detector-error' ? [...(task.shownDivisors ?? [])] : [],
 leftDivisors:[],
 rightDivisors:[],
+noneCommon:false,
 record:task && !task.learningOnly ? createTaskRecord(task.id,task.skills ?? []) : null,
 };
 if (task?.type === 'fraction-step') {
@@ -277,6 +278,7 @@ return `<div class="task-card">
 <div class="detector-row compact">${detectorButtons(state.taskState.rightDivisors,'right-divisor')}</div>
 </section>
 </div>
+${state.taskState.complete ? '' : `<div class="choice-row"><button type="button" class="choice-button ${state.taskState.noneCommon ? 'is-selected' : ''}" aria-pressed="${state.taskState.noneCommon ? 'true' : 'false'}" data-pair-none>Ни один признак не подходит обоим</button></div>`}
 ${state.taskState.complete ? `<div class="intersection-card"><span>Оба числа делятся на</span><strong>${intersection.length ? intersection.join(', ') : 'ни на одно из изученных чисел'}</strong></div>` : ''}
 ${feedbackMarkup()}
 ${state.taskState.complete ? `<button class="btn btn-primary" type="button" data-next>Дальше</button>` : `<button class="btn btn-primary" type="button" data-check>Проверить</button>`}
@@ -544,7 +546,11 @@ const value = Number(button.dataset.rightDivisor);
 state.taskState = {...state.taskState,rightDivisors:toggle(state.taskState.rightDivisors,value),feedback:null};
 render();
 }));
-app.querySelector('[data-check]')?.addEventListener('click', () => submitTraining(task,{left:state.taskState.leftDivisors,right:state.taskState.rightDivisors}));
+app.querySelector('[data-pair-none]')?.addEventListener('click', () => {
+state.taskState = {...state.taskState,noneCommon:!state.taskState.noneCommon,feedback:null};
+render();
+});
+app.querySelector('[data-check]')?.addEventListener('click', () => submitTraining(task,{left:state.taskState.leftDivisors,right:state.taskState.rightDivisors,noneCommon:state.taskState.noneCommon}));
 }
 function bindFractionHandlers(task) {
 if (task.type === 'fraction-error') {
