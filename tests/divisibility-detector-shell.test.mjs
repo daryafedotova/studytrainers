@@ -29,6 +29,16 @@ test('app implements primary practice renderers', () => {
   assert.match(source,/Проверить/);
 });
 
+test('practice setup offers 5, 10, 15, 20 tasks and defaults to 10', () => {
+  const source = fs.readFileSync(appPath,'utf8');
+  assert.match(source,/function\s+renderPracticeSetup\b|const\s+renderPracticeSetup\s*=/);
+  assert.match(source,/practiceCount:\s*10/);
+  for (const count of [5,10,15,20]) {
+    assert.match(source,new RegExp(`data-practice-count=["']?${count}`));
+  }
+  assert.match(source,/tasksFor\([^)]*count:\s*state\.practiceCount/);
+});
+
 test('detector exposes explicit none-applicable answer and mutually exclusive selection', () => {
   const source = fs.readFileSync(appPath,'utf8');
   assert.match(source,/data-detector-none/);
@@ -88,4 +98,11 @@ test('detector reveals correct, wrong, and missed outcomes only after checking',
   assert.match(css,/\.detector-button\.is-correct/);
   assert.match(css,/\.detector-button\.is-wrong/);
   assert.match(css,/\.detector-button\.is-missed/);
+});
+
+test('page background includes a subtle mathematical SVG pattern', () => {
+  const css = fs.readFileSync(cssPath,'utf8');
+  assert.match(css,/background-image:\s*url\(["']?data:image\/svg\+xml/i);
+  assert.match(css,/(÷|%C3%B7|×|%C3%97)/i);
+  assert.match(css,/(opacity|fill-opacity)/i);
 });
