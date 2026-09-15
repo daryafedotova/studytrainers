@@ -235,7 +235,17 @@ ${state.taskState.complete ? `<button class="btn btn-primary" type="button" data
 </div>`;
 }
 function detectorButtons(selected, prefix = 'divisor') {
-return [2,3,5,9,10].map(divisor => `<button type="button" class="detector-button" aria-pressed="${selected.includes(divisor)}" data-${prefix}="${divisor}">${divisor}</button>`).join('');
+const task = prefix === 'divisor' ? currentTask() : null;
+const expected = task?.number !== undefined ? divisibilitySet(task.number) : [];
+const revealOutcomes = prefix === 'divisor' && state.taskState.complete;
+return [2,3,5,9,10].map(divisor => {
+const picked = selected.includes(divisor);
+const shouldPick = expected.includes(divisor);
+const outcomeClass = revealOutcomes
+? (picked && shouldPick ? 'is-correct' : picked ? 'is-wrong' : shouldPick ? 'is-missed' : '')
+: '';
+return `<button type="button" class="detector-button${outcomeClass ? ` ${outcomeClass}` : ''}" aria-pressed="${picked}" data-${prefix}="${divisor}">${divisor}</button>`;
+}).join('');
 }
 function renderDetectorTask(task) {
 const selected = state.taskState.divisors ?? [];

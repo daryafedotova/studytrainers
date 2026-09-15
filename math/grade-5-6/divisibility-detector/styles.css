@@ -65,6 +65,9 @@ h1 { margin-bottom: 12px; font-size: clamp(2.15rem, 6vw, 4.6rem); line-height: .
 
 .detector-button { width: var(--detector-size); height: var(--detector-size); min-width: var(--detector-size); border: 2px solid var(--line); border-radius: 18px; background: var(--surface); font-size: 1.25rem; font-weight: 900; cursor: pointer; }
 .detector-button[aria-pressed="true"] { border-color: var(--accent); background: var(--surface-soft); color: var(--accent-strong); }
+.detector-button.is-correct { border-color: var(--success); background: var(--success-bg); color: var(--success); }
+.detector-button.is-wrong { border-color: var(--danger); background: var(--danger-bg); color: var(--danger); }
+.detector-button.is-missed { border-color: var(--warning); background: var(--warning-bg); color: var(--warning); box-shadow: inset 0 0 0 1px var(--warning); }
 
 @media (max-width: 720px) {
   .app-shell { width: min(100% - 20px, 680px); padding-top: 14px; }
