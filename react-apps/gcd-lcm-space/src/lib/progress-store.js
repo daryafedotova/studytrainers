@@ -1,4 +1,4 @@
-import { rankFor } from './scoring.js';
+import { deriveAchievements, rankFor } from './scoring.js';
 
 export const STORAGE_KEY = 'studytrainers.gcd-lcm-space.v1';
 const VERSION = 1;
@@ -30,7 +30,8 @@ export function deriveProfile(profile) {
   const starsTotal = Object.values(levels).reduce((sum, level) => sum + (Number(level.bestStars) || 0), 0);
   const bossUnlocked = starsTotal >= 18;
   const rank = rankFor({ starsTotal, bossDefeated: Boolean(profile.bossDefeated) });
-  return { ...profile, starsTotal, bossUnlocked, rank };
+  const achievements = deriveAchievements({ levels });
+  return { ...profile, starsTotal, bossUnlocked, rank, achievements };
 }
 export function loadProfile(name, storage = globalThis.localStorage) {
   const key = normalizeProfileName(name);
