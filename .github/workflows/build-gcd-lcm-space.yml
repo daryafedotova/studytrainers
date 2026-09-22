@@ -1,0 +1,57 @@
+name: Build GCD LCM space trainer
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - feature/gcd-lcm-space-campaign
+    paths:
+      - 'react-apps/gcd-lcm-space/**'
+      - 'tests/gcd-lcm-*.test.mjs'
+      - 'index.html'
+      - '.github/workflows/build-gcd-lcm-space.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run full test suite
+        run: node --test tests/*.test.mjs
+
+      - name: Install dependencies
+        working-directory: react-apps/gcd-lcm-space
+        run: npm install --no-audit --no-fund
+
+      - name: Build
+        working-directory: react-apps/gcd-lcm-space
+        run: npm run build
+
+      - name: Publish trainer into Pages tree
+        run: |
+          rm -rf math/grade-6/gcd-lcm-space
+          mkdir -p math/grade-6/gcd-lcm-space
+          cp -R react-apps/gcd-lcm-space/dist/. math/grade-6/gcd-lcm-space/
+
+      - name: Commit built trainer and lockfile
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add react-apps/gcd-lcm-space/package-lock.json math/grade-6/gcd-lcm-space
+          if git diff --cached --quiet; then
+            echo "No build changes"
+          else
+            git commit -m "Build GCD LCM space trainer [skip ci]"
+            git push
+          fi
