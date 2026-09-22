@@ -19,7 +19,7 @@ export default function App() {
   return <AppShell soundOn={soundOn} onToggleSound={()=>setSoundOn(v=>!v)}>
     {screen==='profile'&&<ProfileGate onStart={startProfile}/>}
     {screen==='map'&&profile&&<CampaignMap profile={profile} onStartLevel={startLevel} onStartBoss={()=>setScreen('boss')}/>}
-    {screen==='level'&&profile&&<LevelRunner key={`${selectedLevel}-${levelRunKey}`} levelId={selectedLevel} onComplete={finishLevel} onBack={()=>setScreen('map')} onReplay={()=>startLevel(selectedLevel)}/>}
-    {screen==='boss'&&profile&&<BossBattle profile={profile} onBack={()=>setScreen('map')} onVictory={result=>setProfile(current=>current?persist(completeBoss(current,result)):current)}/>}
+    {screen==='level'&&profile&&<LevelRunner key={`${selectedLevel}-${levelRunKey}`} soundOn={soundOn} levelId={selectedLevel} onComplete={finishLevel} onBack={()=>setScreen('map')} onReplay={()=>startLevel(selectedLevel)}/>}
+    {screen==='boss'&&profile&&<BossBattle profile={profile} soundOn={soundOn} onBack={()=>setScreen('map')} onVictory={result=>setProfile(current=>current?persist(completeBoss(current,result)):current)}/>}
   </AppShell>;
 }
