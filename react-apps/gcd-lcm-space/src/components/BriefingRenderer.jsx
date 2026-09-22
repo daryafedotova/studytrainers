@@ -19,6 +19,22 @@ export const BRIEFINGS = {
   4: [
     {title:'Общая часть', body:'Сравни два разложения и сопоставь одинаковые простые множители.', example:'60 = 2² · 3 · 5; 90 = 2 · 3² · 5'},
     {title:'Не бери лишнее', body:'В общую часть множитель входит только столько раз, сколько он встречается в обоих числах.', example:'Общая часть 60 и 90: 2 · 3 · 5'}
+  ],
+  5: [
+    {title:'Алгоритм НОД', body:'1) Разложи оба числа. 2) Найди общие простые множители. 3) Возьми их с наименьшими показателями. 4) Перемножь.', example:'72 = 2³ · 3²; 108 = 2² · 3³ → НОД = 2² · 3² = 36'},
+    {title:'Если общего нет', body:'Если у чисел нет общих простых множителей, их НОД равен 1.', example:'НОД(24; 25) = 1'}
+  ],
+  6: [
+    {title:'Кратные числа', body:'Кратные получают умножением данного числа на 1, 2, 3, …', example:'Кратные 6: 6, 12, 18, 24, …'},
+    {title:'Общее кратное', body:'Оно находится сразу в нескольких рядах кратных. Самое маленькое положительное — НОК.', example:'6 и 8 → первое общее кратное 24'}
+  ],
+  7: [
+    {title:'Алгоритм НОК', body:'Собери минимальный набор простых множителей, которого хватает для обоих чисел.', example:'18 = 2 · 3²; 24 = 2³ · 3 → НОК = 2³ · 3² = 72'},
+    {title:'Через степени', body:'Для каждого простого множителя бери наибольший показатель из двух разложений.', example:'max(2¹, 2³) = 2³; max(3², 3¹) = 3²'}
+  ],
+  8: [
+    {title:'НОД или НОК?', body:'НОД ищет крупнейшую общую часть; НОК — наименьшее число, кратное обоим.', example:'Общий делитель → НОД. Общее кратное → НОК.'},
+    {title:'Смотри на смысл', body:'Сначала реши, что ищется, и только потом выбирай алгоритм.', example:'«Наибольший общий…» → НОД; «наименьшее кратное…» → НОК'}
   ]
 };
 export function BriefingRenderer({levelId,onDone}){const steps=BRIEFINGS[levelId]??[];const[index,setIndex]=useState(0);const step=steps[index];if(!step)return <button className="primary-button" onClick={onDone}>К миссии <ArrowRight size={18}/></button>;return <section className="briefing-card"><div className="briefing-badge"><BookOpen size={18}/> Бортовой журнал · {index+1}/{steps.length}</div><h2>{step.title}</h2><p>{step.body}</p><div className="briefing-example">{step.example}</div><div className="button-row briefing-actions">{index>0&&<button className="secondary-button" type="button" onClick={()=>setIndex(i=>i-1)}><ChevronLeft size={18}/> Назад</button>}<button className="primary-button" type="button" onClick={()=>index===steps.length-1?onDone():setIndex(i=>i+1)}>{index===steps.length-1?'Начать миссию':'Дальше'} <ArrowRight size={18}/></button></div></section>;}
