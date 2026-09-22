@@ -3,7 +3,8 @@ import { AppShell } from './components/AppShell.jsx';
 import { ProfileGate } from './components/ProfileGate.jsx';
 import { CampaignMap } from './components/CampaignMap.jsx';
 import { LevelRunner } from './components/LevelRunner.jsx';
-import { applyLevelResult, saveProfile } from './lib/progress-store.js';
+import { BossBattle } from './components/BossBattle.jsx';
+import { applyLevelResult, completeBoss, saveProfile } from './lib/progress-store.js';
 
 export default function App() {
   const[profile,setProfile]=useState(null);
@@ -19,6 +20,6 @@ export default function App() {
     {screen==='profile'&&<ProfileGate onStart={startProfile}/>}
     {screen==='map'&&profile&&<CampaignMap profile={profile} onStartLevel={startLevel} onStartBoss={()=>setScreen('boss')}/>}
     {screen==='level'&&profile&&<LevelRunner key={`${selectedLevel}-${levelRunKey}`} levelId={selectedLevel} onComplete={finishLevel} onBack={()=>setScreen('map')} onReplay={()=>startLevel(selectedLevel)}/>}
-    {screen==='boss'&&<section className="placeholder-card"><h1>Ядро Сингулярности</h1><p>Боевой модуль подключается после завершения кампании.</p><button className="secondary-button" onClick={()=>setScreen('map')}>На карту</button></section>}
+    {screen==='boss'&&profile&&<BossBattle profile={profile} onBack={()=>setScreen('map')} onVictory={result=>setProfile(current=>current?persist(completeBoss(current,result)):current)}/>}
   </AppShell>;
 }
