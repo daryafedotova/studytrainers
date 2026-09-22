@@ -12,7 +12,7 @@ const PHASES={1:{title:'Разрушить броню',subtitle:'Простые 
 function categoryFor(task,phase){if(phase===1)return 'factorization';if(phase===2)return 'gcd';return task.skill==='mixed'?'mixed':'lcm';}
 function labelFor(key){return {factorization:'Разложение',gcd:'НОД',lcm:'НОК',mixed:'НОД или НОК'}[key]??key;}
 
-export function BossBattle({profile,onBack,onVictory}) {
+export function BossBattle({profile,onBack,onVictory,soundOn=true}) {
   const[battle,setBattle]=useState(()=>createBossState(COUNTS));
   const[tasks,setTasks]=useState(()=>generateBossPhaseTasks(1));
   const[index,setIndex]=useState(0);
