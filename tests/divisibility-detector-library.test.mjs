@@ -10,6 +10,6 @@ test('library exposes divisibility detector for grades 5 and 6', () => {
   assert.match(library,/data-grades="5 6"/);
 });
 
-test('library material counter matches seven cards', () => {
-  assert.match(library,/id="material-counter">7 материалов</);
+test('library material counter matches eight cards', () => {
+  assert.match(library,/id="material-counter">8 материалов</);
 });
