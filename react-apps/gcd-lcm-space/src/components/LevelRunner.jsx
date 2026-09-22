@@ -9,7 +9,7 @@ import { playTone } from '../lib/audio.js';
 import { BriefingRenderer } from './BriefingRenderer.jsx';
 import { TaskRenderer } from './TaskRenderer.jsx';
 
-export function LevelRunner({levelId,onComplete,onBack,onReplay}) {
+export function LevelRunner({levelId,onComplete,onBack,onReplay,soundOn=true}) {
   const level=CAMPAIGN_LEVELS.find(x=>x.id===levelId);
   const mission=useMemo(()=>generateLevelTasks(levelId),[levelId]);
   const mini=useMemo(()=>generateMiniBossTasks(levelId),[levelId]);
