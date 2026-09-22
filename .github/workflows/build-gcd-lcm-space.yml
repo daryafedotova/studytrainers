@@ -9,6 +9,7 @@ on:
     paths:
       - 'react-apps/gcd-lcm-space/**'
       - 'tests/gcd-lcm-*.test.mjs'
+      - 'tests/divisibility-detector-library.test.mjs'
       - 'index.html'
       - '.github/workflows/build-gcd-lcm-space.yml'
 
