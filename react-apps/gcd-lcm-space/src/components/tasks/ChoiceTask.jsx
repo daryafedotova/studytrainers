@@ -1,0 +1,1 @@
+export function ChoiceTask({task,disabled,onSubmit}){return <div className="answer-grid">{task.data.options.map((option,index)=><button key={`${String(option)}-${index}`} className="answer-button" type="button" disabled={disabled} onClick={()=>onSubmit(option)}>{String(option)}</button>)}</div>;}
