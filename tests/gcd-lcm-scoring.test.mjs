@@ -15,3 +15,16 @@ test('rank rises with stars and boss victory overrides the ladder', () => {
   assert.equal(rankFor({starsTotal:23,bossDefeated:false}), 'Командир экспедиции');
   assert.equal(rankFor({starsTotal:8,bossDefeated:true}), 'Мастер числовой галактики');
 });
+
+test('derives only the approved campaign achievements from best results', async () => {
+  const { deriveAchievements } = await import('../react-apps/gcd-lcm-space/src/lib/scoring.js');
+  const levels = Object.fromEntries(Array.from({length:8},(_,i)=>[String(i+1),{bestStars:0,bestFirstTryAccuracy:0}]));
+  levels['1'] = {bestStars:3,bestFirstTryAccuracy:100};
+  levels['2'] = {bestStars:2,bestFirstTryAccuracy:80};
+  levels['3'] = {bestStars:2,bestFirstTryAccuracy:80};
+  levels['5'] = {bestStars:3,bestFirstTryAccuracy:90};
+  levels['7'] = {bestStars:3,bestFirstTryAccuracy:90};
+  assert.deepEqual(deriveAchievements({levels}), [
+    'Охотник за простыми','Факторизатор','Мастер НОД','Мастер НОК','Без единой ошибки'
+  ]);
+});
