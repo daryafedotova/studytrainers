@@ -65,3 +65,11 @@ export function firstMultiples(value, count) {
   const c = toPositiveInteger(count, 'count');
   return Array.from({ length: c }, (_, i) => n * (i + 1));
 }
+
+const SUPER = {'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+function superscript(value) { return String(value).split('').map(ch => SUPER[ch] ?? ch).join(''); }
+export function formatPrimePowers(value) {
+  return factorizationToPowers(primeFactorization(value))
+    .map(({prime, exponent}) => exponent === 1 ? String(prime) : `${prime}${superscript(exponent)}`)
+    .join(' · ');
+}
