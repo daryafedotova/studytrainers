@@ -32,3 +32,14 @@ export function advanceBossPhase(state) {
   if(!bossCanAdvance(state)||state.phase>=state.phaseTaskCounts.length)return state;
   return {...state,phase:state.phase+1,completedInPhase:0,critical:false};
 }
+
+export function deriveAchievements(profile = {}) {
+  const levels = profile.levels ?? {};
+  const achievements = [];
+  if ((levels['1']?.bestStars ?? 0) >= 3) achievements.push('Охотник за простыми');
+  if ((levels['2']?.bestStars ?? 0) >= 2 && (levels['3']?.bestStars ?? 0) >= 2) achievements.push('Факторизатор');
+  if ((levels['5']?.bestStars ?? 0) >= 3) achievements.push('Мастер НОД');
+  if ((levels['7']?.bestStars ?? 0) >= 3) achievements.push('Мастер НОК');
+  if (Object.values(levels).some(level => (level?.bestStars ?? 0) >= 3 && (level?.bestFirstTryAccuracy ?? 0) >= 100)) achievements.push('Без единой ошибки');
+  return achievements;
+}
