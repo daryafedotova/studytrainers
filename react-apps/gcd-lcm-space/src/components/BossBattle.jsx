@@ -35,7 +35,7 @@ export function BossBattle({profile,onBack,onVictory,soundOn=true}) {
     window.setTimeout(()=>{
       if(bossCanAdvance(next)){
         if(next.phase<3){const upcoming=next.phase+1;setTransition(upcoming);window.setTimeout(()=>{setBattle(advanceBossPhase(next));setTasks(generateBossPhaseTasks(upcoming));setIndex(0);setFeedback(null);setTransition(null);},900);}
-        else{const result={livesRemaining:next.lives,bestCombo:next.bestCombo,errors:next.errors,completedAt:new Date().toISOString()};setVictory(result);setFeedback(null);onVictory(result);}
+        else{const result={livesRemaining:next.lives,bestCombo:next.bestCombo,errors:next.errors,completedAt:new Date().toISOString()};setVictory(result);setFeedback(null);playTone('victory',soundOn);confetti({particleCount:180,spread:95,origin:{y:.55}});onVictory(result);}
       } else {setIndex(i=>i+1);setFeedback(null);}
     },650);
   }
