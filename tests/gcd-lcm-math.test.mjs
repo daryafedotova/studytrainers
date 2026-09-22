@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   isPrime, primeFactorization, factorizationToPowers,
-  gcd, lcm, divisors, firstMultiples
+  gcd, lcm, divisors, firstMultiples, formatPrimePowers
 } from '../react-apps/gcd-lcm-space/src/lib/math.js';
 
 test('classifies primes, composites, and 1', () => {
@@ -31,4 +31,9 @@ test('computes gcd and lcm school cases', () => {
 test('lists divisors and first multiples', () => {
   assert.deepEqual(divisors(12), [1,2,3,4,6,12]);
   assert.deepEqual(firstMultiples(6,5), [6,12,18,24,30]);
+});
+
+test('formats factorization with readable superscripts', () => {
+  assert.equal(formatPrimePowers(72), '2³ · 3²');
+  assert.equal(formatPrimePowers(35), '5 · 7');
 });
