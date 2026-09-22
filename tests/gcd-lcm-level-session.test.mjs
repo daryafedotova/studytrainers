@@ -1,0 +1,8 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { createAttemptStats, registerLevelAnswer, registerHint } from '../react-apps/gcd-lcm-space/src/lib/level-session.js';
+test('first clean correct mission answer raises first-try score and combo',()=>{let s=createAttemptStats(6);s=registerLevelAnswer(s,{taskId:'a',correct:true,isMiniBoss:false});assert.equal(s.firstTryCorrect,1);assert.equal(s.currentCombo,1);assert.equal(s.bestCombo,1);});
+test('wrong answer makes later correction non-first-try and resets combo',()=>{let s=createAttemptStats(6);s=registerLevelAnswer(s,{taskId:'a',correct:true,isMiniBoss:false});s=registerLevelAnswer(s,{taskId:'b',correct:false,isMiniBoss:false});assert.equal(s.currentCombo,0);s=registerLevelAnswer(s,{taskId:'b',correct:true,isMiniBoss:false});assert.equal(s.firstTryCorrect,1);});
+test('opening a hint before answering prevents a clean first-try credit',()=>{let s=createAttemptStats(6);s=registerHint(s,'a');s=registerLevelAnswer(s,{taskId:'a',correct:true,isMiniBoss:false});assert.equal(s.firstTryCorrect,0);assert.equal(s.hintsUsed,1);});
+test('hint opened after a solved task does not change prior first-try credit',()=>{let s=createAttemptStats(6);s=registerLevelAnswer(s,{taskId:'a',correct:true,isMiniBoss:false});s=registerHint(s,'a');assert.equal(s.firstTryCorrect,1);assert.equal(s.hintsUsed,0);});
+test('miniboss mistakes are tracked separately from mission accuracy',()=>{let s=createAttemptStats(6);s=registerLevelAnswer(s,{taskId:'mini-a',correct:false,isMiniBoss:true});s=registerLevelAnswer(s,{taskId:'mini-a',correct:true,isMiniBoss:true});assert.equal(s.miniBossErrors,1);assert.equal(s.firstTryCorrect,0);assert.equal(s.total,6);});
