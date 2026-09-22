@@ -1,9 +1,11 @@
 import { useMemo, useRef, useState } from 'react';
+import confetti from 'canvas-confetti';
 import { ArrowLeft, BookOpen, Lightbulb, Sparkles, Star } from 'lucide-react';
 import { CAMPAIGN_LEVELS } from '../lib/campaign.js';
 import { generateLevelTasks, generateMiniBossTasks, answerMatches } from '../lib/task-generators.js';
 import { createAttemptStats, registerHint, registerLevelAnswer } from '../lib/level-session.js';
 import { evaluateLevelAttempt } from '../lib/scoring.js';
+import { playTone } from '../lib/audio.js';
 import { BriefingRenderer } from './BriefingRenderer.jsx';
 import { TaskRenderer } from './TaskRenderer.jsx';
 
