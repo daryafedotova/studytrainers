@@ -36,7 +36,7 @@
 
 - Повреждённый JSON или неизвестная версия localStorage: приложение не падает, остальные данные библиотеки не затрагиваются, новый профиль можно создать.
 - Имена `" Маша "`, `"маша"` и `"МАША"` должны разрешаться в один локальный профиль, сохраняя исходное displayName первого созданного профиля.
-- Границы звёздности: ровно 65% даёт право на 2 звезды при допустимом мини-боссе; ровно 85% даёт право на 3 только при идеальном мини-боссе и без подсказок.
+- Границы звёздности: ровно 65% даёт право на 2 звезды при допустимом мини-боссе; ровно 85% даёт право на 3 только при идеальном мини-боссе.
 - Генераторы должны сохранять математические инварианты и диапазон школьной сложности, включая взаимно простые пары, случай делимости одного числа на другое и разные показатели одинакового простого множителя.
 - Критический урон босса не должен позволять завершить фазу без выполнения всех обязательных заданий; каждая ошибка снимает ровно одну жизнь.
 
@@ -519,10 +519,10 @@ test('65 percent boundary earns two stars with at most one miniboss error', () =
   assert.equal(evaluateLevelAttempt(attempt(13,20,1)).stars, 2);
 });
 
-test('85 percent boundary needs perfect miniboss and no hints for three stars', () => {
+test('85 percent boundary needs a perfect miniboss for three stars', () => {
   assert.equal(evaluateLevelAttempt(attempt(17,20,0,0)).stars, 3);
   assert.equal(evaluateLevelAttempt(attempt(17,20,1,0)).stars, 2);
-  assert.equal(evaluateLevelAttempt(attempt(17,20,0,1)).stars, 2);
+  assert.equal(evaluateLevelAttempt(attempt(17,20,0,1)).stars, 3);
 });
 
 test('completed weak attempt still earns one star', () => {
@@ -537,7 +537,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   STORAGE_KEY, normalizeProfileName, createProfile,
-  loadProfile, saveProfile, resetProfile
+  loadProfile, saveProfile, resetProfile, applyLevelResult
 } from '../react-apps/gcd-lcm-space/src/lib/progress-store.js';
 
 function memoryStorage(seed = {}) {
@@ -567,6 +567,13 @@ test('corrupt storage returns null instead of throwing', () => {
   assert.equal(loadProfile('Маша', storage), null);
 });
 
+test('unknown storage version is ignored safely', () => {
+  const storage = memoryStorage({
+    [STORAGE_KEY]: JSON.stringify({version:99, profiles:{маша:{displayName:'Маша'}}})
+  });
+  assert.equal(loadProfile('Маша', storage), null);
+});
+
 test('reset deletes only the selected profile', () => {
   const storage = memoryStorage();
   saveProfile(createProfile('Маша'), storage);
@@ -574,6 +581,14 @@ test('reset deletes only the selected profile', () => {
   resetProfile('МАША', storage);
   assert.equal(loadProfile('Маша', storage), null);
   assert.equal(loadProfile('Петя', storage).displayName, 'Петя');
+});
+
+test('completing a level unlocks the next level and never lowers best stars', () => {
+  let profile = createProfile('Маша');
+  profile = applyLevelResult(profile, 1, {stars:2, firstTryAccuracy:70, points:500, bestCombo:3, miniBossErrors:1});
+  assert.equal(profile.levels['2'].unlocked, true);
+  profile = applyLevelResult(profile, 1, {stars:1, firstTryAccuracy:40, points:100, bestCombo:1, miniBossErrors:2});
+  assert.equal(profile.levels['1'].bestStars, 2);
 });
 ```
 
@@ -586,7 +601,7 @@ export function evaluateLevelAttempt(attempt) {
     : 0;
   let stars = 1;
   if (percent >= 65 && attempt.miniBossErrors <= 1) stars = 2;
-  if (percent >= 85 && attempt.miniBossErrors === 0 && attempt.hintsUsed === 0) stars = 3;
+  if (percent >= 85 && attempt.miniBossErrors === 0) stars = 3;
   return {
     stars,
     firstTryAccuracy: percent,
@@ -1410,7 +1425,7 @@ jobs:
 
 Run:
 ```bash
-node --test tests/gcd-lcm-library.test.mjs tests/gcd-lcm-*.test.mjs
+node --test tests/gcd-lcm-*.test.mjs
 ```
 
 Expected: PASS.
