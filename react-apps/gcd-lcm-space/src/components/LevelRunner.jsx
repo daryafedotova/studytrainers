@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from 'react';
 import confetti from 'canvas-confetti';
 import { ArrowLeft, BookOpen, Lightbulb, Sparkles, Star } from 'lucide-react';
 import { CAMPAIGN_LEVELS } from '../lib/campaign.js';
-import { generateLevelTasks, generateMiniBossTasks, answerMatches } from '../lib/task-generators.js';
+import { generateLevelRun, answerMatches } from '../lib/task-generators.js';
 import { createAttemptStats, registerHint, registerLevelAnswer } from '../lib/level-session.js';
 import { evaluateLevelAttempt } from '../lib/scoring.js';
 import { playTone } from '../lib/audio.js';
@@ -11,8 +11,9 @@ import { TaskRenderer } from './TaskRenderer.jsx';
 
 export function LevelRunner({levelId,onComplete,onBack,onReplay,soundOn=true}) {
   const level=CAMPAIGN_LEVELS.find(x=>x.id===levelId);
-  const mission=useMemo(()=>generateLevelTasks(levelId),[levelId]);
-  const mini=useMemo(()=>generateMiniBossTasks(levelId),[levelId]);
+  const run=useMemo(()=>generateLevelRun(levelId),[levelId]);
+  const mission=run.mission;
+  const mini=run.miniboss;
   const[phase,setPhase]=useState('briefing');
   const[index,setIndex]=useState(0);
   const[stats,setStats]=useState(()=>createAttemptStats(mission.length));
