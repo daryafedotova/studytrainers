@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - feature/gcd-lcm-space-campaign
+      - feature/gcd-lcm-gameplay-visual-overhaul
     paths:
       - 'react-apps/gcd-lcm-space/**'
       - 'tests/gcd-lcm-*.test.mjs'
