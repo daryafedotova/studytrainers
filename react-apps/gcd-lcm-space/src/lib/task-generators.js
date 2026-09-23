@@ -7,6 +7,14 @@ let sequence = 0;
 const uid = prefix => `${prefix}-${++sequence}`;
 const choice = (items, rng) => items[Math.floor(rng() * items.length)];
 const shuffled = (items, rng) => [...items].sort(() => rng() - 0.5);
+const sampleWithoutReplacement = (items, count, rng) => {
+  const pool = [...items];
+  for (let i = pool.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(rng() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return pool.slice(0, count);
+};
 const product = values => values.reduce((acc, value) => acc * value, 1);
 
 export const PAIR_FAMILIES = {
@@ -225,8 +233,10 @@ function multiplesChoiceTask(rng) {
   return {id:uid('multiple'),type:'choice',prompt:`Какое число кратно ${n}?`,data:{number:n,options},answer:correct,skill:'multiples',hint:`Кратное ${n} должно делиться на ${n} без остатка.`};
 }
 
-function commonMultipleTask(rng) {
-  const [a,b]=choice([[4,6],[6,8],[5,10],[8,12],[9,12]],rng);
+const COMMON_MULTIPLE_PAIRS = [[4,6],[6,8],[5,10],[8,12],[9,12],[6,9],[8,14],[10,15],[12,18],[14,21],[15,20],[16,24]];
+
+function commonMultipleTask(rng, pair = null) {
+  const [a,b]=pair ?? choice(COMMON_MULTIPLE_PAIRS,rng);
   const target=lcm(a,b);
   const options=shuffled([target,target*2,target+a,target+b],rng);
   return {id:uid('common-multiple'),type:'choice',prompt:`Какое наименьшее число кратно и ${a}, и ${b}?`,data:{a,b,operation:'lcm',options},answer:target,skill:'multiples',hint:'Выпиши несколько кратных каждого числа и найди первое совпадение.'};
@@ -284,8 +294,9 @@ function generateCommonFactorTasks(rng) {
 function generateGcdTasks(rng) {
   return [gcdFactorChoiceTask(rng),numericPairTask('gcd','general',rng),numericPairTask('gcd','shared-prime-different-exponents',rng),numericPairTask('gcd','coprime',rng),gcdErrorFinderTask(rng),numericPairTask('gcd','one-divides-other',rng),gcdFactorChoiceTask(rng)];
 }
-function generateMultipleTasks(rng) {
-  return [multipleSequenceTask(rng),multiplesChoiceTask(rng),commonMultipleTask(rng),multipleSequenceTask(rng),commonMultipleTask(rng),multiplesChoiceTask(rng)];
+function generateMultipleTasks(rng, commonPairs = null) {
+  const pairs = commonPairs ?? sampleWithoutReplacement(COMMON_MULTIPLE_PAIRS, 2, rng);
+  return [multipleSequenceTask(rng),multiplesChoiceTask(rng),commonMultipleTask(rng,pairs[0]),multipleSequenceTask(rng),commonMultipleTask(rng,pairs[1]),multiplesChoiceTask(rng)];
 }
 function generateLcmTasks(rng) {
   return [numericPairTask('lcm','general',rng),numericPairTask('lcm','coprime',rng),numericPairTask('lcm','one-divides-other',rng),numericPairTask('lcm','shared-prime-different-exponents',rng),lcmMissingFactorTask(rng),lcmPowerChoiceTask(rng),lcmErrorFinderTask(rng)];
@@ -310,12 +321,35 @@ export function generateMiniBossTasks(levelId, rng=Math.random) {
     case 3: tasks=[powerCompressionTask(rng),reconstructNumberTask(rng)]; break;
     case 4: tasks=[commonFactorSortTask(rng),commonProductTask(rng)]; break;
     case 5: tasks=[numericPairTask('gcd','general',rng),numericPairTask('gcd','coprime',rng)]; break;
-    case 6: tasks=[commonMultipleTask(rng),commonMultipleTask(rng)]; break;
+    case 6: {
+      const pairs=sampleWithoutReplacement(COMMON_MULTIPLE_PAIRS,2,rng);
+      tasks=[commonMultipleTask(rng,pairs[0]),commonMultipleTask(rng,pairs[1])];
+      break;
+    }
     case 7: tasks=[numericPairTask('lcm','general',rng),numericPairTask('lcm','shared-prime-different-exponents',rng)]; break;
     case 8: tasks=[fullMixedTask(rng),mixedOperationChoiceTask(rng),fullMixedTask(rng)]; break;
     default: throw new RangeError('unknown level');
   }
   return tasks.map(task=>({...task,id:`mini-${task.id}`,miniboss:true}));
+}
+
+
+export function generateLevelRun(levelId, rng=Math.random) {
+  if (levelId === 6) {
+    const pairs = sampleWithoutReplacement(COMMON_MULTIPLE_PAIRS, 4, rng);
+    return {
+      mission: generateMultipleTasks(rng, pairs.slice(0,2)),
+      miniboss: pairs.slice(2,4).map(pair => ({
+        ...commonMultipleTask(rng, pair),
+        id: `mini-${uid('common-multiple')}`,
+        miniboss: true
+      }))
+    };
+  }
+  return {
+    mission: generateLevelTasks(levelId, rng),
+    miniboss: generateMiniBossTasks(levelId, rng)
+  };
 }
 
 export function generateBossPhaseTasks(phase, rng=Math.random) {
