@@ -55,3 +55,31 @@ test('levels render distinct animated space environments and boss renders singul
   assert.match(boss, /singularity-arena/);
   assert.match(boss, /singularity-shard/);
 });
+
+test('campaign map uses responsive grid cards instead of absolute positioned mission nodes', () => {
+  const map = read('../react-apps/gcd-lcm-space/src/components/CampaignMap.jsx');
+  const css = read('../react-apps/gcd-lcm-space/src/styles.css');
+  assert.match(map, /mission-grid/);
+  assert.match(map, /motion\.button/);
+  assert.match(css, /\.mission-grid\{[^}]*grid-template-columns:/);
+  assert.match(css, /\.mission-grid \.mission-node\{[^}]*position:relative/);
+});
+
+test('campaign and level UI use larger game-style cards and typography', () => {
+  const css = read('../react-apps/gcd-lcm-space/src/styles.css');
+  assert.match(css, /\.mission-grid \.mission-node\{[^}]*min-height:210px/);
+  assert.match(css, /\.task-card h2\{[^}]*font-size:clamp\(2\.15rem/);
+  assert.match(css, /\.answer-button\{[^}]*min-height:96px/);
+  assert.match(css, /box-shadow:0 18px 42px/);
+});
+
+test('app exposes independent procedural ambient music control', () => {
+  const app = read('../react-apps/gcd-lcm-space/src/App.jsx');
+  const shell = read('../react-apps/gcd-lcm-space/src/components/AppShell.jsx');
+  const ambient = read('../react-apps/gcd-lcm-space/src/lib/ambient.js');
+  assert.match(app, /musicOn/);
+  assert.match(app, /createAmbientSoundscape/);
+  assert.match(shell, /Музыка/);
+  assert.match(ambient, /AudioContext/);
+  assert.match(ambient, /return \(\) =>/);
+});
