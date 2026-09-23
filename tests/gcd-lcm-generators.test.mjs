@@ -97,3 +97,28 @@ test('GCD factor-choice tasks never require submitting an empty multi-select ans
     }
   }
 });
+
+test('composite proof choice has exactly one proper divisor among options', () => {
+  const rng = seededRng(20260925);
+  for (let round = 0; round < 160; round += 1) {
+    const tasks = generateLevelTasks(1, rng).filter(task => task.id.includes('proof'));
+    for (const task of tasks) {
+      const valid = task.data.options.filter(option =>
+        Number.isInteger(option) && option > 1 && option < task.data.number && task.data.number % option === 0
+      );
+      assert.deepEqual(valid, [task.answer], `Для ${task.data.number} должно быть ровно одно доказательство в вариантах`);
+    }
+  }
+});
+
+test('multiple-choice task has exactly one number divisible by the source number', () => {
+  const rng = seededRng(20260926);
+  for (let round = 0; round < 160; round += 1) {
+    const tasks = generateLevelTasks(6, rng).filter(task => task.id.includes('multiple-') && !task.id.includes('multiple-seq'));
+    for (const task of tasks) {
+      if (!task.prompt.startsWith('Какое число кратно')) continue;
+      const valid = task.data.options.filter(option => option % task.data.number === 0);
+      assert.deepEqual(valid, [task.answer], `Для ${task.data.number} среди вариантов должно быть ровно одно кратное`);
+    }
+  }
+});
