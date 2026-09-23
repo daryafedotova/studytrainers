@@ -37,3 +37,21 @@ test('reduced-motion preference disables intense looping motion and confetti', (
   assert.match(level, /disableForReducedMotion:\s*true/);
   assert.match(boss, /disableForReducedMotion:\s*true/);
 });
+
+test('level six briefing explicitly explains multiples and their number sequence', () => {
+  const briefing = read('../react-apps/gcd-lcm-space/src/components/BriefingRenderer.jsx');
+  assert.match(briefing, /делится[^.]*без остатка/i);
+  assert.match(briefing, /9 · 1 = 9/);
+  assert.match(briefing, /каждый раз прибавлять/i);
+  assert.match(briefing, /общие кратные/i);
+});
+
+test('levels render distinct animated space environments and boss renders singularity arena', () => {
+  const level = read('../react-apps/gcd-lcm-space/src/components/LevelRunner.jsx');
+  const environment = read('../react-apps/gcd-lcm-space/src/components/LevelEnvironment.jsx');
+  const boss = read('../react-apps/gcd-lcm-space/src/components/BossBattle.jsx');
+  assert.match(level, /LevelEnvironment/);
+  for (let id = 1; id <= 8; id += 1) assert.match(environment, new RegExp(`environment-${id}`));
+  assert.match(boss, /singularity-arena/);
+  assert.match(boss, /singularity-shard/);
+});

@@ -1,1 +1,2 @@
-export function ChoiceTask({task,disabled,onSubmit}){return <div className="answer-grid">{task.data.options.map((option,index)=><button key={`${String(option)}-${index}`} className="answer-button" type="button" disabled={disabled} onClick={()=>onSubmit(option)}>{String(option)}</button>)}</div>;}
+import { motion } from 'framer-motion';
+export function ChoiceTask({task,disabled,onSubmit}){return <div className="answer-grid">{task.data.options.map((option,index)=><motion.button key={`${String(option)}-${index}`} className="answer-button" type="button" disabled={disabled} onClick={()=>onSubmit(option)} whileHover={!disabled?{y:-4,scale:1.015}:{}} whileTap={!disabled?{y:2,scale:.99}:{}}>{String(option)}</motion.button>)}</div>;}

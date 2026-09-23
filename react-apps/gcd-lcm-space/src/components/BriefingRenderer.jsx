@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { ArrowRight, BookOpen, ChevronLeft } from 'lucide-react';
 
 export const BRIEFINGS = {
@@ -25,8 +26,9 @@ export const BRIEFINGS = {
     {title:'Если общего нет', body:'Если у чисел нет общих простых множителей, их НОД равен 1.', example:'НОД(24; 25) = 1'}
   ],
   6: [
-    {title:'Кратные числа', body:'Кратные получают умножением данного числа на 1, 2, 3, …', example:'Кратные 6: 6, 12, 18, 24, …'},
-    {title:'Общее кратное', body:'Оно находится сразу в нескольких рядах кратных. Самое маленькое положительное — НОК.', example:'6 и 8 → первое общее кратное 24'}
+    {title:'Что значит «кратное»?', body:'Кратное числа — это число, которое делится на него без остатка. Кратные можно получить, умножая исходное число на 1, 2, 3, 4 и так далее.', example:'9 · 1 = 9   ·   9 · 2 = 18   ·   9 · 3 = 27   ·   9 · 4 = 36'},
+    {title:'Ряд кратных', body:'Поэтому кратные 9 образуют ряд: 9, 18, 27, 36, 45, 54, … Продолжить его можно двумя способами: умножать 9 на следующее натуральное число или каждый раз прибавлять 9.', example:'9, 18, 27, 36, 45, 54, …'},
+    {title:'Общие кратные', body:'Общие кратные — числа, которые одновременно кратны двум числам. Самое маленькое положительное общее кратное называют НОК.', example:'Кратные 6: 6, 12, 18, 24…   Кратные 8: 8, 16, 24…   →   НОК(6; 8) = 24'}
   ],
   7: [
     {title:'Алгоритм НОК', body:'Собери минимальный набор простых множителей, которого хватает для обоих чисел.', example:'18 = 2 · 3²; 24 = 2³ · 3 → НОК = 2³ · 3² = 72'},
@@ -37,4 +39,4 @@ export const BRIEFINGS = {
     {title:'Смотри на смысл', body:'Сначала реши, что ищется, и только потом выбирай алгоритм.', example:'«Наибольший общий…» → НОД; «наименьшее кратное…» → НОК'}
   ]
 };
-export function BriefingRenderer({levelId,onDone}){const steps=BRIEFINGS[levelId]??[];const[index,setIndex]=useState(0);const step=steps[index];if(!step)return <button className="primary-button" onClick={onDone}>К миссии <ArrowRight size={18}/></button>;return <section className="briefing-card"><div className="briefing-badge"><BookOpen size={18}/> Бортовой журнал · {index+1}/{steps.length}</div><h2>{step.title}</h2><p>{step.body}</p><div className="briefing-example">{step.example}</div><div className="button-row briefing-actions">{index>0&&<button className="secondary-button" type="button" onClick={()=>setIndex(i=>i-1)}><ChevronLeft size={18}/> Назад</button>}<button className="primary-button" type="button" onClick={()=>index===steps.length-1?onDone():setIndex(i=>i+1)}>{index===steps.length-1?'Начать миссию':'Дальше'} <ArrowRight size={18}/></button></div></section>;}
+export function BriefingRenderer({levelId,onDone}){const steps=BRIEFINGS[levelId]??[];const[index,setIndex]=useState(0);const step=steps[index];if(!step)return <button className="primary-button" onClick={onDone}>К миссии <ArrowRight size={18}/></button>;return <motion.section key={index} className="briefing-card" initial={{opacity:0,y:18,scale:.985}} animate={{opacity:1,y:0,scale:1}} transition={{duration:.35}}><div className="briefing-badge"><BookOpen size={18}/> Бортовой журнал · {index+1}/{steps.length}</div><h2>{step.title}</h2><p>{step.body}</p><div className="briefing-example">{step.example}</div><div className="button-row briefing-actions">{index>0&&<button className="secondary-button" type="button" onClick={()=>setIndex(i=>i-1)}><ChevronLeft size={18}/> Назад</button>}<button className="primary-button" type="button" onClick={()=>index===steps.length-1?onDone():setIndex(i=>i+1)}>{index===steps.length-1?'Начать миссию':'Дальше'} <ArrowRight size={18}/></button></div></motion.section>;}

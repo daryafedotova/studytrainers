@@ -48,3 +48,146 @@
   .stars{font-size:1.18rem}
   .boss-node{min-height:150px}
 }
+
+
+/* === Game-style cosmic overhaul === */
+.space-background{background:
+  radial-gradient(1200px 700px at 18% -8%,rgba(67,56,202,.34),transparent 58%),
+  radial-gradient(900px 650px at 92% 30%,rgba(14,165,233,.18),transparent 62%),
+  radial-gradient(800px 550px at 45% 110%,rgba(190,24,93,.16),transparent 60%),
+  linear-gradient(180deg,#07091a 0%,#0a0d22 48%,#050714 100%)}
+.planet-outline{position:absolute;border-radius:50%;border:1px solid rgba(165,180,252,.16);box-shadow:inset -18px -15px 45px rgba(2,6,23,.72),0 0 70px rgba(99,102,241,.08)}
+.planet-outline span{position:absolute;left:-18%;right:-18%;top:48%;height:16%;border:2px solid rgba(125,211,252,.12);border-radius:50%;transform:rotate(-14deg)}
+.planet-outline-a{width:340px;height:340px;right:-120px;top:80px;background:radial-gradient(circle at 35% 30%,rgba(129,140,248,.1),transparent 50%)}
+.planet-outline-b{width:190px;height:190px;left:-70px;bottom:80px;background:radial-gradient(circle at 40% 35%,rgba(244,114,182,.08),transparent 55%)}
+.deep-orbit{position:absolute;border:1px solid rgba(255,255,255,.065);border-radius:50%;transform:rotate(-20deg)}
+.deep-orbit-a{width:720px;height:250px;right:-280px;top:34%}
+.deep-orbit-b{width:620px;height:210px;left:-300px;bottom:15%;transform:rotate(18deg)}
+.primary-button{box-shadow:0 10px 30px rgba(56,189,248,.16),inset 0 1px rgba(255,255,255,.45);transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}
+.primary-button:hover{transform:translateY(-2px);filter:brightness(1.07);box-shadow:0 14px 34px rgba(56,189,248,.25),inset 0 1px rgba(255,255,255,.5)}
+.secondary-button,.ghost-button,.answer-button{transition:transform .18s ease,border-color .18s ease,background .18s ease}
+.secondary-button:hover,.ghost-button:hover,.answer-button:hover{transform:translateY(-2px);border-color:rgba(125,211,252,.36);background:rgba(125,211,252,.1)}
+
+/* Per-level environments */
+.themed-level{position:relative;isolation:isolate;min-height:calc(100vh - 145px);padding:8px 0 35px}
+.level-ui-layer{position:relative;z-index:4}
+.level-environment{position:absolute;z-index:0;inset:-85px -16vw -70px;overflow:hidden;border-radius:42px;pointer-events:none;--scene:#38bdf8;--scene2:#818cf8;background:
+  radial-gradient(circle at 50% 12%,color-mix(in srgb,var(--scene) 16%,transparent),transparent 38%),
+  linear-gradient(180deg,rgba(4,7,22,.05),rgba(3,6,18,.42) 72%,rgba(3,5,15,.75));}
+.environment-label{position:absolute;right:28px;top:30px;padding:6px 10px;border:1px solid rgba(255,255,255,.08);border-radius:999px;color:rgba(255,255,255,.18);font-size:.68rem;text-transform:uppercase;letter-spacing:.12em}
+.scene-stars{position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.7) 0 1px,transparent 1.25px);opacity:.18}
+.scene-stars-a{background-size:31px 31px}
+.scene-stars-b{background-size:57px 57px;transform:translate(19px,11px);opacity:.1}
+.scene-orbit{position:absolute;border:1px solid color-mix(in srgb,var(--scene) 24%,transparent);border-radius:50%}
+.orbit-a{width:620px;height:220px;right:-180px;top:80px;transform:rotate(-16deg)}
+.orbit-b{width:520px;height:180px;left:-220px;bottom:30px;transform:rotate(17deg)}
+.scene-planet{position:absolute;border-radius:50%;display:none;box-shadow:inset -25px -22px 55px rgba(2,6,23,.75),0 0 70px color-mix(in srgb,var(--scene) 16%,transparent)}
+.planet-a{width:190px;height:190px;right:6%;top:80px;background:
+  radial-gradient(circle at 30% 25%,rgba(255,255,255,.22),transparent 16%),
+  radial-gradient(circle at 55% 65%,rgba(15,23,42,.35) 0 11%,transparent 12%),
+  linear-gradient(145deg,color-mix(in srgb,var(--scene) 80%,#fff),color-mix(in srgb,var(--scene2) 72%,#10172e))}
+.planet-b{width:82px;height:82px;left:8%;top:190px;background:linear-gradient(145deg,color-mix(in srgb,var(--scene2) 65%,#fff),#15162d)}
+.scene-horizon{display:none;position:absolute;left:-10%;right:-10%;bottom:-180px;height:360px;border-radius:50% 50% 0 0;background:
+  radial-gradient(ellipse at 50% 0%,color-mix(in srgb,var(--scene) 34%,transparent),transparent 18%),
+  linear-gradient(180deg,color-mix(in srgb,var(--scene2) 38%,#111827),#070b18 55%,#03050c);
+  box-shadow:0 -20px 90px color-mix(in srgb,var(--scene) 16%,transparent)}
+.scene-cockpit{display:none;position:absolute;top:0;bottom:0;width:25%;background:linear-gradient(90deg,rgba(3,7,18,.92),rgba(14,22,42,.58));filter:drop-shadow(0 0 20px rgba(0,0,0,.45))}
+.cockpit-left{left:-9%;clip-path:polygon(0 0,72% 0,100% 20%,72% 76%,100% 100%,0 100%)}
+.cockpit-right{right:-9%;transform:scaleX(-1);clip-path:polygon(0 0,72% 0,100% 20%,72% 76%,100% 100%,0 100%)}
+.scene-console-glow{display:none;position:absolute;left:18%;right:18%;bottom:-45px;height:120px;border-radius:50%;background:radial-gradient(ellipse,color-mix(in srgb,var(--scene) 20%,transparent),transparent 65%)}
+.scene-asteroids{display:none;position:absolute;inset:0}
+.scene-asteroids i{position:absolute;width:56px;height:42px;border-radius:48% 52% 55% 45%;background:
+  radial-gradient(circle at 28% 35%,rgba(255,255,255,.18),transparent 12%),
+  linear-gradient(145deg,#475569,#111827 70%);box-shadow:inset -10px -8px 16px rgba(0,0,0,.35),0 8px 20px rgba(0,0,0,.35)}
+.scene-asteroids i:nth-child(1){left:8%;top:18%;transform:scale(.6)}
+.scene-asteroids i:nth-child(2){right:12%;top:25%;transform:scale(1.1)}
+.scene-asteroids i:nth-child(3){left:15%;bottom:22%;transform:scale(.9)}
+.scene-asteroids i:nth-child(4){right:24%;bottom:12%;transform:scale(.55)}
+.scene-asteroids i:nth-child(5){right:4%;bottom:36%;transform:scale(.72)}
+.scene-asteroids i:nth-child(6){left:38%;top:5%;transform:scale(.45)}
+.scene-station{display:none;position:absolute;width:360px;height:360px;right:-90px;top:70px;border-radius:50%;border:14px solid rgba(148,163,184,.13);box-shadow:0 0 0 2px color-mix(in srgb,var(--scene) 24%,transparent),inset 0 0 50px rgba(2,6,23,.65)}
+.scene-station:before,.scene-station:after{content:"";position:absolute;inset:48px;border-radius:50%;border:8px solid rgba(148,163,184,.12)}
+.scene-station:after{inset:105px;background:radial-gradient(circle,color-mix(in srgb,var(--scene) 44%,#fff),color-mix(in srgb,var(--scene2) 65%,#0f172a));box-shadow:0 0 42px color-mix(in srgb,var(--scene) 28%,transparent)}
+.scene-station span{position:absolute;left:50%;top:-20px;width:12px;height:400px;background:linear-gradient(transparent,rgba(148,163,184,.16),transparent);transform-origin:center}
+.scene-station span:nth-child(2){transform:rotate(60deg)}.scene-station span:nth-child(3){transform:rotate(120deg)}
+.scene-route-lines{display:none;position:absolute;inset:0}
+.scene-route-lines i{position:absolute;height:2px;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--scene) 55%,transparent),transparent);box-shadow:0 0 10px color-mix(in srgb,var(--scene) 30%,transparent)}
+.scene-route-lines i:nth-child(1){width:62%;left:20%;top:26%;transform:rotate(-8deg)}
+.scene-route-lines i:nth-child(2){width:52%;left:12%;top:68%;transform:rotate(11deg)}
+.scene-route-lines i:nth-child(3){width:45%;right:8%;top:48%;transform:rotate(-19deg)}
+.scene-nebula-cloud{display:none;position:absolute;width:460px;height:360px;border-radius:50%;filter:blur(70px);opacity:.35}
+.cloud-a{left:-100px;top:40px;background:#7c3aed}.cloud-b{right:-120px;bottom:40px;background:#db2777}
+.environment-1{--scene:#38bdf8;--scene2:#22c55e}.environment-1 .scene-planet,.environment-1 .scene-horizon{display:block}
+.environment-2{--scene:#f59e0b;--scene2:#64748b}.environment-2 .scene-asteroids{display:block}
+.environment-3{--scene:#22d3ee;--scene2:#6366f1}.environment-3 .scene-station{display:block}
+.environment-4{--scene:#34d399;--scene2:#38bdf8}.environment-4 .scene-route-lines,.environment-4 .scene-cockpit,.environment-4 .scene-console-glow{display:block}
+.environment-5{--scene:#60a5fa;--scene2:#8b5cf6}.environment-5 .scene-horizon,.environment-5 .scene-planet{display:block}.environment-5 .planet-a{width:260px;height:260px;right:-30px;top:120px}
+.environment-6{--scene:#22d3ee;--scene2:#f59e0b}.environment-6 .scene-cockpit,.environment-6 .scene-console-glow,.environment-6 .scene-route-lines{display:block}
+.environment-7{--scene:#c084fc;--scene2:#38bdf8}.environment-7 .scene-station,.environment-7 .scene-orbit{display:block}
+.environment-8{--scene:#a78bfa;--scene2:#ec4899}.environment-8 .scene-nebula-cloud{display:block}.environment-8 .scene-route-lines{display:block}
+.themed-level .task-card,.themed-level .briefing-card{background:linear-gradient(145deg,rgba(14,21,45,.86),rgba(11,15,34,.77));border-color:color-mix(in srgb,var(--scene,#38bdf8) 24%,rgba(255,255,255,.12));box-shadow:0 26px 80px rgba(0,0,0,.35),inset 0 1px rgba(255,255,255,.04)}
+.level-2 .task-card,.level-2 .briefing-card{border-color:rgba(245,158,11,.22)}
+.level-3 .task-card,.level-3 .briefing-card{border-color:rgba(34,211,238,.23)}
+.level-5 .task-card,.level-5 .briefing-card{border-color:rgba(96,165,250,.25)}
+.level-7 .task-card,.level-7 .briefing-card{border-color:rgba(192,132,252,.26)}
+.level-8 .task-card,.level-8 .briefing-card{border-color:rgba(236,72,153,.22)}
+
+/* Algorithm workbench */
+.algorithm-workbench{margin-top:22px;text-align:left}
+.workbench-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.workbench-steps span{padding:9px 11px;border-radius:13px;text-align:center;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.42);font-size:.76rem;font-weight:900;text-transform:uppercase;letter-spacing:.06em}
+.workbench-steps span.active{color:#e0f2fe;border-color:rgba(56,189,248,.38);background:rgba(56,189,248,.12);box-shadow:0 0 20px rgba(56,189,248,.08)}
+.workbench-steps span.done{color:#bbf7d0;border-color:rgba(52,211,153,.24)}
+.factorization-lab{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.factorization-console{padding:17px;border-radius:22px;background:linear-gradient(145deg,rgba(2,6,23,.52),rgba(15,23,42,.4));border:1px solid rgba(125,211,252,.13);box-shadow:inset 0 0 30px rgba(2,6,23,.25)}
+.factorization-console.complete{border-color:rgba(52,211,153,.28);box-shadow:inset 0 0 24px rgba(16,185,129,.06)}
+.console-heading{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.55);font-size:.76rem;text-transform:uppercase;font-weight:900}.console-heading strong{font-size:1.45rem;color:#fff;margin-right:auto}
+.division-readout{margin:12px 0;padding:14px;border-radius:17px;background:#050a18;border:1px solid rgba(56,189,248,.12);display:flex;align-items:baseline;gap:10px;min-height:68px}
+.division-readout>strong{font-size:1.7rem;color:#7dd3fc}.division-readout small{color:rgba(255,255,255,.58);line-height:1.35}
+.prime-keypad{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.prime-keypad button{min-height:50px;border:1px solid rgba(125,211,252,.18);border-radius:14px;background:linear-gradient(180deg,rgba(56,189,248,.15),rgba(56,189,248,.06));color:#fff;font-size:1.15rem;font-weight:900;cursor:pointer}
+.prime-keypad button:hover{background:rgba(56,189,248,.22);transform:translateY(-2px)}
+.division-history{display:grid;gap:5px;margin-top:11px}.division-history>div{display:grid;grid-template-columns:1fr auto 1fr;gap:7px;padding:6px 9px;border-radius:10px;background:rgba(255,255,255,.035);font-size:.88rem}.division-history>div span:last-child{text-align:right}.division-history b{color:#93c5fd}
+.workbench-next{display:flex;margin:14px auto 0}
+.result-factor-stage,.calculation-console{margin-top:14px;padding:18px;border-radius:22px;background:rgba(2,6,23,.44);border:1px solid rgba(255,255,255,.09);text-align:center}
+.result-factor-stage h3,.calculation-console h3{margin:0 0 13px;font-size:1.03rem}
+.decomposition-summary{display:grid;grid-template-columns:1fr 1fr;gap:8px}.decomposition-summary span{padding:11px;border-radius:13px;background:rgba(255,255,255,.045);font-size:1.03rem}
+.selected-result-factors{min-height:55px;margin:12px 0;padding:10px;display:flex;flex-wrap:wrap;gap:7px;justify-content:center;align-items:center;border:1px dashed rgba(255,255,255,.15);border-radius:16px;color:rgba(255,255,255,.38)}
+.selected-result-factors button{min-height:38px;border-radius:11px;border:1px solid rgba(244,114,182,.22);background:rgba(244,114,182,.08);color:#fbcfe8}
+.calculation-expression{font-size:1.4rem;font-weight:900;color:#fde68a;margin-bottom:12px}
+.calculation-row{display:grid;grid-template-columns:1fr auto minmax(90px,140px) auto;gap:9px;align-items:center;margin:7px auto;max-width:560px;padding:9px 11px;border-radius:14px;background:rgba(255,255,255,.04)}
+.calculation-row.solved{grid-template-columns:1fr auto 1fr;color:#bbf7d0}.calculation-row.solved strong{text-align:left}
+.calculation-row input{min-height:45px;min-width:0;border-radius:11px;border:1px solid rgba(125,211,252,.2);background:#050a18;color:#fff;text-align:center;font-size:1.05rem;font-weight:900}
+.calculation-row .secondary-button{min-height:45px;padding:0 12px}
+.calculation-finish{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;padding:12px}.calculation-finish strong{font-size:1.8rem;color:#86efac}
+.workbench-reset{margin:8px auto 0;display:flex;gap:6px;align-items:center;border:0;background:transparent;color:rgba(255,255,255,.48);cursor:pointer}
+.workbench-error{margin:12px 0 0;padding:11px 13px;border-radius:13px;background:rgba(244,63,94,.1);border:1px solid rgba(251,113,133,.2);color:#fecdd3;text-align:center}
+
+/* Final boss: dimensional Singularity Core */
+.singularity-arena{position:relative;width:min(430px,90vw);height:300px;margin:4px auto 0;display:grid;place-items:center;filter:drop-shadow(0 28px 45px rgba(0,0,0,.45));transition:filter .3s ease,transform .3s ease}
+.singularity-nebula{position:absolute;width:250px;height:190px;border-radius:50%;filter:blur(50px);opacity:.42}.nebula-left{left:15px;background:#4f46e5}.nebula-right{right:5px;background:#be185d}
+.gravity-well{position:absolute;width:250px;height:250px;border-radius:50%;background:repeating-radial-gradient(circle,rgba(255,255,255,.04) 0 2px,transparent 3px 13px),radial-gradient(circle,rgba(0,0,0,.95) 0 23%,rgba(49,20,94,.75) 37%,rgba(88,28,135,.28) 54%,transparent 68%);box-shadow:0 0 90px rgba(139,92,246,.32),inset 0 0 70px #000}
+.singularity-arena .singularity-ring{position:absolute;border-radius:50%;border:3px solid rgba(196,181,253,.38);box-shadow:0 0 18px rgba(167,139,250,.22),inset 0 0 18px rgba(167,139,250,.12);animation:spin 18s linear infinite}
+.ring-outer{width:330px;height:115px;transform:rotate(-13deg)}.ring-middle{width:285px;height:90px;border-style:dashed!important;transform:rotate(23deg);animation-direction:reverse!important;animation-duration:12s!important}.ring-inner{width:205px;height:205px;border-color:rgba(125,211,252,.32)!important;animation-duration:9s!important}
+.singularity-core-shell{position:relative;width:124px;height:124px;display:grid;place-items:center}.core-corona{position:absolute;inset:-20px;border-radius:50%;background:conic-gradient(from 0deg,transparent,#818cf8,transparent,#ec4899,transparent,#38bdf8,transparent);filter:blur(11px);animation:spin 7s linear infinite;opacity:.8}
+.singularity-arena .singularity-core{position:relative;width:94px;height:94px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 42% 38%,#fff 0 4%,#dbeafe 8%,#818cf8 19%,#312e81 38%,#090516 70%,#000 100%);box-shadow:0 0 18px #fff,0 0 45px #818cf8,0 0 90px rgba(236,72,153,.45),inset -12px -15px 25px #000}
+.singularity-core span{font-size:2rem;font-weight:900;color:#fff;text-shadow:0 0 12px #fff,0 0 25px #a78bfa}
+.core-flare{position:absolute;width:180px;height:3px;background:linear-gradient(90deg,transparent,#fff,transparent);filter:blur(.5px);opacity:.55}.flare-a{transform:rotate(21deg)}.flare-b{transform:rotate(-38deg)}
+.singularity-shards{position:absolute;inset:0}.singularity-shard{position:absolute;width:26px;height:15px;background:linear-gradient(145deg,#64748b,#111827);clip-path:polygon(0 20%,70% 0,100% 62%,44% 100%);box-shadow:0 0 9px rgba(148,163,184,.25);animation:shardFloat 6s ease-in-out infinite}
+.shard-1{left:8%;top:36%}.shard-2{right:8%;top:28%;animation-delay:-1s}.shard-3{left:19%;bottom:18%;animation-delay:-2s}.shard-4{right:18%;bottom:15%;animation-delay:-3s}.shard-5{left:32%;top:9%;animation-delay:-4s}.shard-6{right:31%;top:6%;animation-delay:-2.5s}.shard-7{left:4%;bottom:38%;animation-delay:-1.5s}.shard-8{right:3%;bottom:34%;animation-delay:-4.5s}.shard-9{left:43%;bottom:1%;animation-delay:-.7s}.shard-10{right:44%;top:0;animation-delay:-3.7s}
+.singularity-lightning{position:absolute;width:125px;height:2px;background:linear-gradient(90deg,transparent,#c4b5fd,#fff);box-shadow:0 0 10px #a78bfa;transform-origin:right;opacity:.7}.lightning-a{left:38px;top:43%;transform:rotate(12deg)}.lightning-b{right:39px;bottom:35%;transform:rotate(-17deg)}
+.boss-particles{position:absolute;inset:0}.boss-particles i{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 8px #fff;animation:particlePulse 2.4s ease-in-out infinite}.boss-particles i:nth-child(3n+1){left:20%;top:18%}.boss-particles i:nth-child(3n+2){right:18%;bottom:22%}.boss-particles i:nth-child(3n){left:72%;top:26%}
+.singularity-arena.phase-2 .gravity-well{box-shadow:0 0 105px rgba(236,72,153,.38),inset 0 0 70px #000}.singularity-arena.phase-2 .singularity-shard{background:linear-gradient(145deg,#7c3aed,#1e1b4b)}
+.singularity-arena.phase-3{filter:drop-shadow(0 30px 55px rgba(190,24,93,.42))}.singularity-arena.phase-3 .core-corona{opacity:1;filter:blur(8px)}.singularity-arena.phase-3 .gravity-well{background:repeating-radial-gradient(circle,rgba(255,255,255,.06) 0 2px,transparent 3px 10px),radial-gradient(circle,#000 0 20%,rgba(190,24,93,.85) 36%,rgba(124,58,237,.45) 54%,transparent 70%)}
+.singularity-arena.critical{transform:scale(1.045);filter:brightness(1.35) drop-shadow(0 0 28px rgba(255,255,255,.25))}
+@keyframes shardFloat{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-10px) rotate(12deg)}}@keyframes particlePulse{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:1;transform:scale(1.8)}}
+
+@media(max-width:700px){
+  .level-environment{inset:-70px -8vw -50px}
+  .environment-label{display:none}
+  .factorization-lab,.decomposition-summary{grid-template-columns:1fr}
+  .workbench-steps{grid-template-columns:1fr}
+  .calculation-row{grid-template-columns:1fr auto 1fr}.calculation-row .secondary-button{grid-column:1/-1}
+  .scene-planet.planet-a{opacity:.6}
+  .singularity-arena{height:245px;transform:scale(.86);margin:-10px auto}
+}
