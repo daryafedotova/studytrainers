@@ -184,9 +184,18 @@ function commonProductTask(rng) {
 function gcdFactorChoiceTask(rng) {
   const {a,b,pairKind}=pairData(choice(['general','shared-prime-different-exponents','coprime'],rng),rng);
   const common=primeFactorization(gcd(a,b));
+  if (common.length === 0) {
+    return {
+      id:uid('gcd-factors'),type:'choice',prompt:`Какие общие простые множители есть у ${a} и ${b}?`,
+      data:{a,b,pairKind,operation:'gcd',options:shuffled(['Общих простых множителей нет','2','3','5'],rng)},
+      answer:'Общих простых множителей нет',
+      skill:'gcd',hint:'Если у двух чисел нет ни одного общего простого множителя, их НОД равен 1.'
+    };
+  }
+  const distractors=[2,3,5,7].filter(prime => !common.includes(prime)).slice(0,3);
   return {
     id:uid('gcd-factors'),type:'multi',prompt:`Выбери множители, из которых получится НОД(${a}; ${b}).`,
-    data:{a,b,pairKind,operation:'gcd',options:shuffled([2,2,3,3,5,7],rng)},answer:common,
+    data:{a,b,pairKind,operation:'gcd',options:shuffled([...common,...distractors],rng)},answer:common,
     skill:'gcd',hint:'Для НОД бери только общие множители и не больше раз, чем они встречаются в каждом числе.'
   };
 }
