@@ -133,3 +133,15 @@ test('level 6 never repeats the same common-multiple pair between mission and mi
     assert.equal(new Set(pairs).size, pairs.length, `Повторилась пара в прохождении: ${pairs.join(', ')}`);
   }
 });
+
+test('common-multiple choice options are distinct', () => {
+  for (let seed = 1; seed <= 120; seed += 1) {
+    const run = generateLevelRun(6, seededRng(seed));
+    const tasks = [...run.mission, ...run.miniboss]
+      .filter(task => task.skill === 'multiples' && task.data?.operation === 'lcm');
+    for (const task of tasks) {
+      assert.equal(new Set(task.data.options).size, task.data.options.length,
+        `Повторяются варианты для ${task.data.a} и ${task.data.b}: ${task.data.options.join(', ')}`);
+    }
+  }
+});
