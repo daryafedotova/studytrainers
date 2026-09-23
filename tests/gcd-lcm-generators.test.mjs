@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { gcd, lcm, primeFactorization } from '../react-apps/gcd-lcm-space/src/lib/math.js';
 import {
-  generateLevelTasks, generateMiniBossTasks, generateBossPhaseTasks
+  generateLevelTasks, generateMiniBossTasks, generateBossPhaseTasks, generateLevelRun
 } from '../react-apps/gcd-lcm-space/src/lib/task-generators.js';
 
 function seededRng(seed = 123456789) {
@@ -120,5 +120,16 @@ test('multiple-choice task has exactly one number divisible by the source number
       const valid = task.data.options.filter(option => option % task.data.number === 0);
       assert.deepEqual(valid, [task.answer], `Для ${task.data.number} среди вариантов должно быть ровно одно кратное`);
     }
+  }
+});
+
+test('level 6 never repeats the same common-multiple pair between mission and miniboss', () => {
+  for (let seed = 1; seed <= 120; seed += 1) {
+    const run = generateLevelRun(6, seededRng(seed));
+    const commonMultipleTasks = [...run.mission, ...run.miniboss]
+      .filter(task => task.skill === 'multiples' && task.data?.operation === 'lcm');
+    assert.equal(commonMultipleTasks.length, 4);
+    const pairs = commonMultipleTasks.map(task => [task.data.a, task.data.b].sort((a,b)=>a-b).join(':'));
+    assert.equal(new Set(pairs).size, pairs.length, `Повторилась пара в прохождении: ${pairs.join(', ')}`);
   }
 });
