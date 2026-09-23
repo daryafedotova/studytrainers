@@ -64,8 +64,10 @@ function compositeProofTask(rng) {
   const n = choice([12,15,21,25,27,35,49], rng);
   const valid = divisors(n).filter(d => d !== 1 && d !== n);
   const correct = choice(valid, rng);
-  const candidates = shuffled([...new Set([correct,2,3,5,7,11].filter(d => d < n))], rng).slice(0,4);
-  if (!candidates.includes(correct)) candidates[0] = correct;
+  const distractors = [2,3,5,7,11,13,17]
+    .filter(value => value < n && value !== correct && n % value !== 0)
+    .slice(0,3);
+  const candidates = shuffled([correct, ...distractors], rng);
   return {
     id:uid('proof'), type:'choice', prompt:`Какой делитель доказывает, что ${n} — составное?`,
     data:{number:n,options:candidates}, answer:correct,
@@ -219,8 +221,8 @@ function gcdErrorFinderTask(rng) {
 function multiplesChoiceTask(rng) {
   const n=choice([4,5,6,7,8,9,10,12],rng);
   const correct=n*choice([2,3,4,5],rng);
-  const wrong=correct+choice([1,2,3],rng);
-  return {id:uid('multiple'),type:'choice',prompt:`Какое число кратно ${n}?`,data:{number:n,options:shuffled([correct,wrong,wrong+n-1,correct+1],rng)},answer:correct,skill:'multiples',hint:`Кратное ${n} должно делиться на ${n} без остатка.`};
+  const options=shuffled([correct,correct+1,correct+2,correct+3],rng);
+  return {id:uid('multiple'),type:'choice',prompt:`Какое число кратно ${n}?`,data:{number:n,options},answer:correct,skill:'multiples',hint:`Кратное ${n} должно делиться на ${n} без остатка.`};
 }
 
 function commonMultipleTask(rng) {
