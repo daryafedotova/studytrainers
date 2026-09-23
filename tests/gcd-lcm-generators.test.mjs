@@ -174,3 +174,25 @@ test('level 8 still mixes gcd, lcm, operation choice, factorization and error an
   assert.ok(all.some(task => task.id.includes('gcd-error')));
   assert.ok(all.some(task => task.id.includes('lcm-error')));
 });
+
+test('core GCD and LCM practice uses in-app algorithm workbenches', () => {
+  const rng = seededRng(20261001);
+  const level4 = generateLevelTasks(4, rng);
+  const level5 = generateLevelTasks(5, rng);
+  const level7 = generateLevelTasks(7, rng);
+  assert.ok(level4.some(task => task.type === 'algorithm-workbench' && task.data.operation === 'common'));
+  assert.ok(level5.filter(task => task.type === 'algorithm-workbench' && task.data.operation === 'gcd').length >= 3);
+  assert.ok(level7.filter(task => task.type === 'algorithm-workbench' && task.data.operation === 'lcm').length >= 3);
+});
+
+test('student-facing generated power notation never uses caret syntax', () => {
+  const rng = seededRng(20261002);
+  for (const level of [2,3,4,5,7,8]) {
+    for (let round = 0; round < 20; round += 1) {
+      for (const task of generateLevelTasks(level, rng)) {
+        const text = JSON.stringify({prompt:task.prompt,data:task.data,answer:task.answer,hint:task.hint});
+        assert.doesNotMatch(text, /\d\^\d/);
+      }
+    }
+  }
+});
