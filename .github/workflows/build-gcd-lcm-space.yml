@@ -6,6 +6,7 @@ on:
     branches:
       - main
       - feature/gcd-lcm-space-campaign
+      - fix/gcd-lcm-game-ui-large-cards
     paths:
       - 'react-apps/gcd-lcm-space/**'
       - 'tests/gcd-lcm-*.test.mjs'
