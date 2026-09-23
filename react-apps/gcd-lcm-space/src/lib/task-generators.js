@@ -35,8 +35,10 @@ function pairData(pairKind, rng) {
   return {a,b,pairKind};
 }
 
-function numericPairTask(operation, pairKind, rng, skill = operation) {
-  const {a,b} = pairData(pairKind, rng);
+function numericPairTask(operation, pairKind, rng, skill = operation, pairOverride = null) {
+  const picked = pairOverride ? {a:pairOverride[0],b:pairOverride[1],pairKind:pairKind ?? 'mixed'} : pairData(pairKind, rng);
+  const {a,b} = picked;
+  pairKind = picked.pairKind;
   return {
     id: uid(operation), type: 'numeric',
     prompt: operation === 'gcd' ? `Найди НОД(${a}; ${b})` : `Найди НОК(${a}; ${b})`,
@@ -210,8 +212,8 @@ function gcdFactorChoiceTask(rng) {
   };
 }
 
-function gcdErrorFinderTask(rng) {
-  const {a,b}=pairData('shared-prime-different-exponents',rng);
+function gcdErrorFinderTask(rng, pairOverride = null) {
+  const {a,b}=pairOverride ? {a:pairOverride[0],b:pairOverride[1]} : pairData('shared-prime-different-exponents',rng);
   const ga=gcd(a,b);
   const correctFactors=compactText(primeFactorization(ga));
   return {
@@ -264,22 +266,27 @@ function lcmPowerChoiceTask(rng) {
   return {id:uid('lcm-powers'),type:'choice',prompt:`Какой набор степеней даёт НОК(${a}; ${b})?`,data:{a,b,pairKind,operation:'lcm',options},answer,skill:'lcm',hint:'Для каждого простого множителя бери наибольший показатель из двух разложений.'};
 }
 
-function lcmErrorFinderTask(rng) {
-  const {a,b}=pairData('general',rng);
+function lcmErrorFinderTask(rng, pairOverride = null) {
+  const {a,b}=pairOverride ? {a:pairOverride[0],b:pairOverride[1]} : pairData('general',rng);
   return {id:uid('lcm-error'),type:'error-finder',prompt:`Найди ошибку в решении НОК(${a}; ${b}).`,data:{a,b,operation:'lcm',steps:[`${a} = ${compactText(primeFactorization(a))}`,`${b} = ${compactText(primeFactorization(b))}`,'Берём только общие простые множители','Для НОК нужно взять максимальное количество каждого простого множителя']},answer:2,skill:'lcm',hint:'Правило «только общие» относится к НОД, а не к НОК.'};
 }
 
-function mixedOperationChoiceTask(rng) {
-  const operation=choice(['gcd','lcm'],rng);
-  const [a,b]=choice([[18,24],[20,30],[12,36],[14,25]],rng);
+const MIXED_LEVEL_PAIRS = [
+  [18,24],[20,30],[12,36],[14,25],[16,24],[21,28],[24,36],
+  [25,40],[27,45],[32,48],[35,50],[42,70],[45,60],[48,72],[54,81]
+];
+
+function mixedOperationChoiceTask(rng, pairOverride = null, operationOverride = null) {
+  const operation=operationOverride ?? choice(['gcd','lcm'],rng);
+  const [a,b]=pairOverride ?? choice(MIXED_LEVEL_PAIRS,rng);
   const wording=operation==='gcd' ? `Нужно найти наибольший общий делитель чисел ${a} и ${b}. Что выбираем?` : `Нужно найти наименьшее число, кратное ${a} и ${b}. Что выбираем?`;
   return {id:uid('mixed-op'),type:'choice',prompt:wording,data:{a,b,operation,options:['НОД','НОК']},answer:operation==='gcd'?'НОД':'НОК',skill:'mixed',hint:'Общий делитель → НОД. Общее кратное → НОК.'};
 }
 
-function fullMixedTask(rng) {
-  const operation=choice(['gcd','lcm'],rng);
-  const kind=choice(['general','coprime','one-divides-other','shared-prime-different-exponents'],rng);
-  return {...numericPairTask(operation,kind,rng,'mixed'),id:uid('mixed-full')};
+function fullMixedTask(rng, pairOverride = null, operationOverride = null) {
+  const operation=operationOverride ?? choice(['gcd','lcm'],rng);
+  const kind=pairOverride ? 'mixed-unique' : choice(['general','coprime','one-divides-other','shared-prime-different-exponents'],rng);
+  return {...numericPairTask(operation,kind,rng,'mixed',pairOverride),id:uid('mixed-full')};
 }
 
 function generatePrimeTasks(rng) {
@@ -305,7 +312,16 @@ function generateLcmTasks(rng) {
   return [numericPairTask('lcm','general',rng),numericPairTask('lcm','coprime',rng),numericPairTask('lcm','one-divides-other',rng),numericPairTask('lcm','shared-prime-different-exponents',rng),lcmMissingFactorTask(rng),lcmPowerChoiceTask(rng),lcmErrorFinderTask(rng)];
 }
 function generateMixedTasks(rng) {
-  return [mixedOperationChoiceTask(rng),fullMixedTask(rng),fullMixedTask(rng),factorizationChoiceTask(rng),gcdErrorFinderTask(rng),lcmErrorFinderTask(rng),mixedOperationChoiceTask(rng)];
+  const pairs=sampleWithoutReplacement(MIXED_LEVEL_PAIRS,6,rng);
+  return [
+    mixedOperationChoiceTask(rng,pairs[0],'gcd'),
+    fullMixedTask(rng,pairs[1],'gcd'),
+    fullMixedTask(rng,pairs[2],'lcm'),
+    factorizationChoiceTask(rng),
+    gcdErrorFinderTask(rng,pairs[3]),
+    lcmErrorFinderTask(rng,pairs[4]),
+    mixedOperationChoiceTask(rng,pairs[5],'lcm')
+  ];
 }
 
 const LEVEL_GENERATORS={1:generatePrimeTasks,2:generateFactorizationTasks,3:generatePowerTasks,4:generateCommonFactorTasks,5:generateGcdTasks,6:generateMultipleTasks,7:generateLcmTasks,8:generateMixedTasks};
@@ -348,6 +364,24 @@ export function generateLevelRun(levelId, rng=Math.random) {
         miniboss: true
       }))
     };
+  }
+  if (levelId === 8) {
+    const pairs = sampleWithoutReplacement(MIXED_LEVEL_PAIRS, 9, rng);
+    const mission = [
+      mixedOperationChoiceTask(rng,pairs[0],'gcd'),
+      fullMixedTask(rng,pairs[1],'gcd'),
+      fullMixedTask(rng,pairs[2],'lcm'),
+      factorizationChoiceTask(rng),
+      gcdErrorFinderTask(rng,pairs[3]),
+      lcmErrorFinderTask(rng,pairs[4]),
+      mixedOperationChoiceTask(rng,pairs[5],'lcm')
+    ];
+    const miniboss = [
+      fullMixedTask(rng,pairs[6],'gcd'),
+      mixedOperationChoiceTask(rng,pairs[7],'lcm'),
+      fullMixedTask(rng,pairs[8],'lcm')
+    ].map(task=>({...task,id:`mini-${task.id}`,miniboss:true}));
+    return {mission,miniboss};
   }
   return {
     mission: generateLevelTasks(levelId, rng),
