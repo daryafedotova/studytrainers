@@ -15,11 +15,11 @@ export default function App() {
   function persist(next){const saved=saveProfile(next);setProfile(saved);return saved;}
   function startProfile(next){persist(next);setScreen('map');}
   function startLevel(id){setSelectedLevel(id);setLevelRunKey(k=>k+1);setScreen('level');}
-  function finishLevel(id,evaluation){setProfile(current=>current?persist(applyLevelResult(current,id,evaluation)):current);}
+  function finishLevel(id,evaluation){if(!profile)return;persist(applyLevelResult(profile,id,evaluation));}
   return <AppShell soundOn={soundOn} onToggleSound={()=>setSoundOn(v=>!v)}>
     {screen==='profile'&&<ProfileGate onStart={startProfile}/>}
     {screen==='map'&&profile&&<CampaignMap profile={profile} onStartLevel={startLevel} onStartBoss={()=>setScreen('boss')}/>}
     {screen==='level'&&profile&&<LevelRunner key={`${selectedLevel}-${levelRunKey}`} soundOn={soundOn} levelId={selectedLevel} onComplete={finishLevel} onBack={()=>setScreen('map')} onReplay={()=>startLevel(selectedLevel)}/>}
-    {screen==='boss'&&profile&&<BossBattle profile={profile} soundOn={soundOn} onBack={()=>setScreen('map')} onVictory={result=>setProfile(current=>current?persist(completeBoss(current,result)):current)}/>}
+    {screen==='boss'&&profile&&<BossBattle profile={profile} soundOn={soundOn} onBack={()=>setScreen('map')} onVictory={result=>persist(completeBoss(profile,result))}/>}
   </AppShell>;
 }
