@@ -238,7 +238,10 @@ const COMMON_MULTIPLE_PAIRS = [[4,6],[6,8],[5,10],[8,12],[9,12],[6,9],[8,14],[10
 function commonMultipleTask(rng, pair = null) {
   const [a,b]=pair ?? choice(COMMON_MULTIPLE_PAIRS,rng);
   const target=lcm(a,b);
-  const options=shuffled([target,target*2,target+a,target+b],rng);
+  const distractors=[target*2,target+a,target+b,target+a+b,target*3,target+Math.max(a,b)]
+    .filter((value,index,all)=>value!==target&&all.indexOf(value)===index)
+    .slice(0,3);
+  const options=shuffled([target,...distractors],rng);
   return {id:uid('common-multiple'),type:'choice',prompt:`Какое наименьшее число кратно и ${a}, и ${b}?`,data:{a,b,operation:'lcm',options},answer:target,skill:'multiples',hint:'Выпиши несколько кратных каждого числа и найди первое совпадение.'};
 }
 
