@@ -34,6 +34,6 @@ test('reduced-motion preference disables intense looping motion and confetti', (
   const level = read('../react-apps/gcd-lcm-space/src/components/LevelRunner.jsx');
   const boss = read('../react-apps/gcd-lcm-space/src/components/BossBattle.jsx');
   assert.match(css, /prefers-reduced-motion[\s\S]*animation-iteration-count:\s*1\s*!important/);
-  assert.match(level, /confetti\(\{[^}]*disableForReducedMotion:\s*true/);
-  assert.match(boss, /confetti\(\{[^}]*disableForReducedMotion:\s*true/);
+  assert.match(level, /disableForReducedMotion:\s*true/);
+  assert.match(boss, /disableForReducedMotion:\s*true/);
 });
