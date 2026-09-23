@@ -83,3 +83,27 @@ test('app exposes independent procedural ambient music control', () => {
   assert.match(ambient, /AudioContext/);
   assert.match(ambient, /return \(\) =>/);
 });
+
+test('start screen has richer game-style cosmic hero content', () => {
+  const profile = read('../react-apps/gcd-lcm-space/src/components/ProfileGate.jsx');
+  const css = read('../react-apps/gcd-lcm-space/src/styles.css');
+  assert.match(profile, /start-space-scene/);
+  assert.match(profile, /mission-preview-grid/);
+  assert.match(profile, /launch-panel/);
+  assert.match(profile, /Сканируй множители/);
+  assert.match(profile, /Собирай НОД и НОК/);
+  assert.match(css, /\.start-space-scene/);
+  assert.match(css, /\.mission-preview-card/);
+  assert.match(css, /box-shadow:0 20px 48px/);
+});
+
+test('ambient soundtrack uses brighter upper-register major-pentatonic material', () => {
+  const ambient = read('../react-apps/gcd-lcm-space/src/lib/ambient.js');
+  assert.doesNotMatch(ambient, /frequency:\s*110\b/);
+  assert.match(ambient, /PAD_NOTES/);
+  assert.match(ambient, /ARPEGGIO/);
+  assert.match(ambient, /392/);
+  assert.match(ambient, /493\.88/);
+  assert.match(ambient, /783\.99/);
+  assert.match(ambient, /master\.gain\.value\s*=\s*0\.0(?:1[0-8]|0[5-9])/);
+});
