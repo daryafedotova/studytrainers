@@ -162,7 +162,7 @@ function powerCompressionTask(rng) {
   const correct = compactText(factors);
   const powers = factorizationToPowers(factors);
   const options = [correct];
-  if (powers[0]) options.push(powers.map((p,i)=>`${p.prime}^${Math.max(1,p.exponent + (i===0?1:0))}`).join(' · '));
+  if (powers[0]) options.push(powers.map((p,i)=>{const exponent=Math.max(1,p.exponent + (i===0?1:0));return exponent===1?String(p.prime):`${p.prime}${toSuperscript(exponent)}`;}).join(' · '));
   options.push(factors.join(' · '));
   options.push(compactText([...factors,factors[0]]));
   return {
