@@ -72,3 +72,28 @@ test('minibosses contain two or three independent tasks', () => {
     assert.ok(tasks.every(t => t.miniboss === true));
   }
 });
+
+test('GCD factor-choice tasks always offer enough copies of every required prime', () => {
+  const rng = seededRng(20260923);
+  for (let round = 0; round < 120; round += 1) {
+    const tasks = generateLevelTasks(5, rng).filter(task => task.id.includes('gcd-factors'));
+    for (const task of tasks) {
+      if (task.type !== 'multi') continue;
+      for (const prime of new Set(task.answer)) {
+        const required = task.answer.filter(value => value === prime).length;
+        const offered = task.data.options.filter(value => value === prime).length;
+        assert.ok(offered >= required, `НОД(${task.data.a}; ${task.data.b}): нужно ${required}×${prime}, предложено ${offered}`);
+      }
+    }
+  }
+});
+
+test('GCD factor-choice tasks never require submitting an empty multi-select answer', () => {
+  const rng = seededRng(20260924);
+  for (let round = 0; round < 120; round += 1) {
+    const tasks = generateLevelTasks(5, rng).filter(task => task.id.includes('gcd-factors'));
+    for (const task of tasks) {
+      assert.ok(task.type !== 'multi' || task.answer.length > 0, `НОД(${task.data.a}; ${task.data.b}) produced an impossible empty multi-select`);
+    }
+  }
+});
