@@ -8,6 +8,10 @@ export function AppShell({ soundOn, onToggleSound, children }) {
         <div className="nebula nebula-b" />
         <div className="star-layer star-layer-a" />
         <div className="star-layer star-layer-b" />
+        <div className="planet-outline planet-outline-a"><span /></div>
+        <div className="planet-outline planet-outline-b"><span /></div>
+        <div className="deep-orbit deep-orbit-a" />
+        <div className="deep-orbit deep-orbit-b" />
       </div>
       <header className="global-controls">
         <a className="library-link" href="../../../">← В библиотеку</a>
