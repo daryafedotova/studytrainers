@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { ArrowRight, BookOpen, ChevronLeft } from 'lucide-react';
 
 export const BRIEFINGS = {
@@ -38,4 +39,4 @@ export const BRIEFINGS = {
     {title:'Смотри на смысл', body:'Сначала реши, что ищется, и только потом выбирай алгоритм.', example:'«Наибольший общий…» → НОД; «наименьшее кратное…» → НОК'}
   ]
 };
-export function BriefingRenderer({levelId,onDone}){const steps=BRIEFINGS[levelId]??[];const[index,setIndex]=useState(0);const step=steps[index];if(!step)return <button className="primary-button" onClick={onDone}>К миссии <ArrowRight size={18}/></button>;return <section className="briefing-card"><div className="briefing-badge"><BookOpen size={18}/> Бортовой журнал · {index+1}/{steps.length}</div><h2>{step.title}</h2><p>{step.body}</p><div className="briefing-example">{step.example}</div><div className="button-row briefing-actions">{index>0&&<button className="secondary-button" type="button" onClick={()=>setIndex(i=>i-1)}><ChevronLeft size={18}/> Назад</button>}<button className="primary-button" type="button" onClick={()=>index===steps.length-1?onDone():setIndex(i=>i+1)}>{index===steps.length-1?'Начать миссию':'Дальше'} <ArrowRight size={18}/></button></div></section>;}
+export function BriefingRenderer({levelId,onDone}){const steps=BRIEFINGS[levelId]??[];const[index,setIndex]=useState(0);const step=steps[index];if(!step)return <button className="primary-button" onClick={onDone}>К миссии <ArrowRight size={18}/></button>;return <motion.section key={index} className="briefing-card" initial={{opacity:0,y:18,scale:.985}} animate={{opacity:1,y:0,scale:1}} transition={{duration:.35}}><div className="briefing-badge"><BookOpen size={18}/> Бортовой журнал · {index+1}/{steps.length}</div><h2>{step.title}</h2><p>{step.body}</p><div className="briefing-example">{step.example}</div><div className="button-row briefing-actions">{index>0&&<button className="secondary-button" type="button" onClick={()=>setIndex(i=>i-1)}><ChevronLeft size={18}/> Назад</button>}<button className="primary-button" type="button" onClick={()=>index===steps.length-1?onDone():setIndex(i=>i+1)}>{index===steps.length-1?'Начать миссию':'Дальше'} <ArrowRight size={18}/></button></div></motion.section>;}
