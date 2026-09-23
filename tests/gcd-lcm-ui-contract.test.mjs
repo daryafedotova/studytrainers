@@ -28,3 +28,12 @@ test('App persistence handlers do not write storage from inside React state upda
   assert.match(app, /persist\(applyLevelResult\(profile,id,evaluation\)\)/);
   assert.match(app, /persist\(completeBoss\(profile,result\)\)/);
 });
+
+test('reduced-motion preference disables intense looping motion and confetti', () => {
+  const css = read('../react-apps/gcd-lcm-space/src/styles.css');
+  const level = read('../react-apps/gcd-lcm-space/src/components/LevelRunner.jsx');
+  const boss = read('../react-apps/gcd-lcm-space/src/components/BossBattle.jsx');
+  assert.match(css, /prefers-reduced-motion[\s\S]*animation-iteration-count:\s*1\s*!important/);
+  assert.match(level, /confetti\(\{[^}]*disableForReducedMotion:\s*true/);
+  assert.match(boss, /confetti\(\{[^}]*disableForReducedMotion:\s*true/);
+});
