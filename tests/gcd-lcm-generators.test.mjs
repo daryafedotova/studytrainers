@@ -145,3 +145,32 @@ test('common-multiple choice options are distinct', () => {
     }
   }
 });
+
+test('level 8 uses unique number pairs across mission and miniboss', () => {
+  for (let seed = 1; seed <= 120; seed += 1) {
+    const run = generateLevelRun(8, seededRng(seed));
+    const pairTasks = [...run.mission, ...run.miniboss]
+      .filter(task => Number.isInteger(task.data?.a) && Number.isInteger(task.data?.b));
+    const keys = pairTasks.map(task => [task.data.a, task.data.b].sort((a,b)=>a-b).join(':'));
+    assert.equal(new Set(keys).size, keys.length, `Повторилась пара в Туманности: ${keys.join(', ')}`);
+  }
+});
+
+test('level 8 does not repeat the same prompt in one run', () => {
+  for (let seed = 1; seed <= 120; seed += 1) {
+    const run = generateLevelRun(8, seededRng(seed));
+    const prompts = [...run.mission, ...run.miniboss].map(task => task.prompt);
+    assert.equal(new Set(prompts).size, prompts.length, `Повторилось задание: ${prompts.join(' | ')}`);
+  }
+});
+
+test('level 8 still mixes gcd, lcm, operation choice, factorization and error analysis', () => {
+  const run = generateLevelRun(8, seededRng(20260927));
+  const all = [...run.mission, ...run.miniboss];
+  assert.ok(all.some(task => task.data?.operation === 'gcd'));
+  assert.ok(all.some(task => task.data?.operation === 'lcm'));
+  assert.ok(all.some(task => task.id.includes('mixed-op')));
+  assert.ok(all.some(task => task.id.includes('factor-choice')));
+  assert.ok(all.some(task => task.id.includes('gcd-error')));
+  assert.ok(all.some(task => task.id.includes('lcm-error')));
+});
