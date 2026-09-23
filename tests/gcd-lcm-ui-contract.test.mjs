@@ -21,3 +21,10 @@ test('level and boss flows use the shared sound helper and celebratory confetti'
   assert.match(boss, /playTone\(correct\?\(next\.critical\?'critical':'correct'\):'life',soundOn\)/);
   assert.match(boss, /confetti\(\{particleCount:/);
 });
+
+test('App persistence handlers do not write storage from inside React state updater callbacks', () => {
+  const app = read('../react-apps/gcd-lcm-space/src/App.jsx');
+  assert.doesNotMatch(app, /setProfile\(current\s*=>[\s\S]{0,180}persist\(/);
+  assert.match(app, /persist\(applyLevelResult\(profile,id,evaluation\)\)/);
+  assert.match(app, /persist\(completeBoss\(profile,result\)\)/);
+});
