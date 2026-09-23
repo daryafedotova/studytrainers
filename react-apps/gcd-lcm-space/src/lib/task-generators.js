@@ -24,9 +24,11 @@ export const PAIR_FAMILIES = {
   general: [[18,30],[42,70],[60,90],[84,126]]
 };
 
+const SUPER_DIGITS = {'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+const toSuperscript = value => String(value).split('').map(char => SUPER_DIGITS[char] ?? char).join('');
 function compactText(factors) {
   return factorizationToPowers(factors)
-    .map(({prime, exponent}) => exponent === 1 ? String(prime) : `${prime}^${exponent}`)
+    .map(({prime, exponent}) => exponent === 1 ? String(prime) : `${prime}${toSuperscript(exponent)}`)
     .join(' · ');
 }
 
@@ -48,6 +50,31 @@ function numericPairTask(operation, pairKind, rng, skill = operation, pairOverri
     hint: operation === 'gcd'
       ? 'Разложи оба числа и возьми общие простые множители с наименьшими показателями.'
       : 'Собери минимальный набор простых множителей, которого хватает для обоих чисел.'
+  };
+}
+
+
+function algorithmWorkbenchTask(operation, pairKind, rng, skill = operation, pairOverride = null) {
+  const picked = pairOverride ? {a:pairOverride[0],b:pairOverride[1],pairKind:pairKind ?? 'mixed'} : pairData(pairKind, rng);
+  const {a,b} = picked;
+  const baseOperation = operation === 'common' ? 'gcd' : operation;
+  const result = baseOperation === 'gcd' ? gcd(a,b) : lcm(a,b);
+  const prompt = operation === 'common'
+    ? `Разложи ${a} и ${b}, затем найди произведение их общих простых множителей.`
+    : baseOperation === 'gcd'
+      ? `Найди НОД(${a}; ${b}) по алгоритму.`
+      : `Найди НОК(${a}; ${b}) по алгоритму.`;
+  return {
+    id:uid(`workbench-${operation}`), type:'algorithm-workbench', prompt,
+    data:{
+      operation,a,b,pairKind:picked.pairKind,
+      factorsA:primeFactorization(a),factorsB:primeFactorization(b),
+      resultFactors:primeFactorization(result)
+    },
+    answer:result, skill,
+    hint:operation === 'lcm'
+      ? 'Разложи оба числа, собери минимальный набор простых множителей для обоих чисел и перемножь его.'
+      : 'Разложи оба числа, выбери общие простые множители и перемножь их.'
   };
 }
 
@@ -185,12 +212,7 @@ function commonFactorSortTask(rng) {
 }
 
 function commonProductTask(rng) {
-  const {a,b,pairKind}=pairData(choice(['general','shared-prime-different-exponents','coprime'],rng),rng);
-  return {
-    id:uid('common-product'), type:'numeric', prompt:`Найди произведение общих простых множителей чисел ${a} и ${b}.`,
-    data:{a,b,pairKind,operation:'gcd'}, answer:gcd(a,b), skill:'common-factors',
-    hint:'Если общих простых множителей нет, произведение общей части равно 1.'
-  };
+  return algorithmWorkbenchTask('common', choice(['general','shared-prime-different-exponents','coprime'],rng), rng, 'common-factors');
 }
 
 function gcdFactorChoiceTask(rng) {
@@ -286,7 +308,7 @@ function mixedOperationChoiceTask(rng, pairOverride = null, operationOverride = 
 function fullMixedTask(rng, pairOverride = null, operationOverride = null) {
   const operation=operationOverride ?? choice(['gcd','lcm'],rng);
   const kind=pairOverride ? 'mixed-unique' : choice(['general','coprime','one-divides-other','shared-prime-different-exponents'],rng);
-  return {...numericPairTask(operation,kind,rng,'mixed',pairOverride),id:uid('mixed-full')};
+  return {...algorithmWorkbenchTask(operation,kind,rng,'mixed',pairOverride),id:uid('mixed-full')};
 }
 
 function generatePrimeTasks(rng) {
@@ -302,14 +324,28 @@ function generateCommonFactorTasks(rng) {
   return [commonFactorSortTask(rng),commonProductTask(rng),commonFactorSortTask(rng),commonProductTask(rng),factorBuilderTask(rng,'common-factors'),commonFactorSortTask(rng)];
 }
 function generateGcdTasks(rng) {
-  return [gcdFactorChoiceTask(rng),numericPairTask('gcd','general',rng),numericPairTask('gcd','shared-prime-different-exponents',rng),numericPairTask('gcd','coprime',rng),gcdErrorFinderTask(rng),numericPairTask('gcd','one-divides-other',rng),gcdFactorChoiceTask(rng)];
+  return [
+    algorithmWorkbenchTask('gcd','general',rng),
+    algorithmWorkbenchTask('gcd','shared-prime-different-exponents',rng),
+    gcdFactorChoiceTask(rng),
+    algorithmWorkbenchTask('gcd','coprime',rng),
+    gcdErrorFinderTask(rng),
+    algorithmWorkbenchTask('gcd','one-divides-other',rng),
+    gcdFactorChoiceTask(rng)
+  ];
 }
 function generateMultipleTasks(rng, commonPairs = null) {
   const pairs = commonPairs ?? sampleWithoutReplacement(COMMON_MULTIPLE_PAIRS, 2, rng);
   return [multipleSequenceTask(rng),multiplesChoiceTask(rng),commonMultipleTask(rng,pairs[0]),multipleSequenceTask(rng),commonMultipleTask(rng,pairs[1]),multiplesChoiceTask(rng)];
 }
 function generateLcmTasks(rng) {
-  return [numericPairTask('lcm','general',rng),numericPairTask('lcm','coprime',rng),numericPairTask('lcm','one-divides-other',rng),numericPairTask('lcm','shared-prime-different-exponents',rng),lcmMissingFactorTask(rng),lcmPowerChoiceTask(rng),lcmErrorFinderTask(rng)];
+  return [
+    algorithmWorkbenchTask('lcm','general',rng),
+    algorithmWorkbenchTask('lcm','coprime',rng),
+    algorithmWorkbenchTask('lcm','one-divides-other',rng),
+    algorithmWorkbenchTask('lcm','shared-prime-different-exponents',rng),
+    lcmMissingFactorTask(rng),lcmPowerChoiceTask(rng),lcmErrorFinderTask(rng)
+  ];
 }
 function generateMixedTasks(rng) {
   const pairs=sampleWithoutReplacement(MIXED_LEVEL_PAIRS,6,rng);
@@ -339,13 +375,13 @@ export function generateMiniBossTasks(levelId, rng=Math.random) {
     case 2: tasks=[factorTreeTask(rng),factorBuilderTask(rng)]; break;
     case 3: tasks=[powerCompressionTask(rng),reconstructNumberTask(rng)]; break;
     case 4: tasks=[commonFactorSortTask(rng),commonProductTask(rng)]; break;
-    case 5: tasks=[numericPairTask('gcd','general',rng),numericPairTask('gcd','coprime',rng)]; break;
+    case 5: tasks=[algorithmWorkbenchTask('gcd','general',rng),algorithmWorkbenchTask('gcd','coprime',rng)]; break;
     case 6: {
       const pairs=sampleWithoutReplacement(COMMON_MULTIPLE_PAIRS,2,rng);
       tasks=[commonMultipleTask(rng,pairs[0]),commonMultipleTask(rng,pairs[1])];
       break;
     }
-    case 7: tasks=[numericPairTask('lcm','general',rng),numericPairTask('lcm','shared-prime-different-exponents',rng)]; break;
+    case 7: tasks=[algorithmWorkbenchTask('lcm','general',rng),algorithmWorkbenchTask('lcm','shared-prime-different-exponents',rng)]; break;
     case 8: tasks=[fullMixedTask(rng),mixedOperationChoiceTask(rng),fullMixedTask(rng)]; break;
     default: throw new RangeError('unknown level');
   }
@@ -391,8 +427,8 @@ export function generateLevelRun(levelId, rng=Math.random) {
 
 export function generateBossPhaseTasks(phase, rng=Math.random) {
   if (phase===1) return [primeClassificationTask(rng),factorTreeTask(rng),powerCompressionTask(rng),factorizationChoiceTask(rng)].map(t=>({...t,bossPhase:1}));
-  if (phase===2) return [commonFactorSortTask(rng),numericPairTask('gcd','shared-prime-different-exponents',rng),numericPairTask('gcd','coprime',rng)].map(t=>({...t,bossPhase:2}));
-  if (phase===3) return [numericPairTask('lcm','one-divides-other',rng),numericPairTask('lcm','coprime',rng),mixedOperationChoiceTask(rng),fullMixedTask(rng)].map(t=>({...t,bossPhase:3}));
+  if (phase===2) return [commonFactorSortTask(rng),algorithmWorkbenchTask('gcd','shared-prime-different-exponents',rng),algorithmWorkbenchTask('gcd','coprime',rng)].map(t=>({...t,bossPhase:2}));
+  if (phase===3) return [algorithmWorkbenchTask('lcm','one-divides-other',rng),algorithmWorkbenchTask('lcm','coprime',rng),mixedOperationChoiceTask(rng),fullMixedTask(rng)].map(t=>({...t,bossPhase:3}));
   throw new RangeError('unknown boss phase');
 }
 
